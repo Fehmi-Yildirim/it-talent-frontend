@@ -1,10 +1,10 @@
-const API_BASE_URL = '/api/v1'
+import { env } from '../../config/env'
 
 async function request<T>(
     endpoint: string,
     options?: RequestInit,
 ): Promise<T> {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    const response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
         ...options,
         headers: {
             'Content-Type': 'application/json',
