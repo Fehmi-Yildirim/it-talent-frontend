@@ -4,7 +4,8 @@ import {
     useState,
     type ReactNode,
 } from 'react'
-import { getAccessToken, clearAccessToken } from './auth.storage'
+import { login } from './auth.api'
+import { getAccessToken, setAccessToken, clearAccessToken } from './auth.storage'
 import type { AuthUser } from './auth.types'
 
 interface AuthContextValue {
@@ -12,6 +13,7 @@ interface AuthContextValue {
     accessToken: string | null
     isAuthenticated: boolean
     isLoading: boolean
+    login: (email: string, password: string) => Promise<AuthUser>
     logout: () => void
 }
 
@@ -22,20 +24,46 @@ interface AuthProviderProps {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-    const [accessToken, setAccessToken] = useState<string | null>(
+    const [accessToken, setToken] = useState<string | null>(
         getAccessToken(),
     )
+    const [user, setUser] = useState<AuthUser | null>(null)
+    const [isLoading, setIsLoading] = useState(false)
+
+    const handleLogin = async (
+        email: string,
+        password: string,
+    ): Promise<AuthUser> => {
+        setIsLoading(true)
+
+        try {
+            const response = await login({
+                email,
+                password,
+            })
+
+            setAccessToken(response.accessToken)
+            setToken(response.accessToken)
+            setUser(response.user)
+
+            return response.user
+        } finally {
+            setIsLoading(false)
+        }
+    }
 
     const logout = () => {
         clearAccessToken()
-        setAccessToken(null)
+        setToken(null)
+        setUser(null)
     }
 
     const value: AuthContextValue = {
-        user: null,
+        user,
         accessToken,
         isAuthenticated: Boolean(accessToken),
-        isLoading: false,
+        isLoading,
+        login: handleLogin,
         logout,
     }
 
