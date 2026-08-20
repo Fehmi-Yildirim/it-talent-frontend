@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { RouterProvider } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { router } from '../../src/app/routes'
+import { AuthProvider } from '../../src/features/auth/AuthProvider'
 
 vi.mock('../../src/features/auth/auth.storage', () => ({
     getAccessToken: vi.fn(),
@@ -22,7 +23,11 @@ describe('application routes', () => {
 
         await router.navigate('/')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -36,7 +41,11 @@ describe('application routes', () => {
 
         await router.navigate('/login')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -50,7 +59,11 @@ describe('application routes', () => {
 
         await router.navigate('/register')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -64,7 +77,11 @@ describe('application routes', () => {
 
         await router.navigate('/dashboard')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -78,7 +95,11 @@ describe('application routes', () => {
 
         await router.navigate('/profile')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -92,7 +113,11 @@ describe('application routes', () => {
 
         await router.navigate('/dashboard')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -106,7 +131,11 @@ describe('application routes', () => {
 
         await router.navigate('/profile')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
@@ -120,7 +149,11 @@ describe('application routes', () => {
 
         await router.navigate('/this-route-does-not-exist')
 
-        render(<RouterProvider router={router} />)
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
 
         expect(
             await screen.findByRole('heading', {
