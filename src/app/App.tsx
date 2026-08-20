@@ -1,8 +1,9 @@
+import { Outlet } from 'react-router-dom'
+
 function App() {
   return (
     <main>
-      <h1>IT Talent</h1>
-      <p>IT Talent Platform</p>
+      <Outlet />
     </main>
   )
 }
