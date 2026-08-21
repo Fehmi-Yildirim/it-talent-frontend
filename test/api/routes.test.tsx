@@ -1,4 +1,4 @@
-
+import '@testing-library/jest-dom/vitest'
 import { render, screen } from '@testing-library/react'
 import { RouterProvider } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -149,39 +149,6 @@ describe('application routes', () => {
 
     it('renders profile for authenticated users', async () => {
         mockedGetAccessToken.mockReturnValue('test-token')
-
-        mockedGetCurrentUser.mockResolvedValue({
-            id: 'user-1',
-            email: 'test@example.com',
-            role: 'CANDIDATE',
-            status: 'ACTIVE',
-        })
-
-        await router.navigate('/profile')
-
-        render(
-            <AuthProvider>
-                <RouterProvider router={router} />
-            </AuthProvider>,
-        )
-
-        expect(
-            await screen.findByRole('heading', {
-                name: 'Profile',
-            }),
-        ).toBeInTheDocument()
-    })
-
-    it('renders profile for authenticated users', async () => {
-
-        vi.mock('../../src/features/auth/auth.storage', () => ({
-            getAccessToken: vi.fn(),
-            setAccessToken: vi.fn(),
-            clearAccessToken: vi.fn(),
-        }))
-
-        mockedGetAccessToken.mockReturnValue('test-token')
-
         mockedGetCurrentUser.mockResolvedValue({
             id: 'user-1',
             email: 'test@example.com',
