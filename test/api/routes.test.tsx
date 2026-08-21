@@ -1,21 +1,35 @@
-import React from 'react'
+
 import { render, screen } from '@testing-library/react'
 import { RouterProvider } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { router } from '../../src/app/routes'
 import { AuthProvider } from '../../src/features/auth/AuthProvider'
+import { getCurrentUser } from '../../src/features/auth/auth.api'
+import { getAccessToken } from '../../src/features/auth/auth.storage'
+
+vi.mock('../../src/features/auth/auth.api', () => ({
+    getCurrentUser: vi.fn(),
+    login: vi.fn(),
+}))
 
 vi.mock('../../src/features/auth/auth.storage', () => ({
     getAccessToken: vi.fn(),
+    setAccessToken: vi.fn(),
+    clearAccessToken: vi.fn(),
 }))
 
-import { getAccessToken } from '../../src/features/auth/auth.storage'
-
+const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 const mockedGetAccessToken = vi.mocked(getAccessToken)
+
+beforeEach(() => {
+    vi.clearAllMocks()
+    mockedGetAccessToken.mockReturnValue(null)
+})
 
 describe('application routes', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        mockedGetAccessToken.mockReturnValue(null)
     })
 
     it('renders the landing page at /', async () => {
@@ -111,6 +125,13 @@ describe('application routes', () => {
     it('renders dashboard for authenticated users', async () => {
         mockedGetAccessToken.mockReturnValue('test-token')
 
+        mockedGetCurrentUser.mockResolvedValue({
+            id: 'user-1',
+            email: 'test@example.com',
+            role: 'CANDIDATE',
+            status: 'ACTIVE',
+        })
+
         await router.navigate('/dashboard')
 
         render(
@@ -128,6 +149,45 @@ describe('application routes', () => {
 
     it('renders profile for authenticated users', async () => {
         mockedGetAccessToken.mockReturnValue('test-token')
+
+        mockedGetCurrentUser.mockResolvedValue({
+            id: 'user-1',
+            email: 'test@example.com',
+            role: 'CANDIDATE',
+            status: 'ACTIVE',
+        })
+
+        await router.navigate('/profile')
+
+        render(
+            <AuthProvider>
+                <RouterProvider router={router} />
+            </AuthProvider>,
+        )
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Profile',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('renders profile for authenticated users', async () => {
+
+        vi.mock('../../src/features/auth/auth.storage', () => ({
+            getAccessToken: vi.fn(),
+            setAccessToken: vi.fn(),
+            clearAccessToken: vi.fn(),
+        }))
+
+        mockedGetAccessToken.mockReturnValue('test-token')
+
+        mockedGetCurrentUser.mockResolvedValue({
+            id: 'user-1',
+            email: 'test@example.com',
+            role: 'CANDIDATE',
+            status: 'ACTIVE',
+        })
 
         await router.navigate('/profile')
 

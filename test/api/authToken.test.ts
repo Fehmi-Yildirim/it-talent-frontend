@@ -13,9 +13,9 @@ describe('authToken', () => {
     it('stores an access token', () => {
         authToken.set('test-token')
 
-        expect(localStorage.getItem('accessToken')).toBe(
-            'test-token',
-        )
+        expect(
+            localStorage.getItem('it-talent-access-token'),
+        ).toBe('test-token')
     })
 
     it('returns the stored access token', () => {

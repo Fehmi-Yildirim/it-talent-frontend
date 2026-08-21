@@ -1,11 +1,16 @@
 import {
     createContext,
     useContext,
+    useEffect,
     useState,
     type ReactNode,
 } from 'react'
-import { login } from './auth.api'
-import { getAccessToken, setAccessToken, clearAccessToken } from './auth.storage'
+import { getCurrentUser, login } from './auth.api'
+import {
+    getAccessToken,
+    setAccessToken,
+    clearAccessToken,
+} from './auth.storage'
 import type { AuthUser } from './auth.types'
 
 interface AuthContextValue {
@@ -28,7 +33,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
         getAccessToken(),
     )
     const [user, setUser] = useState<AuthUser | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading, setIsLoading] = useState(true)
+
+    useEffect(() => {
+        const initializeSession = async () => {
+            const token = getAccessToken()
+
+            if (!token) {
+                setIsLoading(false)
+                return
+            }
+
+            try {
+                const currentUser = await getCurrentUser()
+                setToken(token)
+                setUser(currentUser)
+            } catch {
+                clearAccessToken()
+                setToken(null)
+                setUser(null)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+
+        void initializeSession()
+    }, [])
 
     const handleLogin = async (
         email: string,
@@ -61,7 +91,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const value: AuthContextValue = {
         user,
         accessToken,
-        isAuthenticated: Boolean(accessToken),
+        isAuthenticated: Boolean(accessToken) && user !== null,
         isLoading,
         login: handleLogin,
         logout,
