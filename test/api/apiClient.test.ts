@@ -6,7 +6,7 @@ import {
     it,
     vi,
 } from 'vitest'
-
+import '@testing-library/jest-dom/vitest'
 import { apiClient } from '../../src/services/api/apiClient'
 import { ApiError } from '../../src/services/api/apiError'
 import { authToken } from '../../src/services/api/authToken'
