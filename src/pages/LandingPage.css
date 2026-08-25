@@ -1,0 +1,249 @@
+.landing-page {
+    min-height: 100vh;
+    background: #ffffff;
+    color: #111827;
+}
+
+.landing-header {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    min-height: 72px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.landing-logo {
+    color: #111827;
+    font-size: 1.25rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.landing-nav {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.landing-login-link {
+    color: #374151;
+    font-weight: 500;
+    text-decoration: none;
+}
+
+.landing-login-link:hover {
+    color: #111827;
+}
+
+.landing-register-link,
+.landing-primary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+
+    font-weight: 600;
+    text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.landing-register-link {
+    min-height: 40px;
+    padding: 0 16px;
+}
+
+.landing-register-link:hover,
+.landing-primary-button:hover {
+    background: #374151;
+    transform: translateY(-1px);
+}
+
+.landing-hero {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 96px 0 80px;
+}
+
+.landing-hero-content {
+    max-width: 760px;
+}
+
+.landing-eyebrow,
+.landing-card-label {
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.landing-hero h1 {
+    margin: 16px 0 8px;
+
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.05;
+    letter-spacing: -0.04em;
+}
+
+.landing-hero h2 {
+    max-width: 760px;
+    margin: 0 0 24px;
+
+    font-size: clamp(1.75rem, 4vw, 3rem);
+    line-height: 1.15;
+    letter-spacing: -0.03em;
+}
+
+.landing-hero-description {
+    max-width: 640px;
+    margin: 0;
+
+    color: #4b5563;
+    font-size: 1.2rem;
+    line-height: 1.7;
+}
+
+.landing-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px;
+}
+
+.landing-primary-button,
+.landing-secondary-button {
+    min-height: 48px;
+    padding: 0 22px;
+
+    border-radius: 8px;
+
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.landing-secondary-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #d1d5db;
+    color: #374151;
+}
+
+.landing-secondary-button:hover {
+    background: #f9fafb;
+}
+
+.landing-audience {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px;
+
+    padding-bottom: 80px;
+}
+
+.landing-card {
+    padding: 32px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.landing-card h2 {
+    margin: 12px 0 12px;
+
+    font-size: 1.5rem;
+    line-height: 1.3;
+}
+
+.landing-card p {
+    margin: 0 0 20px;
+
+    color: #6b7280;
+    line-height: 1.7;
+}
+
+.landing-card a {
+    color: #111827;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.landing-card a:hover {
+    text-decoration: underline;
+}
+
+.landing-footer {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+
+    padding: 24px 0 32px;
+
+    border-top: 1px solid #e5e7eb;
+
+    color: #9ca3af;
+    font-size: 0.875rem;
+}
+
+@media (max-width: 640px) {
+    .landing-header {
+        width: min(100% - 24px, 1120px);
+    }
+
+    .landing-nav {
+        gap: 12px;
+    }
+
+    .landing-login-link {
+        display: none;
+    }
+
+    .landing-hero {
+        width: min(100% - 24px, 1120px);
+        padding: 64px 0 56px;
+    }
+
+    .landing-hero h1 {
+        font-size: 2.75rem;
+    }
+
+    .landing-hero-description {
+        font-size: 1.05rem;
+    }
+
+    .landing-actions {
+        flex-direction: column;
+    }
+
+    .landing-primary-button,
+    .landing-secondary-button {
+        width: 100%;
+    }
+
+    .landing-audience {
+        width: min(100% - 24px, 1120px);
+        grid-template-columns: 1fr;
+        padding-bottom: 56px;
+    }
+
+    .landing-card {
+        padding: 24px;
+    }
+
+    .landing-footer {
+        width: min(100% - 24px, 1120px);
+    }
+}
