@@ -1,0 +1,156 @@
+.dashboard-page {
+    width: min(1120px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 48px 0 64px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 32px;
+    margin-bottom: 40px;
+}
+
+.dashboard-eyebrow {
+    margin: 0 0 8px;
+
+    color: #6b7280;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: clamp(2rem, 5vw, 3rem);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+}
+
+.dashboard-welcome {
+    margin: 12px 0 0;
+
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+.dashboard-profile-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0 18px;
+
+    border-radius: 8px;
+    background: #111827;
+    color: #ffffff;
+
+    font-weight: 600;
+    text-decoration: none;
+
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.dashboard-profile-link:hover {
+    background: #374151;
+    transform: translateY(-1px);
+}
+
+.dashboard-account {
+    padding: 32px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    background: #ffffff;
+}
+
+.dashboard-section-header {
+    margin-bottom: 24px;
+}
+
+.dashboard-section-header h2 {
+    margin: 0;
+
+    font-size: 1.5rem;
+    line-height: 1.3;
+}
+
+.dashboard-account-details {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+
+    margin: 0;
+}
+
+.dashboard-account-item {
+    min-width: 0;
+    padding: 20px;
+
+    border-radius: 8px;
+    background: #f9fafb;
+}
+
+.dashboard-account-item dt {
+    margin-bottom: 8px;
+
+    color: #6b7280;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.dashboard-account-item dd {
+    margin: 0;
+
+    color: #111827;
+    font-size: 1rem;
+    font-weight: 600;
+
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 768px) {
+    .dashboard-page {
+        width: min(100% - 24px, 1120px);
+        padding: 32px 0 48px;
+    }
+
+    .dashboard-header {
+        flex-direction: column;
+        gap: 20px;
+        margin-bottom: 32px;
+    }
+
+    .dashboard-profile-link {
+        width: 100%;
+    }
+
+    .dashboard-account {
+        padding: 24px;
+    }
+
+    .dashboard-account-details {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-page {
+        width: calc(100% - 24px);
+    }
+
+    .dashboard-account {
+        padding: 20px;
+    }
+
+    .dashboard-account-item {
+        padding: 16px;
+    }
+}
