@@ -8,153 +8,116 @@ import { AuthProvider } from '../../src/features/auth/AuthProvider'
 import { getCurrentUser } from '../../src/features/auth/auth.api'
 
 vi.mock('../../src/features/auth/auth.api', () => ({
-    getCurrentUser: vi.fn(),
-    login: vi.fn(),
+  getCurrentUser: vi.fn(),
+  login: vi.fn(),
 }))
 
 const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 
 const currentUser = {
-    id: 'user-1',
-    email: 'test@example.com',
-    role: 'CANDIDATE' as const,
-    status: 'ACTIVE' as const,
+  id: 'user-1',
+  email: 'test@example.com',
+  role: 'CANDIDATE' as const,
+  status: 'ACTIVE' as const,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+  candidate: {
+    id: 'candidate-1',
+    headline: null,
+    summary: null,
+    location: null,
+    salaryMin: null,
+    salaryMax: null,
+    currency: null,
+    availabilityDate: null,
+    remotePreference: null,
     createdAt: '2026-01-01T00:00:00.000Z',
     updatedAt: '2026-01-01T00:00:00.000Z',
-    candidate: {
-        id: 'candidate-1',
-        headline: null,
-        summary: null,
-        location: null,
-        salaryMin: null,
-        salaryMax: null,
-        currency: null,
-        availabilityDate: null,
-        remotePreference: null,
-        createdAt: '2026-01-01T00:00:00.000Z',
-        updatedAt: '2026-01-01T00:00:00.000Z',
-    },
-    recruiter: null,
+  },
+  recruiter: null,
 }
 
 describe('ProtectedRoute', () => {
-    beforeEach(() => {
-        localStorage.clear()
-        vi.clearAllMocks()
+  beforeEach(() => {
+    localStorage.clear()
+    vi.clearAllMocks()
+  })
+
+  it('renders protected content when an access token exists', async () => {
+    localStorage.setItem('it-talent-access-token', 'test-token')
+
+    mockedGetCurrentUser.mockResolvedValue(currentUser)
+
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<div>Dashboard content</div>} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
+
+    expect(screen.queryByText('Dashboard content')).not.toBeInTheDocument()
+
+    await waitFor(() => {
+      expect(screen.getByText('Dashboard content')).toBeInTheDocument()
     })
 
-    it('renders protected content when an access token exists', async () => {
-        localStorage.setItem(
-            'it-talent-access-token',
-            'test-token',
-        )
+    expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
+  })
 
-        mockedGetCurrentUser.mockResolvedValue(currentUser)
+  it('clears an invalid session and redirects to login', async () => {
+    localStorage.setItem('it-talent-access-token', 'expired-token')
 
-        render(
-            <AuthProvider>
-                <MemoryRouter initialEntries={['/dashboard']}>
-                    <Routes>
-                        <Route element={<ProtectedRoute />}>
-                            <Route
-                                path="/dashboard"
-                                element={<div>Dashboard content</div>}
-                            />
-                        </Route>
-                    </Routes>
-                </MemoryRouter>
-            </AuthProvider>,
-        )
+    mockedGetCurrentUser.mockRejectedValue(new Error('Unauthorized'))
 
-        expect(
-            screen.queryByText('Dashboard content'),
-        ).not.toBeInTheDocument()
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<div>Dashboard content</div>} />
+            </Route>
 
-        await waitFor(() => {
-            expect(
-                screen.getByText('Dashboard content'),
-            ).toBeInTheDocument()
-        })
+            <Route path="/login" element={<div>Login page</div>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
 
-        expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
+    await waitFor(() => {
+      expect(screen.getByText('Login page')).toBeInTheDocument()
     })
 
-    it('clears an invalid session and redirects to login', async () => {
-        localStorage.setItem(
-            'it-talent-access-token',
-            'expired-token',
-        )
+    expect(localStorage.getItem('it-talent-access-token')).toBeNull()
 
-        mockedGetCurrentUser.mockRejectedValue(
-            new Error('Unauthorized'),
-        )
+    expect(screen.queryByText('Dashboard content')).not.toBeInTheDocument()
 
-        render(
-            <AuthProvider>
-                <MemoryRouter initialEntries={['/dashboard']}>
-                    <Routes>
-                        <Route element={<ProtectedRoute />}>
-                            <Route
-                                path="/dashboard"
-                                element={<div>Dashboard content</div>}
-                            />
-                        </Route>
+    expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
+  })
 
-                        <Route
-                            path="/login"
-                            element={<div>Login page</div>}
-                        />
-                    </Routes>
-                </MemoryRouter>
-            </AuthProvider>,
-        )
+  it('redirects unauthenticated users to login', () => {
+    render(
+      <AuthProvider>
+        <MemoryRouter initialEntries={['/dashboard']}>
+          <Routes>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<div>Dashboard content</div>} />
+            </Route>
 
-        await waitFor(() => {
-            expect(
-                screen.getByText('Login page'),
-            ).toBeInTheDocument()
-        })
+            <Route path="/login" element={<div>Login page</div>} />
+          </Routes>
+        </MemoryRouter>
+      </AuthProvider>,
+    )
 
-        expect(
-            localStorage.getItem('it-talent-access-token'),
-        ).toBeNull()
+    expect(screen.getByText('Login page')).toBeInTheDocument()
 
-        expect(
-            screen.queryByText('Dashboard content'),
-        ).not.toBeInTheDocument()
+    expect(screen.queryByText('Dashboard content')).not.toBeInTheDocument()
 
-        expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
-    })
-
-    it('redirects unauthenticated users to login', () => {
-        render(
-            <AuthProvider>
-                <MemoryRouter initialEntries={['/dashboard']}>
-                    <Routes>
-                        <Route element={<ProtectedRoute />}>
-                            <Route
-                                path="/dashboard"
-                                element={<div>Dashboard content</div>}
-                            />
-                        </Route>
-
-                        <Route
-                            path="/login"
-                            element={<div>Login page</div>}
-                        />
-                    </Routes>
-                </MemoryRouter>
-            </AuthProvider>,
-        )
-
-        expect(
-            screen.getByText('Login page'),
-        ).toBeInTheDocument()
-
-        expect(
-            screen.queryByText('Dashboard content'),
-        ).not.toBeInTheDocument()
-
-        expect(mockedGetCurrentUser).not.toHaveBeenCalled()
-    })
+    expect(mockedGetCurrentUser).not.toHaveBeenCalled()
+  })
 })
