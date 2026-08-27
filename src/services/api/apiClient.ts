@@ -1,6 +1,8 @@
 import { env } from '../../config/env'
-import { ApiError, type ApiErrorDetails } from './apiError'
+import type { ApiErrorDetails } from '../../types/api'
+import { ApiError } from './apiError'
 import { authToken } from './authToken'
+
 
 async function request<T>(
     endpoint: string,
@@ -60,10 +62,27 @@ export const apiClient = {
         return request<T>(endpoint)
     },
 
-    post<T>(endpoint: string, body: unknown) {
+    post<T>(endpoint: string, body?: unknown) {
         return request<T>(endpoint, {
             method: 'POST',
+            ...(body !== undefined
+                ? {
+                    body: JSON.stringify(body),
+                }
+                : {}),
+        })
+    },
+
+    patch<T>(endpoint: string, body: unknown) {
+        return request<T>(endpoint, {
+            method: 'PATCH',
             body: JSON.stringify(body),
+        })
+    },
+
+    delete<T>(endpoint: string) {
+        return request<T>(endpoint, {
+            method: 'DELETE',
         })
     },
 }

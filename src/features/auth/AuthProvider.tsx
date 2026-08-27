@@ -11,10 +11,11 @@ import {
     setAccessToken,
     clearAccessToken,
 } from './auth.storage'
-import type { AuthUser } from './auth.types'
+import type { AuthUser } from '../../types/auth'
+import type { CurrentUser } from '../../types/user'
 
 interface AuthContextValue {
-    user: AuthUser | null
+    user: CurrentUser | null
     accessToken: string | null
     isAuthenticated: boolean
     isLoading: boolean
@@ -32,7 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const [accessToken, setToken] = useState<string | null>(
         getAccessToken(),
     )
-    const [user, setUser] = useState<AuthUser | null>(null)
+    const [user, setUser] = useState<CurrentUser | null>(null)
     const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
@@ -74,7 +75,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
             setAccessToken(response.accessToken)
             setToken(response.accessToken)
-            setUser(response.user)
+
+            const currentUser = await getCurrentUser()
+            setUser(currentUser)
 
             return response.user
         } finally {

@@ -1,9 +1,4 @@
-export type ApiErrorDetails = {
-    statusCode?: number
-    error?: string
-    message?: string | string[]
-    [key: string]: unknown
-}
+import type { ApiErrorDetails } from '../../types/api'
 
 export class ApiError extends Error {
     readonly status: number

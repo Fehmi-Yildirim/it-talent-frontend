@@ -1,15 +1,10 @@
 import { apiClient } from '../../services/api/apiClient'
-import type { AuthResponse, AuthUser } from './auth.types'
-
-export interface RegisterRequest {
-    email: string
-    password: string
-}
-
-export interface LoginRequest {
-    email: string
-    password: string
-}
+import type {
+    AuthResponse,
+    LoginRequest,
+    RegisterRequest,
+} from '../../types/auth'
+import type { CurrentUser } from '../../types/user'
 
 export function register(
     data: RegisterRequest,
@@ -23,6 +18,6 @@ export function login(
     return apiClient.post<AuthResponse>('/auth/login', data)
 }
 
-export function getCurrentUser(): Promise<AuthUser> {
-    return apiClient.get<AuthUser>('/users/me')
+export function getCurrentUser(): Promise<CurrentUser> {
+    return apiClient.get<CurrentUser>('/users/me')
 }
