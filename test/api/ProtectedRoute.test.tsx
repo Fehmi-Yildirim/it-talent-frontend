@@ -1,27 +1,46 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
-import { beforeEach, describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
+import '@testing-library/jest-dom/vitest'
+
 import ProtectedRoute from '../../src/app/ProtectedRoute'
 import { AuthProvider } from '../../src/features/auth/AuthProvider'
-import '@testing-library/jest-dom/vitest'
-import { vi } from 'vitest'
 import { getCurrentUser } from '../../src/features/auth/auth.api'
-
-const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 
 vi.mock('../../src/features/auth/auth.api', () => ({
     getCurrentUser: vi.fn(),
     login: vi.fn(),
 }))
-vi.mocked(getCurrentUser).mockResolvedValue({
+
+const mockedGetCurrentUser = vi.mocked(getCurrentUser)
+
+const currentUser = {
     id: 'user-1',
     email: 'test@example.com',
-    role: 'CANDIDATE',
-    status: 'ACTIVE',
-})
+    role: 'CANDIDATE' as const,
+    status: 'ACTIVE' as const,
+    createdAt: '2026-01-01T00:00:00.000Z',
+    updatedAt: '2026-01-01T00:00:00.000Z',
+    candidate: {
+        id: 'candidate-1',
+        headline: null,
+        summary: null,
+        location: null,
+        salaryMin: null,
+        salaryMax: null,
+        currency: null,
+        availabilityDate: null,
+        remotePreference: null,
+        createdAt: '2026-01-01T00:00:00.000Z',
+        updatedAt: '2026-01-01T00:00:00.000Z',
+    },
+    recruiter: null,
+}
+
 describe('ProtectedRoute', () => {
     beforeEach(() => {
         localStorage.clear()
+        vi.clearAllMocks()
     })
 
     it('renders protected content when an access token exists', async () => {
@@ -30,12 +49,7 @@ describe('ProtectedRoute', () => {
             'test-token',
         )
 
-        mockedGetCurrentUser.mockResolvedValue({
-            id: 'user-1',
-            email: 'test@example.com',
-            role: 'CANDIDATE',
-            status: 'ACTIVE',
-        })
+        mockedGetCurrentUser.mockResolvedValue(currentUser)
 
         render(
             <AuthProvider>
@@ -61,6 +75,8 @@ describe('ProtectedRoute', () => {
                 screen.getByText('Dashboard content'),
             ).toBeInTheDocument()
         })
+
+        expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
     })
 
     it('clears an invalid session and redirects to login', async () => {
@@ -106,6 +122,8 @@ describe('ProtectedRoute', () => {
         expect(
             screen.queryByText('Dashboard content'),
         ).not.toBeInTheDocument()
+
+        expect(mockedGetCurrentUser).toHaveBeenCalledTimes(1)
     })
 
     it('redirects unauthenticated users to login', () => {
@@ -136,5 +154,7 @@ describe('ProtectedRoute', () => {
         expect(
             screen.queryByText('Dashboard content'),
         ).not.toBeInTheDocument()
+
+        expect(mockedGetCurrentUser).not.toHaveBeenCalled()
     })
 })
