@@ -1,63 +1,53 @@
 import { apiClient } from '../../services/api/apiClient'
 import type {
-    CreateJobRequest,
-    Job,
-    JobRequirement,
-    RemoveJobRequirementResponse,
-    UpdateJobRequest,
-    UpdateJobRequirementsRequest,
+  CreateJobRequest,
+  Job,
+  JobRequirement,
+  RemoveJobRequirementResponse,
+  UpdateJobRequest,
+  UpdateJobRequirementsRequest,
 } from '../../types/job'
 
 export function getJobs(): Promise<Job[]> {
-    return apiClient.get<Job[]>('/jobs')
+  return apiClient.get<Job[]>('/jobs')
 }
 
 export function getJobById(jobId: string): Promise<Job> {
-    return apiClient.get<Job>(`/jobs/${jobId}`)
+  return apiClient.get<Job>(`/jobs/${jobId}`)
 }
 
 export function createJob(data: CreateJobRequest): Promise<Job> {
-    return apiClient.post<Job>('/jobs', data)
+  return apiClient.post<Job>('/jobs', data)
 }
 
-export function updateJob(
-    jobId: string,
-    data: UpdateJobRequest,
-): Promise<Job> {
-    return apiClient.patch<Job>(`/jobs/${jobId}`, data)
+export function updateJob(jobId: string, data: UpdateJobRequest): Promise<Job> {
+  return apiClient.patch<Job>(`/jobs/${jobId}`, data)
 }
 
 export function publishJob(jobId: string): Promise<Job> {
-    return apiClient.post<Job>(`/jobs/${jobId}/publish`)
+  return apiClient.post<Job>(`/jobs/${jobId}/publish`)
 }
 
 export function closeJob(jobId: string): Promise<Job> {
-    return apiClient.post<Job>(`/jobs/${jobId}/close`)
+  return apiClient.post<Job>(`/jobs/${jobId}/close`)
 }
 
-export function getJobRequirements(
-    jobId: string,
-): Promise<JobRequirement[]> {
-    return apiClient.get<JobRequirement[]>(
-        `/jobs/${jobId}/requirements`,
-    )
+export function getJobRequirements(jobId: string): Promise<JobRequirement[]> {
+  return apiClient.get<JobRequirement[]>(`/jobs/${jobId}/requirements`)
 }
 
 export function updateJobRequirements(
-    jobId: string,
-    data: UpdateJobRequirementsRequest,
+  jobId: string,
+  data: UpdateJobRequirementsRequest,
 ): Promise<JobRequirement[]> {
-    return apiClient.patch<JobRequirement[]>(
-        `/jobs/${jobId}/requirements`,
-        data,
-    )
+  return apiClient.patch<JobRequirement[]>(`/jobs/${jobId}/requirements`, data)
 }
 
 export function removeJobRequirement(
-    jobId: string,
-    skillId: string,
+  jobId: string,
+  skillId: string,
 ): Promise<RemoveJobRequirementResponse> {
-    return apiClient.delete<RemoveJobRequirementResponse>(
-        `/jobs/${jobId}/requirements/${skillId}`,
-    )
+  return apiClient.delete<RemoveJobRequirementResponse>(
+    `/jobs/${jobId}/requirements/${skillId}`,
+  )
 }

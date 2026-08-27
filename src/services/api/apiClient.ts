@@ -3,86 +3,78 @@ import type { ApiErrorDetails } from '../../types/api'
 import { ApiError } from './apiError'
 import { authToken } from './authToken'
 
+async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+  const token = authToken.get()
 
-async function request<T>(
-    endpoint: string,
-    options?: RequestInit,
-): Promise<T> {
-    const token = authToken.get()
+  let response: Response
 
-    let response: Response
+  try {
+    response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token
+          ? {
+              Authorization: `Bearer ${token}`,
+            }
+          : {}),
+        ...options?.headers,
+      },
+    })
+  } catch (error) {
+    throw new ApiError(0, 'Unable to connect to the API', {
+      cause: error,
+    })
+  }
+
+  if (!response.ok) {
+    let details: ApiErrorDetails | undefined
 
     try {
-        response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
-            ...options,
-            headers: {
-                'Content-Type': 'application/json',
-                ...(token
-                    ? {
-                        Authorization: `Bearer ${token}`,
-                    }
-                    : {}),
-                ...options?.headers,
-            },
-        })
-    } catch (error) {
-        throw new ApiError(
-            0,
-            'Unable to connect to the API',
-            {
-                cause: error,
-            },
-        )
+      details = (await response.json()) as ApiErrorDetails
+    } catch {
+      // Response bevat geen JSON body.
     }
 
-    if (!response.ok) {
-        let details: ApiErrorDetails | undefined
+    const message =
+      typeof details?.message === 'string'
+        ? details.message
+        : Array.isArray(details?.message)
+          ? details.message.join(', ')
+          : `API request failed with status ${response.status}`
 
-        try {
-            details = (await response.json()) as ApiErrorDetails
-        } catch {
-            // Response bevat geen JSON body.
-        }
+    throw new ApiError(response.status, message, details)
+  }
 
-        const message =
-            typeof details?.message === 'string'
-                ? details.message
-                : Array.isArray(details?.message)
-                    ? details.message.join(', ')
-                    : `API request failed with status ${response.status}`
-
-        throw new ApiError(response.status, message, details)
-    }
-
-    return response.json() as Promise<T>
+  return response.json() as Promise<T>
 }
 
 export const apiClient = {
-    get<T>(endpoint: string) {
-        return request<T>(endpoint)
-    },
+  get<T>(endpoint: string) {
+    return request<T>(endpoint)
+  },
 
-    post<T>(endpoint: string, body?: unknown) {
-        return request<T>(endpoint, {
-            method: 'POST',
-            ...(body !== undefined
-                ? {
-                    body: JSON.stringify(body),
-                }
-                : {}),
-        })
-    },
-
-    patch<T>(endpoint: string, body: unknown) {
-        return request<T>(endpoint, {
-            method: 'PATCH',
+  post<T>(endpoint: string, body?: unknown) {
+    return request<T>(endpoint, {
+      method: 'POST',
+      ...(body !== undefined
+        ? {
             body: JSON.stringify(body),
-        })
-    },
+          }
+        : {}),
+    })
+  },
 
-    delete<T>(endpoint: string) {
-        return request<T>(endpoint, {
-            method: 'DELETE',
-        })
-    },
+  patch<T>(endpoint: string, body: unknown) {
+    return request<T>(endpoint, {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+    })
+  },
+
+  delete<T>(endpoint: string) {
+    return request<T>(endpoint, {
+      method: 'DELETE',
+    })
+  },
 }

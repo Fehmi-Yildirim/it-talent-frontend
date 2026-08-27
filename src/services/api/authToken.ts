@@ -1,15 +1,15 @@
 const ACCESS_TOKEN_KEY = 'it-talent-access-token'
 
 export const authToken = {
-    get(): string | null {
-        return localStorage.getItem(ACCESS_TOKEN_KEY)
-    },
+  get(): string | null {
+    return localStorage.getItem(ACCESS_TOKEN_KEY)
+  },
 
-    set(token: string): void {
-        localStorage.setItem(ACCESS_TOKEN_KEY, token)
-    },
+  set(token: string): void {
+    localStorage.setItem(ACCESS_TOKEN_KEY, token)
+  },
 
-    clear(): void {
-        localStorage.removeItem(ACCESS_TOKEN_KEY)
-    },
+  clear(): void {
+    localStorage.removeItem(ACCESS_TOKEN_KEY)
+  },
 }

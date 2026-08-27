@@ -1,85 +1,75 @@
 export type EmploymentType =
-    | 'FULL_TIME'
-    | 'PART_TIME'
-    | 'CONTRACT'
-    | 'FREELANCE'
-    | 'INTERNSHIP'
+  'FULL_TIME' | 'PART_TIME' | 'CONTRACT' | 'FREELANCE' | 'INTERNSHIP'
 
-export type WorkMode =
-    | 'ONSITE'
-    | 'HYBRID'
-    | 'REMOTE'
+export type WorkMode = 'ONSITE' | 'HYBRID' | 'REMOTE'
 
-export type JobStatus =
-    | 'DRAFT'
-    | 'PUBLISHED'
-    | 'CLOSED'
+export type JobStatus = 'DRAFT' | 'PUBLISHED' | 'CLOSED'
 
 export interface Skill {
-    id: string
-    name: string
+  id: string
+  name: string
 }
 
 export interface JobRequirement {
-    id: string
-    jobId: string
-    skillId: string
-    required: boolean
-    minimumLevel: number
-    skill: Skill
+  id: string
+  jobId: string
+  skillId: string
+  required: boolean
+  minimumLevel: number
+  skill: Skill
 }
 
 export interface Job {
-    id: string
-    companyId: string
-    createdByRecruiterId: string
-    title: string
-    description: string
-    location: string | null
-    employmentType: EmploymentType
-    workMode: WorkMode
-    salaryMin: string | number | null
-    salaryMax: string | number | null
-    currency: string | null
-    expiresAt: string | null
-    status: JobStatus
-    publishedAt: string | null
-    createdAt: string
-    updatedAt: string
-    requirements: JobRequirement[]
+  id: string
+  companyId: string
+  createdByRecruiterId: string
+  title: string
+  description: string
+  location: string | null
+  employmentType: EmploymentType
+  workMode: WorkMode
+  salaryMin: string | number | null
+  salaryMax: string | number | null
+  currency: string | null
+  expiresAt: string | null
+  status: JobStatus
+  publishedAt: string | null
+  createdAt: string
+  updatedAt: string
+  requirements: JobRequirement[]
 }
 
 export interface CreateJobRequest {
-    title: string
-    description: string
-    location?: string
-    employmentType: EmploymentType
-    workMode: WorkMode
-    salaryMin?: number
-    salaryMax?: number
-    currency?: string
-    expiresAt?: string
-    requiredSkillIds?: string[]
-    preferredSkillIds?: string[]
+  title: string
+  description: string
+  location?: string
+  employmentType: EmploymentType
+  workMode: WorkMode
+  salaryMin?: number
+  salaryMax?: number
+  currency?: string
+  expiresAt?: string
+  requiredSkillIds?: string[]
+  preferredSkillIds?: string[]
 }
 
 export interface UpdateJobRequest {
-    title?: string
-    description?: string
-    employmentType?: EmploymentType
-    workMode?: WorkMode
-    salaryMin?: number
-    salaryMax?: number
-    location?: string
-    requiredSkillIds?: string[]
-    preferredSkillIds?: string[]
+  title?: string
+  description?: string
+  employmentType?: EmploymentType
+  workMode?: WorkMode
+  salaryMin?: number
+  salaryMax?: number
+  location?: string
+  requiredSkillIds?: string[]
+  preferredSkillIds?: string[]
 }
 
 export interface UpdateJobRequirementsRequest {
-    requiredSkillIds?: string[]
-    preferredSkillIds?: string[]
+  requiredSkillIds?: string[]
+  preferredSkillIds?: string[]
 }
 
 export interface RemoveJobRequirementResponse {
-    message: string
+  message: string
 }

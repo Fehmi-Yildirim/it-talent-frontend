@@ -9,39 +9,39 @@ import ProfilePage from '../pages/ProfilePage'
 import RegisterPage from '../pages/RegisterPage'
 
 export const router = createBrowserRouter([
-    {
-        path: '/',
-        element: <App />,
+  {
+    path: '/',
+    element: <App />,
+    children: [
+      {
+        index: true,
+        element: <LandingPage />,
+      },
+      {
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />,
+      },
+      {
+        element: <ProtectedRoute />,
         children: [
-            {
-                index: true,
-                element: <LandingPage />,
-            },
-            {
-                path: 'login',
-                element: <LoginPage />,
-            },
-            {
-                path: 'register',
-                element: <RegisterPage />,
-            },
-            {
-                element: <ProtectedRoute />,
-                children: [
-                    {
-                        path: 'dashboard',
-                        element: <DashboardPage />,
-                    },
-                    {
-                        path: 'profile',
-                        element: <ProfilePage />,
-                    },
-                ],
-            },
-            {
-                path: '*',
-                element: <NotFoundPage />,
-            },
+          {
+            path: 'dashboard',
+            element: <DashboardPage />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
+          },
         ],
-    },
+      },
+      {
+        path: '*',
+        element: <NotFoundPage />,
+      },
+    ],
+  },
 ])

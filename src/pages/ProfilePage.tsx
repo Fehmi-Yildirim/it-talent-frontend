@@ -6,214 +6,185 @@ import type { CandidateProfile } from '../types/candidate'
 import './ProfilePage.css'
 
 function formatSalary(
-    min: string | null,
-    max: string | null,
-    currency: string | null,
+  min: string | null,
+  max: string | null,
+  currency: string | null,
 ) {
-    if ((min === null && max === null) || !currency) {
-        return 'Not specified'
-    }
+  if ((min === null && max === null) || !currency) {
+    return 'Not specified'
+  }
 
-    const formatter = new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency,
-        maximumFractionDigits: 0,
-    })
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency,
+    maximumFractionDigits: 0,
+  })
 
-    if (min === null) {
-        return `Up to ${formatter.format(Number(max))}`
-    }
+  if (min === null) {
+    return `Up to ${formatter.format(Number(max))}`
+  }
 
-    if (max === null) {
-        return `From ${formatter.format(Number(min))}`
-    }
+  if (max === null) {
+    return `From ${formatter.format(Number(min))}`
+  }
 
-    return `${formatter.format(Number(min))} – ${formatter.format(Number(max))}`
+  return `${formatter.format(Number(min))} – ${formatter.format(Number(max))}`
 }
 
 function formatDate(value: string | null) {
-    if (!value) {
-        return 'Not specified'
-    }
+  if (!value) {
+    return 'Not specified'
+  }
 
-    return new Intl.DateTimeFormat('en-GB', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-    }).format(new Date(value))
+  return new Intl.DateTimeFormat('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  }).format(new Date(value))
 }
 
 function ProfilePage() {
-    const { user } = useAuth()
+  const { user } = useAuth()
 
-    const [candidateProfile, setCandidateProfile] =
-        useState<CandidateProfile | null>(null)
+  const [candidateProfile, setCandidateProfile] =
+    useState<CandidateProfile | null>(null)
 
-    const [loading, setLoading] = useState(false)
-    const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
-    useEffect(() => {
-        if (!user || user.role !== 'CANDIDATE') {
-            return
+  useEffect(() => {
+    if (!user || user.role !== 'CANDIDATE') {
+      return
+    }
+
+    let cancelled = false
+
+    async function loadCandidateProfile() {
+      setLoading(true)
+      setError(null)
+
+      try {
+        const profile = await getCandidateProfile()
+
+        if (!cancelled) {
+          setCandidateProfile(profile)
         }
-
-        let cancelled = false
-
-        async function loadCandidateProfile() {
-            setLoading(true)
-            setError(null)
-
-            try {
-                const profile = await getCandidateProfile()
-
-                if (!cancelled) {
-                    setCandidateProfile(profile)
-                }
-            } catch {
-                if (!cancelled) {
-                    setError('Unable to load your candidate profile.')
-                }
-            } finally {
-                if (!cancelled) {
-                    setLoading(false)
-                }
-            }
+      } catch {
+        if (!cancelled) {
+          setError('Unable to load your candidate profile.')
         }
-
-        void loadCandidateProfile()
-
-        return () => {
-            cancelled = true
+      } finally {
+        if (!cancelled) {
+          setLoading(false)
         }
-    }, [user])
+      }
+    }
 
-    return (
-        <section className="profile-page">
-            <div className="profile-header">
-                <div>
-                    <p className="profile-eyebrow">IT Talent</p>
-                    <h1>Profile</h1>
-                </div>
+    void loadCandidateProfile()
 
-                <Link to="/dashboard">
-                    Back to dashboard
-                </Link>
-            </div>
+    return () => {
+      cancelled = true
+    }
+  }, [user])
 
-            <section
-                className="profile-section"
-                aria-labelledby="account-heading"
-            >
-                <p className="profile-eyebrow">Account</p>
+  return (
+    <section className="profile-page">
+      <div className="profile-header">
+        <div>
+          <p className="profile-eyebrow">IT Talent</p>
+          <h1>Profile</h1>
+        </div>
 
-                <h2 id="account-heading">
-                    Account information
-                </h2>
+        <Link to="/dashboard">Back to dashboard</Link>
+      </div>
 
-                <dl className="profile-details">
-                    <div>
-                        <dt>Email</dt>
-                        <dd>{user?.email}</dd>
-                    </div>
+      <section className="profile-section" aria-labelledby="account-heading">
+        <p className="profile-eyebrow">Account</p>
 
-                    <div>
-                        <dt>Role</dt>
-                        <dd>{user?.role}</dd>
-                    </div>
+        <h2 id="account-heading">Account information</h2>
 
-                    <div>
-                        <dt>Status</dt>
-                        <dd>{user?.status}</dd>
-                    </div>
-                </dl>
-            </section>
+        <dl className="profile-details">
+          <div>
+            <dt>Email</dt>
+            <dd>{user?.email}</dd>
+          </div>
 
-            {user?.role === 'CANDIDATE' && (
-                <section
-                    className="profile-section"
-                    aria-labelledby="candidate-heading"
-                >
-                    <p className="profile-eyebrow">
-                        Candidate
-                    </p>
+          <div>
+            <dt>Role</dt>
+            <dd>{user?.role}</dd>
+          </div>
 
-                    <h2 id="candidate-heading">
-                        Candidate profile
-                    </h2>
+          <div>
+            <dt>Status</dt>
+            <dd>{user?.status}</dd>
+          </div>
+        </dl>
+      </section>
 
-                    {loading && (
-                        <p role="status" aria-live="polite">
-                            Loading candidate profile...
-                        </p>
-                    )}
+      {user?.role === 'CANDIDATE' && (
+        <section
+          className="profile-section"
+          aria-labelledby="candidate-heading"
+        >
+          <p className="profile-eyebrow">Candidate</p>
 
-                    {error && (
-                        <p role="alert">
-                            {error}
-                        </p>
-                    )}
+          <h2 id="candidate-heading">Candidate profile</h2>
 
-                    {!loading && !error && candidateProfile && (
-                        <dl className="profile-details">
-                            <div>
-                                <dt>Headline</dt>
-                                <dd>
-                                    {candidateProfile.headline}
-                                </dd>
-                            </div>
+          {loading && (
+            <p role="status" aria-live="polite">
+              Loading candidate profile...
+            </p>
+          )}
 
-                            <div>
-                                <dt>Summary</dt>
-                                <dd>
-                                    {candidateProfile.summary}
-                                </dd>
-                            </div>
+          {error && <p role="alert">{error}</p>}
 
-                            <div>
-                                <dt>Location</dt>
-                                <dd>
-                                    {candidateProfile.location}
-                                </dd>
-                            </div>
+          {!loading && !error && candidateProfile && (
+            <dl className="profile-details">
+              <div>
+                <dt>Headline</dt>
+                <dd>{candidateProfile.headline}</dd>
+              </div>
 
-                            <div>
-                                <dt>Salary</dt>
-                                <dd>
-                                    {formatSalary(
-                                        candidateProfile.salaryMin,
-                                        candidateProfile.salaryMax,
-                                        candidateProfile.currency,
-                                    )}
-                                </dd>
-                            </div>
+              <div>
+                <dt>Summary</dt>
+                <dd>{candidateProfile.summary}</dd>
+              </div>
 
-                            <div>
-                                <dt>Remote preference</dt>
-                                <dd>
-                                    {candidateProfile.remotePreference}
-                                </dd>
-                            </div>
+              <div>
+                <dt>Location</dt>
+                <dd>{candidateProfile.location}</dd>
+              </div>
 
-                            <div>
-                                <dt>Availability</dt>
-                                <dd>
-                                    {formatDate(
-                                        candidateProfile.availabilityDate,
-                                    )}
-                                </dd>
-                            </div>
-                        </dl>
-                    )}
+              <div>
+                <dt>Salary</dt>
+                <dd>
+                  {formatSalary(
+                    candidateProfile.salaryMin,
+                    candidateProfile.salaryMax,
+                    candidateProfile.currency,
+                  )}
+                </dd>
+              </div>
 
-                    {!loading && !error && !candidateProfile && (
-                        <p role="status">
-                            No candidate profile information is available.
-                        </p>
-                    )}
-                </section>
-            )}
+              <div>
+                <dt>Remote preference</dt>
+                <dd>{candidateProfile.remotePreference}</dd>
+              </div>
+
+              <div>
+                <dt>Availability</dt>
+                <dd>{formatDate(candidateProfile.availabilityDate)}</dd>
+              </div>
+            </dl>
+          )}
+
+          {!loading && !error && !candidateProfile && (
+            <p role="status">No candidate profile information is available.</p>
+          )}
         </section>
-    )
+      )}
+    </section>
+  )
 }
 
 export default ProfilePage
