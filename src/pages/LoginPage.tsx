@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { useAuth } from '../features/auth/AuthProvider'
+import { useAuth } from '../features/auth/useAuth'
 
 function LoginPage() {
     const navigate = useNavigate()
@@ -65,6 +65,7 @@ function LoginPage() {
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                         autoComplete="email"
+                        aria-describedby={error ? 'login-error' : undefined}
                     />
                 </div>
 
@@ -77,12 +78,20 @@ function LoginPage() {
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                         autoComplete="current-password"
+                        aria-describedby={error ? 'login-error' : undefined}
                     />
                 </div>
 
-                {error && <p role="alert">{error}</p>}
-
-                <button type="submit" disabled={isLoading}>
+                {error && (
+                    <p id="login-error" role="alert">
+                        {error}
+                    </p>
+                )}
+                <button
+                    type="submit"
+                    disabled={isLoading}
+                    aria-busy={isLoading}
+                >
                     {isLoading ? 'Logging in...' : 'Login'}
                 </button>
             </form>

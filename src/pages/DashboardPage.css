@@ -57,7 +57,8 @@
         transform 0.2s ease;
 }
 
-.dashboard-profile-link:hover {
+.dashboard-profile-link:hover,
+.dashboard-profile-link:focus-visible {
     background: #374151;
     transform: translateY(-1px);
 }
