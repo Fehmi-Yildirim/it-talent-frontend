@@ -74,6 +74,7 @@ function RegisterPage() {
                         value={email}
                         onChange={(event) => setEmail(event.target.value)}
                         autoComplete="email"
+                        aria-describedby={error ? 'register-error' : undefined}
                     />
                 </div>
 
@@ -86,11 +87,12 @@ function RegisterPage() {
                         value={password}
                         onChange={(event) => setPassword(event.target.value)}
                         autoComplete="new-password"
+                        aria-describedby={error ? 'register-error' : undefined}
                     />
                 </div>
 
                 {error && (
-                    <p role="alert">
+                    <p id="register-error" role="alert">
                         {error}
                     </p>
                 )}
@@ -98,6 +100,7 @@ function RegisterPage() {
                 <button
                     type="submit"
                     disabled={isSubmitting}
+                    aria-busy={isSubmitting}
                 >
                     {isSubmitting ? 'Creating account...' : 'Register'}
                 </button>

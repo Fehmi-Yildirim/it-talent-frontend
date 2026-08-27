@@ -3,7 +3,7 @@ import './LandingPage.css'
 
 function LandingPage() {
     return (
-        <main className="landing-page">
+        <div className="landing-page">
             <header className="landing-header">
                 <Link to="/" className="landing-logo">
                     IT Talent
@@ -84,7 +84,7 @@ function LandingPage() {
             <footer className="landing-footer">
                 <span>© {new Date().getFullYear()} IT Talent</span>
             </footer>
-        </main>
+        </div>
     )
 }
 

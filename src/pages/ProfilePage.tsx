@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useAuth } from '../features/auth/AuthProvider'
+import { useAuth } from '../features/auth/useAuth'
 import { getCandidateProfile } from '../features/candidate/candidate.api'
 import type { CandidateProfile } from '../types/candidate'
 import './ProfilePage.css'
@@ -142,7 +142,7 @@ function ProfilePage() {
                     </h2>
 
                     {loading && (
-                        <p role="status">
+                        <p role="status" aria-live="polite">
                             Loading candidate profile...
                         </p>
                     )}
@@ -203,6 +203,12 @@ function ProfilePage() {
                                 </dd>
                             </div>
                         </dl>
+                    )}
+
+                    {!loading && !error && !candidateProfile && (
+                        <p role="status">
+                            No candidate profile information is available.
+                        </p>
                     )}
                 </section>
             )}

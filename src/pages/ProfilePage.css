@@ -65,3 +65,7 @@
         padding: 20px;
     }
 }
+
+.profile-details dd {
+    overflow-wrap: anywhere;
+}

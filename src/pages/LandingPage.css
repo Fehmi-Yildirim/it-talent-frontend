@@ -34,7 +34,8 @@
     text-decoration: none;
 }
 
-.landing-login-link:hover {
+.landing-login-link:hover,
+.landing-login-link:focus-visible {
     color: #111827;
 }
 
@@ -62,7 +63,9 @@
 }
 
 .landing-register-link:hover,
-.landing-primary-button:hover {
+.landing-register-link:focus-visible,
+.landing-primary-button:hover,
+.landing-primary-button:focus-visible {
     background: #374151;
     transform: translateY(-1px);
 }
@@ -139,7 +142,8 @@
     color: #374151;
 }
 
-.landing-secondary-button:hover {
+.landing-secondary-button:hover,
+.landing-secondary-button:focus-visible {
     background: #f9fafb;
 }
 
@@ -182,7 +186,8 @@
     text-decoration: none;
 }
 
-.landing-card a:hover {
+.landing-card a:hover,
+.landing-card a:focus-visible {
     text-decoration: underline;
 }
 

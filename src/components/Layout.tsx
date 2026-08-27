@@ -1,5 +1,5 @@
 import { Link, Outlet, useNavigate } from 'react-router-dom'
-import { useAuth } from '../features/auth/AuthProvider'
+import { useAuth } from '../features/auth/useAuth'
 
 function Layout() {
     const navigate = useNavigate()
@@ -12,8 +12,12 @@ function Layout() {
 
     return (
         <>
+            <a className="skip-link" href="#main-content">
+                Skip to main content
+            </a>
+
             <header>
-                <nav>
+                <nav aria-label="Main navigation">
                     <Link to="/">Home</Link>
 
                     {isAuthenticated ? (
@@ -34,7 +38,7 @@ function Layout() {
                 </nav>
             </header>
 
-            <main>
+            <main id="main-content">
                 <Outlet />
             </main>
         </>

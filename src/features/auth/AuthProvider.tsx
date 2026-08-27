@@ -1,6 +1,5 @@
+import { AuthContext, type AuthContextValue } from './auth.context'
 import {
-    createContext,
-    useContext,
     useEffect,
     useState,
     type ReactNode,
@@ -13,17 +12,6 @@ import {
 } from './auth.storage'
 import type { AuthUser } from '../../types/auth'
 import type { CurrentUser } from '../../types/user'
-
-interface AuthContextValue {
-    user: CurrentUser | null
-    accessToken: string | null
-    isAuthenticated: boolean
-    isLoading: boolean
-    login: (email: string, password: string) => Promise<AuthUser>
-    logout: () => void
-}
-
-const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 interface AuthProviderProps {
     children: ReactNode
@@ -105,14 +93,4 @@ export function AuthProvider({ children }: AuthProviderProps) {
             {children}
         </AuthContext.Provider>
     )
-}
-
-export function useAuth(): AuthContextValue {
-    const context = useContext(AuthContext)
-
-    if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
-    }
-
-    return context
 }
