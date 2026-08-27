@@ -9,6 +9,7 @@ import { AuthProvider } from '../../src/features/auth/AuthProvider'
 
 vi.mock('../../src/features/auth/auth.api', () => ({
     login: vi.fn(),
+    getCurrentUser: vi.fn(),
 }))
 
 const mockedLogin = vi.mocked(login)

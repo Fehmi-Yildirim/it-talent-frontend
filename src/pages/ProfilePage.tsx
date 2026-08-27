@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../features/auth/AuthProvider'
-import {
-    getCandidateProfile,
-    type CandidateProfile,
-} from '../features/candidate/candidate.api'
+import { getCandidateProfile } from '../features/candidate/candidate.api'
+import type { CandidateProfile } from '../types/candidate'
 import './ProfilePage.css'
 
 function formatSalary(
