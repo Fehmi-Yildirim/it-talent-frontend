@@ -130,6 +130,10 @@ describe('application routes', () => {
       email: 'test@example.com',
       role: 'CANDIDATE',
       status: 'ACTIVE',
+      candidate: null,
+      recruiter: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
     })
 
     await router.navigate('/dashboard')
@@ -154,6 +158,10 @@ describe('application routes', () => {
       email: 'test@example.com',
       role: 'CANDIDATE',
       status: 'ACTIVE',
+      candidate: null,
+      recruiter: null,
+      createdAt: '2026-01-01T00:00:00.000Z',
+      updatedAt: '2026-01-01T00:00:00.000Z',
     })
 
     await router.navigate('/profile')
