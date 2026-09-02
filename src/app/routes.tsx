@@ -9,6 +9,8 @@ import NotFoundPage from '../pages/NotFoundPage'
 import ProfilePage from '../pages/ProfilePage'
 import RegisterPage from '../pages/RegisterPage'
 import AdminUsersPage from '../pages/AdminUsersPage'
+import RecruiterProfile from '../features/recruiter/RecruiterProfile'
+import CompanyManagement from '../features/recruiter/CompanyManagement'
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +39,14 @@ export const router = createBrowserRouter([
           {
             path: 'profile',
             element: <ProfilePage />,
+          },
+          {
+            path: 'recruiter/profile',
+            element: <RecruiterProfile />,
+          },
+          {
+            path: 'recruiter/company',
+            element: <CompanyManagement />,
           },
           {
             element: <AdminRoute />,

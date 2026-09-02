@@ -15,6 +15,7 @@ export interface AuthResponse {
 export interface RegisterRequest {
   email: string
   password: string
+  role: 'CANDIDATE' | 'RECRUITER'
 }
 
 export interface LoginRequest {
