@@ -47,6 +47,42 @@ describe('RegisterPage', () => {
     expect(mockedRegister).not.toHaveBeenCalled()
   })
 
+  it('submits recruiter registration data', async () => {
+    const user = userEvent.setup()
+
+    mockedRegister.mockResolvedValue({
+      user: {
+        id: 'user-1',
+        email: 'recruiter@example.com',
+        role: 'RECRUITER',
+        status: 'PENDING',
+      },
+      accessToken: 'test-token',
+    })
+
+    render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    )
+
+    await user.type(
+      screen.getByLabelText('Email'),
+      'recruiter@example.com',
+    )
+    await user.type(screen.getByLabelText('Password'), 'password123')
+    await user.selectOptions(screen.getByLabelText('Account type'), 'RECRUITER')
+    await user.click(screen.getByRole('button', { name: 'Register' }))
+
+    await waitFor(() => {
+      expect(mockedRegister).toHaveBeenCalledWith({
+        email: 'recruiter@example.com',
+        password: 'password123',
+        role: 'RECRUITER',
+      })
+    })
+  })
+
   it('shows validation error for a short password', async () => {
     const user = userEvent.setup()
 
@@ -93,6 +129,7 @@ describe('RegisterPage', () => {
       expect(mockedRegister).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
+        role: 'CANDIDATE',
       })
     })
 
@@ -126,6 +163,7 @@ describe('RegisterPage', () => {
       expect(mockedRegister).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'password123',
+        role: 'CANDIDATE',
       })
     })
   })

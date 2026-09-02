@@ -1,4 +1,5 @@
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
+import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register } from '../features/auth/auth.api'
 
@@ -7,6 +8,7 @@ function RegisterPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [role, setRole] = useState<'CANDIDATE' | 'RECRUITER'>('CANDIDATE')
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -37,6 +39,7 @@ function RegisterPage() {
       const response = await register({
         email: normalizedEmail,
         password,
+        role,
       })
 
       if (response.user.status === 'PENDING') {
@@ -85,6 +88,21 @@ function RegisterPage() {
             autoComplete="new-password"
             aria-describedby={error ? 'register-error' : undefined}
           />
+        </div>
+
+        <div>
+          <label htmlFor="role">Account type</label>
+          <select
+            id="role"
+            name="role"
+            value={role}
+            onChange={(event) =>
+              setRole(event.target.value as 'CANDIDATE' | 'RECRUITER')
+            }
+          >
+            <option value="CANDIDATE">Candidate</option>
+            <option value="RECRUITER">Recruiter</option>
+          </select>
         </div>
 
         {error && (
