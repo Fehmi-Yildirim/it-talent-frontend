@@ -32,6 +32,13 @@
   border-radius: 12px;
 }
 
+.profile-section-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
 .profile-details {
   display: grid;
   gap: 16px;
@@ -50,6 +57,45 @@
 
 .profile-details dd {
   margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.profile-form {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.profile-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 700;
+}
+
+.profile-form input,
+.profile-form textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+}
+
+.profile-form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.profile-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.profile-actions {
+  display: flex;
+  gap: 12px;
 }
 
 @media (max-width: 640px) {
@@ -64,8 +110,51 @@
   .profile-section {
     padding: 20px;
   }
+
+  .profile-section-header {
+    flex-direction: column;
+  }
+
+  .profile-form-row {
+    grid-template-columns: 1fr;
+  }
 }
 
-.profile-details dd {
-  overflow-wrap: anywhere;
+
+.profile-skill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.profile-skill:last-child {
+  border-bottom: 0;
+}
+
+.profile-skill strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.profile-section article h3 {
+  margin: 0;
+}
+
+.profile-form select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font: inherit;
+}
+
+@media (max-width: 640px) {
+  .profile-skill {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
