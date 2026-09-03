@@ -1,0 +1,332 @@
+.recruiter-job-details-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+}
+
+.recruiter-job-details-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 24px;
+}
+
+.recruiter-job-details-header h1 {
+    margin: 12px 0 12px;
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.recruiter-job-details-back {
+    color: inherit;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.recruiter-job-details-back:hover {
+    text-decoration: underline;
+}
+
+.recruiter-job-details-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    color: #666;
+    font-size: 14px;
+}
+
+.recruiter-job-details-meta>span:not(.recruiter-job-details-status)::before {
+    content: '•';
+    margin-right: 8px;
+    color: #aaa;
+}
+
+.recruiter-job-details-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.recruiter-job-details-status-draft {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.recruiter-job-details-status-published {
+    background: #d3f9d8;
+    color: #2b8a3e;
+}
+
+.recruiter-job-details-status-closed {
+    background: #ffe3e3;
+    color: #c92a2a;
+}
+
+.recruiter-job-details-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.recruiter-job-details-primary-button,
+.recruiter-job-details-secondary-button,
+.recruiter-job-details-danger-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 9px 16px;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.recruiter-job-details-primary-button {
+    background: #1c7ed6;
+    color: #fff;
+    border-color: #1c7ed6;
+}
+
+.recruiter-job-details-primary-button:hover:not(:disabled) {
+    background: #1971c2;
+    border-color: #1971c2;
+}
+
+.recruiter-job-details-secondary-button {
+    background: #fff;
+    color: #343a40;
+    border-color: #ced4da;
+}
+
+.recruiter-job-details-secondary-button:hover {
+    background: #f8f9fa;
+}
+
+.recruiter-job-details-danger-button {
+    background: #e03131;
+    color: #fff;
+    border-color: #e03131;
+}
+
+.recruiter-job-details-danger-button:hover:not(:disabled) {
+    background: #c92a2a;
+    border-color: #c92a2a;
+}
+
+.recruiter-job-details-primary-button:disabled,
+.recruiter-job-details-danger-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.recruiter-job-details-alert,
+.recruiter-job-details-success {
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.recruiter-job-details-alert {
+    background: #fff5f5;
+    color: #c92a2a;
+    border: 1px solid #ffc9c9;
+}
+
+.recruiter-job-details-success {
+    background: #ebfbee;
+    color: #2b8a3e;
+    border: 1px solid #b2f2bb;
+}
+
+.recruiter-job-details-layout {
+    display: grid;
+    gap: 20px;
+}
+
+.recruiter-job-details-card {
+    padding: 24px;
+    background: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    box-shadow: 0 1px 3px rgb(0 0 0 / 5%);
+}
+
+.recruiter-job-details-card h2 {
+    margin: 0 0 16px;
+    font-size: 20px;
+}
+
+.recruiter-job-details-description {
+    margin: 0;
+    white-space: pre-wrap;
+    line-height: 1.7;
+    color: #343a40;
+}
+
+.recruiter-job-details-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 32px;
+    margin: 0;
+}
+
+.recruiter-job-details-list div {
+    min-width: 0;
+}
+
+.recruiter-job-details-list dt {
+    margin-bottom: 5px;
+    color: #868e96;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.recruiter-job-details-list dd {
+    margin: 0;
+    color: #212529;
+    font-size: 15px;
+}
+
+.recruiter-job-details-section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.recruiter-job-details-section-header h2 {
+    margin-bottom: 6px;
+}
+
+.recruiter-job-details-section-header p {
+    margin: 0;
+    color: #868e96;
+    font-size: 14px;
+}
+
+.recruiter-job-details-requirements {
+    display: grid;
+    gap: 24px;
+}
+
+.recruiter-job-details-requirements h3 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+.recruiter-job-requirement {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 0;
+    border-top: 1px solid #f1f3f5;
+}
+
+.recruiter-job-requirement>div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.recruiter-job-requirement strong {
+    color: #212529;
+}
+
+.recruiter-job-requirement span {
+    color: #868e96;
+    font-size: 13px;
+}
+
+.recruiter-job-requirement>div span {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #f1f3f5;
+    color: #495057;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.recruiter-job-details-muted {
+    margin: 0;
+    color: #868e96;
+    font-size: 14px;
+}
+
+.recruiter-job-details-state {
+    padding: 48px 24px;
+    text-align: center;
+    color: #495057;
+}
+
+.recruiter-job-details-state p {
+    margin: 0 0 16px;
+}
+
+.recruiter-job-details-error {
+    color: #c92a2a;
+}
+
+.recruiter-job-details-footer {
+    display: flex;
+    justify-content: flex-start;
+    margin-top: 24px;
+}
+
+@media (max-width: 768px) {
+    .recruiter-job-details-page {
+        padding: 24px 16px 40px;
+    }
+
+    .recruiter-job-details-header {
+        flex-direction: column;
+    }
+
+    .recruiter-job-details-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .recruiter-job-details-list {
+        grid-template-columns: 1fr;
+    }
+
+    .recruiter-job-details-section-header {
+        flex-direction: column;
+    }
+
+    .recruiter-job-requirement {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .recruiter-job-details-header h1 {
+        font-size: 26px;
+    }
+
+    .recruiter-job-details-actions {
+        flex-direction: column;
+    }
+
+    .recruiter-job-details-primary-button,
+    .recruiter-job-details-secondary-button,
+    .recruiter-job-details-danger-button {
+        width: 100%;
+    }
+}

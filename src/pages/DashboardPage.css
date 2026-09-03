@@ -155,3 +155,59 @@
     padding: 16px;
   }
 }
+
+/* Dashboard Recruiter */
+.dashboard-recruiter {
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+}
+
+.dashboard-recruiter-description {
+  margin: 0;
+  color: #64748b;
+}
+
+.dashboard-recruiter-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.dashboard-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.dashboard-action--primary {
+  border: 1px solid #2563eb;
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.dashboard-action--primary:hover {
+  background: #1d4ed8;
+}
+
+.dashboard-action--secondary {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #334155;
+}
+
+.dashboard-action--secondary:hover {
+  background: #f8fafc;
+}
