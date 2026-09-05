@@ -1,0 +1,232 @@
+.candidate-job-details-page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 32px 24px 48px;
+}
+
+.candidate-job-details-back {
+    display: inline-block;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.candidate-job-details-back:hover {
+    text-decoration: underline;
+}
+
+.candidate-job-details {
+    overflow: hidden;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: #fff;
+}
+
+.candidate-job-details-header {
+    padding: 32px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.candidate-job-details-eyebrow {
+    margin: 0 0 6px;
+    color: #666;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.candidate-job-details-header h1 {
+    margin: 0 0 8px;
+    font-size: 2rem;
+}
+
+.candidate-job-details-company {
+    margin: 0;
+    color: #555;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.candidate-job-details-meta {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1px;
+    background: #e0e0e0;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.candidate-job-details-meta>div {
+    padding: 18px;
+    background: #fff;
+}
+
+.candidate-job-details-meta dt,
+.candidate-job-company-details dt {
+    margin-bottom: 5px;
+    color: #777;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.candidate-job-details-meta dd,
+.candidate-job-company-details dd {
+    margin: 0;
+    color: #222;
+}
+
+.candidate-job-details-section {
+    padding: 28px 32px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.candidate-job-details-section h2 {
+    margin: 0 0 16px;
+    font-size: 1.25rem;
+}
+
+.candidate-job-description p {
+    margin: 0 0 12px;
+    line-height: 1.7;
+}
+
+.candidate-job-description p:last-child {
+    margin-bottom: 0;
+}
+
+.candidate-job-skill-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.candidate-job-skill-list li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 14px;
+    border-radius: 6px;
+    background: #f5f5f5;
+}
+
+.candidate-job-skill-list li span {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.candidate-job-company-details {
+    display: grid;
+    gap: 14px;
+    margin: 0 0 20px;
+}
+
+.candidate-job-company-details a {
+    color: #222;
+}
+
+.candidate-job-details-section>p {
+    margin: 0;
+    color: #666;
+    line-height: 1.6;
+}
+
+.candidate-job-details-footer {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 32px;
+}
+
+.candidate-job-details-footer>div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.candidate-job-details-footer strong {
+    color: #777;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+}
+
+.candidate-job-details-footer span {
+    color: #222;
+}
+
+.candidate-job-details-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    padding: 32px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.candidate-job-details-state h1 {
+    margin: 0 0 8px;
+}
+
+.candidate-job-details-state p {
+    max-width: 550px;
+    margin: 0 0 20px;
+    color: #666;
+}
+
+.candidate-job-details-actions button {
+    min-height: 40px;
+    padding: 8px 16px;
+    border: 1px solid #111;
+    border-radius: 6px;
+    background: #111;
+    color: #fff;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.candidate-job-details-actions button:hover {
+    opacity: 0.9;
+}
+
+@media (max-width: 800px) {
+    .candidate-job-details-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 600px) {
+    .candidate-job-details-page {
+        padding: 24px 16px 40px;
+    }
+
+    .candidate-job-details-header,
+    .candidate-job-details-section {
+        padding: 24px 20px;
+    }
+
+    .candidate-job-details-header h1 {
+        font-size: 1.6rem;
+    }
+
+    .candidate-job-details-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .candidate-job-skill-list li {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .candidate-job-details-footer {
+        flex-direction: column;
+        padding: 20px;
+    }
+}

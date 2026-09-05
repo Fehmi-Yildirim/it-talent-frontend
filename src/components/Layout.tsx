@@ -1,14 +1,17 @@
-import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
+import './Layout.css'
 
 function Layout() {
   const navigate = useNavigate()
-  const { isAuthenticated, logout } = useAuth()
+  const { user, isAuthenticated, logout } = useAuth()
 
   function handleLogout() {
     logout()
     navigate('/login', { replace: true })
   }
+
+  const isCandidate = user?.role === 'CANDIDATE'
 
   return (
     <>
@@ -16,24 +19,35 @@ function Layout() {
         Skip to main content
       </a>
 
-      <header>
-        <nav aria-label="Main navigation">
-          <Link to="/">Home</Link>
+      <header className="site-header">
+        <nav className="main-nav" aria-label="Main navigation">
+          <Link className="main-nav__brand" to="/">
+            IT Talent
+          </Link>
 
           {isAuthenticated ? (
-            <>
-              <Link to="/dashboard">Dashboard</Link>
-              <Link to="/profile">Profile</Link>
+            <div className="main-nav__links">
+              <NavLink to="/dashboard">Dashboard</NavLink>
 
-              <button type="button" onClick={handleLogout}>
+              {isCandidate && (
+                <NavLink to="/jobs">Find jobs</NavLink>
+              )}
+
+              <NavLink to="/profile">Profile</NavLink>
+
+              <button
+                className="main-nav__logout"
+                type="button"
+                onClick={handleLogout}
+              >
                 Logout
               </button>
-            </>
+            </div>
           ) : (
-            <>
-              <Link to="/login">Login</Link>
-              <Link to="/register">Register</Link>
-            </>
+            <div className="main-nav__links">
+              <NavLink to="/login">Login</NavLink>
+              <NavLink to="/register">Register</NavLink>
+            </div>
           )}
         </nav>
       </header>
