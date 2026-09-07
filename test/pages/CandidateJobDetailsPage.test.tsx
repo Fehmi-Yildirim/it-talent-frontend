@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import '@testing-library/jest-dom/vitest'
 
 import CandidateJobDetailsPage from '../../src/pages/CandidateJobDetailsPage'
+import { createApplication } from '../../src/features/applications/applications.api'
 import { getCandidateJobById } from '../../src/features/jobs/jobs.api'
 import { ApiError } from '../../src/services/api/apiError'
 
@@ -11,7 +12,12 @@ vi.mock('../../src/features/jobs/jobs.api', () => ({
     getCandidateJobById: vi.fn(),
 }))
 
+vi.mock('../../src/features/applications/applications.api', () => ({
+    createApplication: vi.fn(),
+}))
+
 const mockedGetCandidateJobById = vi.mocked(getCandidateJobById)
+const mockedCreateApplication = vi.mocked(createApplication)
 
 const candidateJob = {
     id: 'job-1',
@@ -235,6 +241,204 @@ describe('CandidateJobDetailsPage', () => {
         expect(screen.getByText('January 1, 2027')).toBeInTheDocument()
     })
 
+    it('shows the application form', async () => {
+        renderPage()
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Apply for this job',
+            }),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByLabelText(/cover letter/i),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Apply now',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('submits an application with the cover letter', async () => {
+        mockedCreateApplication.mockResolvedValue({
+            id: 'application-1',
+        } as Awaited<ReturnType<typeof createApplication>>)
+
+        renderPage()
+
+        const coverLetter = await screen.findByLabelText(
+            /cover letter/i,
+        )
+
+        fireEvent.change(coverLetter, {
+            target: {
+                value: 'I would love to join your team.',
+            },
+        })
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Apply now',
+            }),
+        )
+
+        await waitFor(() => {
+            expect(mockedCreateApplication).toHaveBeenCalledWith(
+                'job-1',
+                {
+                    coverLetter:
+                        'I would love to join your team.',
+                },
+            )
+        })
+
+        expect(
+            await screen.findByText('Application submitted'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('link', {
+                name: 'View my applications',
+            }),
+        ).toHaveAttribute('href', '/applications')
+    })
+
+    it('submits an application without a cover letter', async () => {
+        mockedCreateApplication.mockResolvedValue({
+            id: 'application-1',
+        } as Awaited<ReturnType<typeof createApplication>>)
+
+        renderPage()
+
+        await screen.findByRole('heading', {
+            name: 'Apply for this job',
+        })
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Apply now',
+            }),
+        )
+
+        await waitFor(() => {
+            expect(mockedCreateApplication).toHaveBeenCalledWith(
+                'job-1',
+                {},
+            )
+        })
+
+        expect(
+            await screen.findByText('Application submitted'),
+        ).toBeInTheDocument()
+    })
+
+    it('shows already applied when the API returns 409', async () => {
+        mockedCreateApplication.mockRejectedValue(
+            createApiError(409, 'Application already exists'),
+        )
+
+        renderPage()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Apply now',
+            }),
+        )
+
+        expect(
+            await screen.findByText('Already applied'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText(
+                'You have already applied for this job.',
+            ),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('link', {
+                name: 'View my applications',
+            }),
+        ).toHaveAttribute('href', '/applications')
+    })
+
+    it('shows an error when submitting the application fails', async () => {
+        mockedCreateApplication.mockRejectedValue(
+            createApiError(500, 'Server error'),
+        )
+
+        renderPage()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Apply now',
+            }),
+        )
+
+        expect(
+            await screen.findByText(
+                'Unable to submit your application. Please try again.',
+            ),
+        ).toBeInTheDocument()
+    })
+
+    it('disables the application form while submitting', async () => {
+        let resolveApplication:
+            | ((
+                value: Awaited<
+                    ReturnType<typeof createApplication>
+                >,
+            ) => void)
+            | undefined
+
+        const applicationPromise =
+            new Promise<
+                Awaited<ReturnType<typeof createApplication>>
+            >((resolve) => {
+                resolveApplication = resolve
+            })
+
+        mockedCreateApplication.mockReturnValue(applicationPromise)
+
+        renderPage()
+
+        const applyButton = await screen.findByRole('button', {
+            name: 'Apply now',
+        })
+
+        const coverLetter = screen.getByLabelText(
+            /cover letter/i,
+        )
+
+        fireEvent.change(coverLetter, {
+            target: {
+                value: 'My application',
+            },
+        })
+
+        fireEvent.click(applyButton)
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Submitting...',
+            }),
+        ).toBeDisabled()
+
+        expect(coverLetter).toBeDisabled()
+
+        resolveApplication?.({
+            id: 'application-1',
+        } as Awaited<ReturnType<typeof createApplication>>)
+
+        await waitFor(() => {
+            expect(
+                screen.getByText('Application submitted'),
+            ).toBeInTheDocument()
+        })
+    })
+
     it('shows a not-found state for a 404 response', async () => {
         mockedGetCandidateJobById.mockRejectedValue(
             createApiError(404, 'Job not found'),
@@ -295,7 +499,9 @@ describe('CandidateJobDetailsPage', () => {
 
     it('retries after a general API error', async () => {
         mockedGetCandidateJobById
-            .mockRejectedValueOnce(createApiError(500, 'Server error'))
+            .mockRejectedValueOnce(
+                createApiError(500, 'Server error'),
+            )
             .mockResolvedValueOnce(candidateJob)
 
         renderPage()

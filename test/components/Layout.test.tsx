@@ -53,7 +53,7 @@ describe('Layout', () => {
 
     renderLayout()
 
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'IT Talent' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Dashboard' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Profile' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Logout' })).toBeInTheDocument()
@@ -79,7 +79,7 @@ describe('Layout', () => {
 
     renderLayout()
 
-    expect(screen.getByRole('link', { name: 'Home' })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'IT Talent' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Login' })).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Register' })).toBeInTheDocument()
 

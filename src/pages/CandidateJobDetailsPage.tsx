@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createApplication } from '../features/applications/applications.api'
-import { ApiError } from '../services/api/apiError'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
+import { ApiError } from '../services/api/apiError'
 import type { CandidateJob } from '../types/job'
 import './CandidateJobDetailsPage.css'
 
@@ -18,15 +18,14 @@ function formatSalary(
     const currencyLabel = currency ? ` ${currency} ` : ''
 
     if (salaryMin !== null && salaryMax !== null) {
-        return `${salaryMin} - ${salaryMax}${currencyLabel} `
+        return `${salaryMin} - ${salaryMax}${currencyLabel}`
     }
 
     if (salaryMin !== null) {
-        return `From ${salaryMin}${currencyLabel} `
+        return `From ${salaryMin}${currencyLabel}`
     }
 
-    return `Up to ${salaryMax}${currencyLabel} `
-
+    return `Up to ${salaryMax}${currencyLabel}`
 }
 
 function formatDate(value: string | null): string {
@@ -34,12 +33,9 @@ function formatDate(value: string | null): string {
         return 'Not specified'
     }
 
-
     return new Intl.DateTimeFormat('en', {
         dateStyle: 'long',
     }).format(new Date(value))
-
-
 }
 
 function CandidateJobDetailsPage() {
@@ -52,9 +48,14 @@ function CandidateJobDetailsPage() {
     const [retryCount, setRetryCount] = useState(0)
 
     const [coverLetter, setCoverLetter] = useState('')
-    const [isSubmittingApplication, setIsSubmittingApplication] = useState(false)
+    const [isSubmittingApplication, setIsSubmittingApplication] =
+        useState(false)
     const [applicationSubmitted, setApplicationSubmitted] = useState(false)
-    const [applicationError, setApplicationError] = useState<string | null>(null)
+    const [applicationAlreadyExists, setApplicationAlreadyExists] =
+        useState(false)
+    const [applicationError, setApplicationError] = useState<string | null>(
+        null,
+    )
 
     useEffect(() => {
         let cancelled = false
@@ -105,6 +106,7 @@ function CandidateJobDetailsPage() {
 
         setIsSubmittingApplication(true)
         setApplicationError(null)
+        setApplicationAlreadyExists(false)
 
         try {
             await createApplication(jobId, {
@@ -115,10 +117,7 @@ function CandidateJobDetailsPage() {
             setCoverLetter('')
         } catch (caught) {
             if (caught instanceof ApiError && caught.status === 409) {
-                setApplicationSubmitted(true)
-                setApplicationError(
-                    'You have already applied to this job.',
-                )
+                setApplicationAlreadyExists(true)
             } else if (caught instanceof ApiError) {
                 setApplicationError(
                     'Unable to submit your application. Please try again.',
@@ -257,7 +256,7 @@ function CandidateJobDetailsPage() {
                         {job.description
                             .split('\n')
                             .map((paragraph, index) => (
-                                <p key={`${index}-${paragraph} `}>
+                                <p key={`${index}-${paragraph}`}>
                                     {paragraph}
                                 </p>
                             ))}
@@ -279,9 +278,21 @@ function CandidateJobDetailsPage() {
                                 You have successfully applied for this job.
                             </p>
 
-                            {applicationError && (
-                                <p>{applicationError}</p>
-                            )}
+                            <Link to="/applications">
+                                View my applications
+                            </Link>
+                        </div>
+                    ) : applicationAlreadyExists ? (
+                        <div
+                            className="candidate-job-application-success"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <strong>Already applied</strong>
+
+                            <p>
+                                You have already applied for this job.
+                            </p>
 
                             <Link to="/applications">
                                 View my applications
@@ -422,24 +433,18 @@ function CandidateJobDetailsPage() {
                     <div>
                         <strong>Published</strong>
 
-                        <span>
-                            {formatDate(job.publishedAt)}
-                        </span>
+                        <span>{formatDate(job.publishedAt)}</span>
                     </div>
 
                     <div>
                         <strong>Expires</strong>
 
-                        <span>
-                            {formatDate(job.expiresAt)}
-                        </span>
+                        <span>{formatDate(job.expiresAt)}</span>
                     </div>
                 </footer>
             </article>
         </section>
     )
-
-
 }
 
 export default CandidateJobDetailsPage

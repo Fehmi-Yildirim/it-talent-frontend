@@ -11,6 +11,7 @@ export interface ApplicationJob {
     location: string | null
     workMode: string
     employmentType: string
+    company: ApplicationCompany
 }
 
 export interface ApplicationCompany {
@@ -33,7 +34,6 @@ export interface CandidateApplication {
     createdAt: string
     updatedAt: string
     job: ApplicationJob
-    company: ApplicationCompany
 }
 
 export interface CandidateApplicationDetail extends CandidateApplication {

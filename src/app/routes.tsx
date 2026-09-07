@@ -3,7 +3,6 @@ import App from './App'
 import AdminRoute from './AdminRoute'
 import CandidateRoute from './CandidateRoute'
 import ProtectedRoute from './ProtectedRoute'
-
 import DashboardPage from '../pages/DashboardPage'
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
@@ -18,6 +17,11 @@ import CompanyManagement from '../features/recruiter/CompanyManagement'
 import RecruiterJobDetailsPage from '../pages/RecruiterJobDetailsPage'
 import CandidateJobsPage from '../pages/CandidateJobsPage'
 import CandidateJobDetailsPage from '../pages/CandidateJobDetailsPage'
+import CandidateApplicationsPage from '../pages/CandidateApplicationsPage'
+import CandidateApplicationDetailsPage from '../pages/CandidateApplicationDetailsPage'
+import RecruiterApplicationsPage from '../pages/RecruiterApplicationsPage'
+import RecruiterApplicationDetailsPage from '../pages/RecruiterApplicationDetailsPage'
+import RecruiterRoute from './RecruiterRoute'
 
 export const router = createBrowserRouter([
   {
@@ -49,6 +53,14 @@ export const router = createBrowserRouter([
               {
                 path: 'jobs/:jobId',
                 element: <CandidateJobDetailsPage />,
+              },
+              {
+                path: 'applications',
+                element: <CandidateApplicationsPage />,
+              },
+              {
+                path: 'applications/:applicationId',
+                element: <CandidateApplicationDetailsPage />,
               },
             ],
           },
@@ -83,6 +95,19 @@ export const router = createBrowserRouter([
           {
             path: 'recruiter/jobs/:jobId',
             element: <RecruiterJobDetailsPage />,
+          },
+          {
+            element: <RecruiterRoute />,
+            children: [
+              {
+                path: 'recruiter/applications',
+                element: <RecruiterApplicationsPage />,
+              },
+              {
+                path: 'recruiter/applications/:applicationId',
+                element: <RecruiterApplicationDetailsPage />,
+              },
+            ],
           },
           {
             element: <AdminRoute />,
