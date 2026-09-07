@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
+import { createApplication } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import type { CandidateJob } from '../types/job'
@@ -45,11 +46,15 @@ function CandidateJobDetailsPage() {
     const { jobId } = useParams()
     const navigate = useNavigate()
 
-
     const [job, setJob] = useState<CandidateJob | null>(null)
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+
+    const [coverLetter, setCoverLetter] = useState('')
+    const [isSubmittingApplication, setIsSubmittingApplication] = useState(false)
+    const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+    const [applicationError, setApplicationError] = useState<string | null>(null)
 
     useEffect(() => {
         let cancelled = false
@@ -92,6 +97,41 @@ function CandidateJobDetailsPage() {
             cancelled = true
         }
     }, [jobId, retryCount])
+
+    async function handleApply() {
+        if (!jobId || isSubmittingApplication || applicationSubmitted) {
+            return
+        }
+
+        setIsSubmittingApplication(true)
+        setApplicationError(null)
+
+        try {
+            await createApplication(jobId, {
+                coverLetter: coverLetter.trim() || undefined,
+            })
+
+            setApplicationSubmitted(true)
+            setCoverLetter('')
+        } catch (caught) {
+            if (caught instanceof ApiError && caught.status === 409) {
+                setApplicationSubmitted(true)
+                setApplicationError(
+                    'You have already applied to this job.',
+                )
+            } else if (caught instanceof ApiError) {
+                setApplicationError(
+                    'Unable to submit your application. Please try again.',
+                )
+            } else {
+                setApplicationError(
+                    'Something went wrong while submitting your application.',
+                )
+            }
+        } finally {
+            setIsSubmittingApplication(false)
+        }
+    }
 
     if (loading) {
         return (
@@ -222,6 +262,77 @@ function CandidateJobDetailsPage() {
                                 </p>
                             ))}
                     </div>
+                </section>
+
+                <section className="candidate-job-details-section candidate-job-application-section">
+                    <h2>Apply for this job</h2>
+
+                    {applicationSubmitted ? (
+                        <div
+                            className="candidate-job-application-success"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <strong>Application submitted</strong>
+
+                            <p>
+                                You have successfully applied for this job.
+                            </p>
+
+                            {applicationError && (
+                                <p>{applicationError}</p>
+                            )}
+
+                            <Link to="/applications">
+                                View my applications
+                            </Link>
+                        </div>
+                    ) : (
+                        <>
+                            <p>
+                                Submit your application for this position.
+                            </p>
+
+                            <label
+                                htmlFor="cover-letter"
+                                className="candidate-job-application-label"
+                            >
+                                Cover letter <span>(optional)</span>
+                            </label>
+
+                            <textarea
+                                id="cover-letter"
+                                value={coverLetter}
+                                onChange={(event) =>
+                                    setCoverLetter(event.target.value)
+                                }
+                                maxLength={2000}
+                                rows={8}
+                                placeholder="Tell the recruiter why you are a good fit for this role..."
+                                disabled={isSubmittingApplication}
+                            />
+
+                            {applicationError && (
+                                <p
+                                    className="candidate-job-application-error"
+                                    role="alert"
+                                >
+                                    {applicationError}
+                                </p>
+                            )}
+
+                            <button
+                                type="button"
+                                className="candidate-job-application-button"
+                                onClick={() => void handleApply()}
+                                disabled={isSubmittingApplication}
+                            >
+                                {isSubmittingApplication
+                                    ? 'Submitting...'
+                                    : 'Apply now'}
+                            </button>
+                        </>
+                    )}
                 </section>
 
                 <section className="candidate-job-details-section">
