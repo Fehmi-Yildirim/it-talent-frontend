@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { ApiError } from '../services/api/apiError'
+import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
+import { ApiError } from '../services/api/apiError'
 import type { CandidateJob } from '../types/job'
 import './CandidateJobDetailsPage.css'
 
@@ -17,15 +18,14 @@ function formatSalary(
     const currencyLabel = currency ? ` ${currency} ` : ''
 
     if (salaryMin !== null && salaryMax !== null) {
-        return `${salaryMin} - ${salaryMax}${currencyLabel} `
+        return `${salaryMin} - ${salaryMax}${currencyLabel}`
     }
 
     if (salaryMin !== null) {
-        return `From ${salaryMin}${currencyLabel} `
+        return `From ${salaryMin}${currencyLabel}`
     }
 
-    return `Up to ${salaryMax}${currencyLabel} `
-
+    return `Up to ${salaryMax}${currencyLabel}`
 }
 
 function formatDate(value: string | null): string {
@@ -33,23 +33,29 @@ function formatDate(value: string | null): string {
         return 'Not specified'
     }
 
-
     return new Intl.DateTimeFormat('en', {
         dateStyle: 'long',
     }).format(new Date(value))
-
-
 }
 
 function CandidateJobDetailsPage() {
     const { jobId } = useParams()
     const navigate = useNavigate()
 
-
     const [job, setJob] = useState<CandidateJob | null>(null)
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+
+    const [coverLetter, setCoverLetter] = useState('')
+    const [isSubmittingApplication, setIsSubmittingApplication] =
+        useState(false)
+    const [applicationSubmitted, setApplicationSubmitted] = useState(false)
+    const [applicationAlreadyExists, setApplicationAlreadyExists] =
+        useState(false)
+    const [applicationError, setApplicationError] = useState<string | null>(
+        null,
+    )
 
     useEffect(() => {
         let cancelled = false
@@ -92,6 +98,39 @@ function CandidateJobDetailsPage() {
             cancelled = true
         }
     }, [jobId, retryCount])
+
+    async function handleApply() {
+        if (!jobId || isSubmittingApplication || applicationSubmitted) {
+            return
+        }
+
+        setIsSubmittingApplication(true)
+        setApplicationError(null)
+        setApplicationAlreadyExists(false)
+
+        try {
+            await createApplication(jobId, {
+                coverLetter: coverLetter.trim() || undefined,
+            })
+
+            setApplicationSubmitted(true)
+            setCoverLetter('')
+        } catch (caught) {
+            if (caught instanceof ApiError && caught.status === 409) {
+                setApplicationAlreadyExists(true)
+            } else if (caught instanceof ApiError) {
+                setApplicationError(
+                    'Unable to submit your application. Please try again.',
+                )
+            } else {
+                setApplicationError(
+                    'Something went wrong while submitting your application.',
+                )
+            }
+        } finally {
+            setIsSubmittingApplication(false)
+        }
+    }
 
     if (loading) {
         return (
@@ -217,11 +256,94 @@ function CandidateJobDetailsPage() {
                         {job.description
                             .split('\n')
                             .map((paragraph, index) => (
-                                <p key={`${index}-${paragraph} `}>
+                                <p key={`${index}-${paragraph}`}>
                                     {paragraph}
                                 </p>
                             ))}
                     </div>
+                </section>
+
+                <section className="candidate-job-details-section candidate-job-application-section">
+                    <h2>Apply for this job</h2>
+
+                    {applicationSubmitted ? (
+                        <div
+                            className="candidate-job-application-success"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <strong>Application submitted</strong>
+
+                            <p>
+                                You have successfully applied for this job.
+                            </p>
+
+                            <Link to="/applications">
+                                View my applications
+                            </Link>
+                        </div>
+                    ) : applicationAlreadyExists ? (
+                        <div
+                            className="candidate-job-application-success"
+                            role="status"
+                            aria-live="polite"
+                        >
+                            <strong>Already applied</strong>
+
+                            <p>
+                                You have already applied for this job.
+                            </p>
+
+                            <Link to="/applications">
+                                View my applications
+                            </Link>
+                        </div>
+                    ) : (
+                        <>
+                            <p>
+                                Submit your application for this position.
+                            </p>
+
+                            <label
+                                htmlFor="cover-letter"
+                                className="candidate-job-application-label"
+                            >
+                                Cover letter <span>(optional)</span>
+                            </label>
+
+                            <textarea
+                                id="cover-letter"
+                                value={coverLetter}
+                                onChange={(event) =>
+                                    setCoverLetter(event.target.value)
+                                }
+                                maxLength={2000}
+                                rows={8}
+                                placeholder="Tell the recruiter why you are a good fit for this role..."
+                                disabled={isSubmittingApplication}
+                            />
+
+                            {applicationError && (
+                                <p
+                                    className="candidate-job-application-error"
+                                    role="alert"
+                                >
+                                    {applicationError}
+                                </p>
+                            )}
+
+                            <button
+                                type="button"
+                                className="candidate-job-application-button"
+                                onClick={() => void handleApply()}
+                                disabled={isSubmittingApplication}
+                            >
+                                {isSubmittingApplication
+                                    ? 'Submitting...'
+                                    : 'Apply now'}
+                            </button>
+                        </>
+                    )}
                 </section>
 
                 <section className="candidate-job-details-section">
@@ -311,24 +433,18 @@ function CandidateJobDetailsPage() {
                     <div>
                         <strong>Published</strong>
 
-                        <span>
-                            {formatDate(job.publishedAt)}
-                        </span>
+                        <span>{formatDate(job.publishedAt)}</span>
                     </div>
 
                     <div>
                         <strong>Expires</strong>
 
-                        <span>
-                            {formatDate(job.expiresAt)}
-                        </span>
+                        <span>{formatDate(job.expiresAt)}</span>
                     </div>
                 </footer>
             </article>
         </section>
     )
-
-
 }
 
 export default CandidateJobDetailsPage

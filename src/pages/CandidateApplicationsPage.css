@@ -1,0 +1,198 @@
+.candidate-applications-page {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 32px 24px 56px;
+}
+
+.candidate-applications-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 32px;
+}
+
+.candidate-applications-eyebrow {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.7;
+}
+
+.candidate-applications-header h1 {
+    margin: 0 0 10px;
+    font-size: 2rem;
+}
+
+.candidate-applications-header p:last-child {
+    margin: 0;
+    max-width: 680px;
+    line-height: 1.6;
+}
+
+.candidate-applications-loading {
+    padding: 32px 0;
+    text-align: center;
+}
+
+.candidate-applications-state {
+    padding: 40px 24px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    text-align: center;
+}
+
+.candidate-applications-state h2 {
+    margin: 0 0 10px;
+}
+
+.candidate-applications-state p {
+    margin: 0 0 20px;
+    line-height: 1.6;
+}
+
+.candidate-applications-state-error {
+    border-color: #e2b8b8;
+}
+
+.candidate-applications-state button,
+.candidate-applications-state a {
+    display: inline-block;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+}
+
+.candidate-applications-state button {
+    border: 1px solid #ccc;
+    background: #fff;
+    cursor: pointer;
+}
+
+.candidate-applications-primary-link {
+    text-decoration: none;
+}
+
+.candidate-applications-results-header {
+    margin-bottom: 16px;
+}
+
+.candidate-applications-results-header p {
+    margin: 0;
+    font-weight: 600;
+}
+
+.candidate-applications-list {
+    display: grid;
+    gap: 16px;
+}
+
+.candidate-application-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+    padding: 24px;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+}
+
+.candidate-application-card-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.candidate-application-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.candidate-application-card-header h2 {
+    margin: 0 0 6px;
+    font-size: 1.2rem;
+}
+
+.candidate-application-card-header h2 a {
+    text-decoration: none;
+}
+
+.candidate-application-company {
+    margin: 0;
+    font-weight: 600;
+}
+
+.candidate-application-status {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.candidate-application-status-pending {
+    background: #f1f1f1;
+}
+
+.candidate-application-status-reviewing {
+    background: #e8eef8;
+}
+
+.candidate-application-status-accepted {
+    background: #e6f4ea;
+}
+
+.candidate-application-status-rejected {
+    background: #fce8e6;
+}
+
+.candidate-application-status-withdrawn {
+    background: #eeeeee;
+}
+
+.candidate-application-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.candidate-application-cover-letter {
+    margin: 14px 0 0;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.candidate-application-view-link {
+    flex-shrink: 0;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.candidate-application-view-link:hover,
+.candidate-application-card-header h2 a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 700px) {
+    .candidate-applications-page {
+        padding: 24px 16px 40px;
+    }
+
+    .candidate-application-card {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .candidate-application-card-header {
+        flex-direction: column;
+    }
+
+    .candidate-application-view-link {
+        align-self: flex-start;
+    }
+}
