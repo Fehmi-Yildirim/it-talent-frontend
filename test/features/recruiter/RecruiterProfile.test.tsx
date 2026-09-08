@@ -24,7 +24,7 @@ describe('RecruiterProfile', () => {
         render(<RecruiterProfile />)
 
         expect(
-            screen.getByText('Recruiterprofiel laden...'),
+            screen.getByText('Loading recruiter profile...'),
         ).toBeInTheDocument()
     })
 
@@ -40,7 +40,10 @@ describe('RecruiterProfile', () => {
 
         render(<RecruiterProfile />)
 
-        expect(await screen.findByDisplayValue('Senior Recruiter')).toBeInTheDocument()
+        expect(
+            await screen.findByDisplayValue('Senior Recruiter'),
+        ).toBeInTheDocument()
+
         expect(getRecruiterProfile).toHaveBeenCalledOnce()
     })
 
@@ -52,9 +55,17 @@ describe('RecruiterProfile', () => {
         render(<RecruiterProfile />)
 
         expect(
-            await screen.findByText(
-                'Recruiterprofiel kon niet worden geladen.',
-            ),
+            await screen.findByRole('heading', {
+                name: 'Recruiter profile unavailable',
+            }),
+        ).toBeInTheDocument()
+
+        expect(screen.getByRole('alert')).toHaveTextContent(
+            'Unable to load recruiter profile.',
+        )
+
+        expect(
+            screen.getByRole('button', { name: 'Try again' }),
         ).toBeInTheDocument()
     })
 
@@ -85,7 +96,7 @@ describe('RecruiterProfile', () => {
             target: { value: 'Senior Recruiter' },
         })
 
-        fireEvent.click(screen.getByRole('button', { name: 'Opslaan' }))
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
         await waitFor(() => {
             expect(updateRecruiterProfile).toHaveBeenCalledWith({
@@ -94,7 +105,7 @@ describe('RecruiterProfile', () => {
         })
 
         expect(
-            await screen.findByText('Recruiterprofiel opgeslagen.'),
+            await screen.findByText('Recruiter profile saved.'),
         ).toBeInTheDocument()
     })
 
@@ -120,12 +131,10 @@ describe('RecruiterProfile', () => {
             target: { value: 'Senior Recruiter' },
         })
 
-        fireEvent.click(screen.getByRole('button', { name: 'Opslaan' }))
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
         expect(
-            await screen.findByText(
-                'Recruiterprofiel kon niet worden opgeslagen.',
-            ),
-        ).toBeInTheDocument()
+            await screen.findByRole('alert'),
+        ).toHaveTextContent('Unable to save recruiter profile.')
     })
 })

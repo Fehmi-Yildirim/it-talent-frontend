@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
+import ErrorState from '../../components/feedback/ErrorState'
+import LoadingState from '../../components/feedback/LoadingState'
 import {
     getRecruiterProfile,
     updateRecruiterProfile,
@@ -12,23 +14,38 @@ function RecruiterProfile() {
     const [isSaving, setIsSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
+    const [retryCount, setRetryCount] = useState(0)
 
     useEffect(() => {
-        async function loadProfile() {
-            try {
-                setError(null)
+        let cancelled = false
 
+        async function loadProfile() {
+            setIsLoading(true)
+            setError(null)
+
+            try {
                 const profile = await getRecruiterProfile()
-                setJobTitle(profile.jobTitle ?? '')
+
+                if (!cancelled) {
+                    setJobTitle(profile.jobTitle ?? '')
+                }
             } catch {
-                setError('Recruiterprofiel kon niet worden geladen.')
+                if (!cancelled) {
+                    setError('Unable to load recruiter profile.')
+                }
             } finally {
-                setIsLoading(false)
+                if (!cancelled) {
+                    setIsLoading(false)
+                }
             }
         }
 
         void loadProfile()
-    }, [])
+
+        return () => {
+            cancelled = true
+        }
+    }, [retryCount])
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -43,39 +60,52 @@ function RecruiterProfile() {
             })
 
             setJobTitle(profile.jobTitle ?? '')
-            setSuccess('Recruiterprofiel opgeslagen.')
+            setSuccess('Recruiter profile saved.')
         } catch {
-            setError('Recruiterprofiel kon niet worden opgeslagen.')
+            setError('Unable to save recruiter profile.')
         } finally {
             setIsSaving(false)
         }
     }
 
     if (isLoading) {
-        return <p>Recruiterprofiel laden...</p>
+        return <LoadingState message="Loading recruiter profile..." />
     }
 
     return (
         <section>
-            <h2>Recruiterprofiel</h2>
+            <h2>Recruiter profile</h2>
 
-            {error && <p role="alert">{error}</p>}
+            {error && (
+                <ErrorState
+                    title="Recruiter profile unavailable"
+                    message={error}
+                    onRetry={() => {
+                        setError(null)
+                        setRetryCount((current) => current + 1)
+                    }}
+                />
+            )}
+
             {success && <p role="status">{success}</p>}
 
             <form onSubmit={handleSubmit}>
-                <label htmlFor="recruiter-job-title">Functietitel</label>
+                <label htmlFor="recruiter-job-title">Job title</label>
 
                 <input
                     id="recruiter-job-title"
                     type="text"
                     value={jobTitle}
                     onChange={(event) => setJobTitle(event.target.value)}
+                    minLength={2}
                     maxLength={150}
-                    placeholder="Bijv. Senior Recruiter"
+                    required
+                    aria-invalid={Boolean(error)}
+                    placeholder="e.g. Senior Recruiter"
                 />
 
                 <button type="submit" disabled={isSaving}>
-                    {isSaving ? 'Opslaan...' : 'Opslaan'}
+                    {isSaving ? 'Saving...' : 'Save'}
                 </button>
             </form>
         </section>

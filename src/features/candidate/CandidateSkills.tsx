@@ -1,11 +1,8 @@
 import { useEffect, useState } from 'react'
-import {
-    createCandidateSkill,
-    deleteCandidateSkill,
-    getCandidateSkills,
-    getSkills,
-    updateCandidateSkill,
-} from './candidate.api'
+import type { FormEvent } from 'react'
+
+import ErrorState from '../../components/feedback/ErrorState'
+import LoadingState from '../../components/feedback/LoadingState'
 import { ApiError } from '../../services/api/apiError'
 import type {
     CandidateSkill,
@@ -13,6 +10,13 @@ import type {
     CandidateSkillUpdateInput,
     Skill,
 } from '../../types/candidate'
+import {
+    createCandidateSkill,
+    deleteCandidateSkill,
+    getCandidateSkills,
+    getSkills,
+    updateCandidateSkill,
+} from './candidate.api'
 
 interface CandidateSkillsProps {
     onSuccess?: (message: string) => void
@@ -25,6 +29,7 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
     const [loading, setLoading] = useState(true)
     const [submitting, setSubmitting] = useState(false)
     const [editingId, setEditingId] = useState<string | null>(null)
+    const [retryCount, setRetryCount] = useState(0)
 
     const [selectedSkillId, setSelectedSkillId] = useState('')
     const [proficiencyLevel, setProficiencyLevel] = useState(1)
@@ -66,7 +71,7 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
         return () => {
             cancelled = true
         }
-    }, [])
+    }, [retryCount])
 
     function resetForm() {
         setSelectedSkillId('')
@@ -81,7 +86,7 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
         onSuccess?.(message)
     }
 
-    async function handleAdd(event: React.FormEvent<HTMLFormElement>) {
+    async function handleAdd(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
         if (!selectedSkillId) {
@@ -127,7 +132,7 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
     }
 
     async function handleUpdate(
-        event: React.FormEvent<HTMLFormElement>,
+        event: FormEvent<HTMLFormElement>,
         id: string,
     ) {
         event.preventDefault()
@@ -200,19 +205,27 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                 </div>
             </div>
 
-            {loading && (
-                <p role="status" aria-live="polite">
-                    Loading skills...
-                </p>
-            )}
+            {loading && <LoadingState message="Loading skills..." />}
 
-            {!loading && error && <p role="alert">{error}</p>}
+            {!loading && error && (
+                <ErrorState
+                    title="Skills unavailable"
+                    message={error}
+                    onRetry={() => {
+                        setError(null)
+                        setRetryCount((current) => current + 1)
+                    }}
+                />
+            )}
 
             {!loading && success && <p role="status">{success}</p>}
 
-            {!loading && (
+            {!loading && !error && (
                 <>
-                    <form className="profile-form" onSubmit={(event) => void handleAdd(event)}>
+                    <form
+                        className="profile-form"
+                        onSubmit={(event) => void handleAdd(event)}
+                    >
                         <label>
                             Skill
                             <select
@@ -262,7 +275,10 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                         </label>
 
                         <div className="profile-actions">
-                            <button type="submit" disabled={submitting || !selectedSkillId}>
+                            <button
+                                type="submit"
+                                disabled={submitting || !selectedSkillId}
+                            >
                                 {submitting ? 'Saving...' : 'Add skill'}
                             </button>
                         </div>
@@ -288,7 +304,9 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                                                 <select
                                                     value={proficiencyLevel}
                                                     onChange={(event) =>
-                                                        setProficiencyLevel(Number(event.target.value))
+                                                        setProficiencyLevel(
+                                                            Number(event.target.value),
+                                                        )
                                                     }
                                                     disabled={submitting}
                                                 >
@@ -308,7 +326,9 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                                                     step="0.1"
                                                     value={yearsOfExperience}
                                                     onChange={(event) =>
-                                                        setYearsOfExperience(Number(event.target.value))
+                                                        setYearsOfExperience(
+                                                            Number(event.target.value),
+                                                        )
                                                     }
                                                     disabled={submitting}
                                                 />
@@ -332,9 +352,11 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                                         <div className="profile-skill">
                                             <div>
                                                 <strong>{candidateSkill.skill.name}</strong>
+
                                                 <div>
                                                     Proficiency: {candidateSkill.proficiencyLevel}/5
                                                 </div>
+
                                                 <div>
                                                     Experience: {candidateSkill.yearsOfExperience} years
                                                 </div>
@@ -351,7 +373,9 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
 
                                                 <button
                                                     type="button"
-                                                    onClick={() => void handleDelete(candidateSkill.id)}
+                                                    onClick={() =>
+                                                        void handleDelete(candidateSkill.id)
+                                                    }
                                                     disabled={submitting}
                                                 >
                                                     Remove
