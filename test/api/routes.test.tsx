@@ -6,6 +6,10 @@ import { router } from '../../src/app/routes'
 import { AuthProvider } from '../../src/features/auth/AuthProvider'
 import { getCurrentUser } from '../../src/features/auth/auth.api'
 import { getAccessToken } from '../../src/features/auth/auth.storage'
+import {
+  getCandidateDashboard,
+  getRecruiterDashboard,
+} from '../../src/features/dashboard/dashboard.api'
 
 vi.mock('../../src/features/auth/auth.api', () => ({
   getCurrentUser: vi.fn(),
@@ -18,8 +22,15 @@ vi.mock('../../src/features/auth/auth.storage', () => ({
   clearAccessToken: vi.fn(),
 }))
 
+vi.mock('../../src/features/dashboard/dashboard.api', () => ({
+  getCandidateDashboard: vi.fn(),
+  getRecruiterDashboard: vi.fn(),
+}))
+
 const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 const mockedGetAccessToken = vi.mocked(getAccessToken)
+const mockedGetCandidateDashboard = vi.mocked(getCandidateDashboard)
+const mockedGetRecruiterDashboard = vi.mocked(getRecruiterDashboard)
 
 beforeEach(() => {
   vi.clearAllMocks()
@@ -136,6 +147,41 @@ describe('application routes', () => {
       updatedAt: '2026-01-01T00:00:00.000Z',
     })
 
+    mockedGetCandidateDashboard.mockResolvedValue({
+      profile: {
+        status: 'ACTIVE',
+        completionPercentage: 75,
+        headline: 'Backend Developer',
+        summary: 'Experienced developer',
+        location: 'Amsterdam',
+        salaryMin: '4000',
+        salaryMax: '6000',
+        currency: 'EUR',
+        availabilityDate: null,
+        remotePreference: 'HYBRID',
+      },
+      applications: {
+        total: 3,
+        byStatus: {
+          PENDING: 1,
+          REVIEWING: 1,
+          ACCEPTED: 1,
+          REJECTED: 0,
+          WITHDRAWN: 0,
+        },
+        recent: [],
+      },
+      jobs: {
+        recommendedCount: 2,
+        availableCount: 10,
+        recent: [],
+      },
+      skills: {
+        total: 4,
+        items: [],
+      },
+    })
+
     await router.navigate('/dashboard')
 
     render(
@@ -149,10 +195,22 @@ describe('application routes', () => {
         name: 'Dashboard',
       }),
     ).toBeInTheDocument()
+
+    expect(
+      await screen.findByText('75% complete'),
+    ).toBeInTheDocument()
+
+    expect(
+      await screen.findByText('Total applications'),
+    ).toBeInTheDocument()
+
+    expect(mockedGetCandidateDashboard).toHaveBeenCalledTimes(1)
+    expect(mockedGetRecruiterDashboard).not.toHaveBeenCalled()
   })
 
   it('renders profile for authenticated users', async () => {
     mockedGetAccessToken.mockReturnValue('test-token')
+
     mockedGetCurrentUser.mockResolvedValue({
       id: 'user-1',
       email: 'test@example.com',
