@@ -1,5 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+
+import ErrorState from '../components/feedback/ErrorState'
+import LoadingState from '../components/feedback/LoadingState'
+import CandidateSkills from '../features/candidate/CandidateSkills'
 import { useAuth } from '../features/auth/useAuth'
 import {
   createCandidateProfile,
@@ -12,7 +16,6 @@ import type {
   CandidateProfileInput,
 } from '../types/candidate'
 import './ProfilePage.css'
-import CandidateSkills from '../features/candidate/CandidateSkills'
 
 function formatNullable(value: string | null) {
   return value || 'Not specified'
@@ -56,22 +59,32 @@ function formatDate(value: string | null) {
   }).format(new Date(value))
 }
 
-function toInput(profile: CandidateProfile | null): CandidateProfileInput {
+function toInput(
+  profile: CandidateProfile | null,
+): CandidateProfileInput {
   if (!profile) {
     return {}
   }
 
   return {
-    ...(profile.headline ? { headline: profile.headline } : {}),
-    ...(profile.summary ? { summary: profile.summary } : {}),
-    ...(profile.location ? { location: profile.location } : {}),
+    ...(profile.headline
+      ? { headline: profile.headline }
+      : {}),
+    ...(profile.summary
+      ? { summary: profile.summary }
+      : {}),
+    ...(profile.location
+      ? { location: profile.location }
+      : {}),
     ...(profile.salaryMin !== null
       ? { salaryMin: Number(profile.salaryMin) }
       : {}),
     ...(profile.salaryMax !== null
       ? { salaryMax: Number(profile.salaryMax) }
       : {}),
-    ...(profile.currency ? { currency: profile.currency } : {}),
+    ...(profile.currency
+      ? { currency: profile.currency }
+      : {}),
     ...(profile.availabilityDate
       ? { availabilityDate: profile.availabilityDate }
       : {}),
@@ -205,7 +218,8 @@ function ProfileForm({
           onChange={(event) =>
             onChange({
               ...value,
-              availabilityDate: event.target.value || undefined,
+              availabilityDate:
+                event.target.value || undefined,
             })
           }
         />
@@ -226,12 +240,19 @@ function ProfileForm({
       </label>
 
       <div className="profile-actions">
-        <button type="submit" disabled={submitting}>
+        <button
+          type="submit"
+          disabled={submitting}
+        >
           {submitting ? 'Saving...' : submitLabel}
         </button>
 
         {onCancel && (
-          <button type="button" onClick={onCancel} disabled={submitting}>
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={submitting}
+          >
             Cancel
           </button>
         )}
@@ -251,7 +272,9 @@ function ProfilePage() {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [formValue, setFormValue] = useState<CandidateProfileInput>({})
+  const [formValue, setFormValue] =
+    useState<CandidateProfileInput>({})
+  const [retryCount, setRetryCount] = useState(0)
 
   useEffect(() => {
     if (!user || user.role !== 'CANDIDATE') {
@@ -273,11 +296,39 @@ function ProfilePage() {
         }
       } catch (caught) {
         if (!cancelled) {
-          if (caught instanceof ApiError && caught.status === 404) {
+          if (
+            caught instanceof ApiError &&
+            caught.status === 404
+          ) {
             setCandidateProfile(null)
             setFormValue({})
+            setError(null)
+          } else if (
+            caught instanceof ApiError &&
+            (caught.status === 401 ||
+              caught.status === 403)
+          ) {
+            setError(
+              'You are not authorized to access your candidate profile.',
+            )
+          } else if (
+            caught instanceof ApiError &&
+            caught.status === 500
+          ) {
+            setError(
+              'The server encountered an error while loading your candidate profile.',
+            )
+          } else if (
+            caught instanceof ApiError &&
+            caught.status === 0
+          ) {
+            setError(
+              'Unable to connect to the server. Please check your connection and try again.',
+            )
           } else {
-            setError('Unable to load your candidate profile.')
+            setError(
+              'Unable to load your candidate profile.',
+            )
           }
         }
       } finally {
@@ -292,7 +343,7 @@ function ProfilePage() {
     return () => {
       cancelled = true
     }
-  }, [user])
+  }, [user, retryCount])
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -313,12 +364,57 @@ function ProfilePage() {
           ? 'Profile updated successfully.'
           : 'Profile created successfully.',
       )
-    } catch {
-      setError(
-        candidateProfile
-          ? 'Unable to update your candidate profile.'
-          : 'Unable to create your candidate profile.',
-      )
+    } catch (caught) {
+      if (
+        caught instanceof ApiError &&
+        (caught.status === 401 ||
+          caught.status === 403)
+      ) {
+        setError(
+          'You are not authorized to modify your candidate profile.',
+        )
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 400
+      ) {
+        setError(
+          'Please check your profile information and try again.',
+        )
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 409
+      ) {
+        setError(
+          'A candidate profile already exists.',
+        )
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 422
+      ) {
+        setError(
+          'The profile information could not be processed. Please check your input.',
+        )
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 500
+      ) {
+        setError(
+          'The server encountered an error. Please try again later.',
+        )
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 0
+      ) {
+        setError(
+          'Unable to connect to the server. Please check your connection and try again.',
+        )
+      } else {
+        setError(
+          candidateProfile
+            ? 'Unable to update your candidate profile.'
+            : 'Unable to create your candidate profile.',
+        )
+      }
     } finally {
       setSubmitting(false)
     }
@@ -346,7 +442,9 @@ function ProfilePage() {
           <h1>Profile</h1>
         </div>
 
-        <Link to="/dashboard">Back to dashboard</Link>
+        <Link to="/dashboard">
+          Back to dashboard
+        </Link>
       </div>
 
       <section
@@ -355,7 +453,9 @@ function ProfilePage() {
       >
         <p className="profile-eyebrow">Account</p>
 
-        <h2 id="account-heading">Account information</h2>
+        <h2 id="account-heading">
+          Account information
+        </h2>
 
         <dl className="profile-details">
           <div>
@@ -382,7 +482,9 @@ function ProfilePage() {
         >
           <div className="profile-section-header">
             <div>
-              <p className="profile-eyebrow">Candidate</p>
+              <p className="profile-eyebrow">
+                Candidate
+              </p>
 
               <h2 id="candidate-heading">
                 {candidateProfile
@@ -391,22 +493,38 @@ function ProfilePage() {
               </h2>
             </div>
 
-            {!loading && candidateProfile && !editing && (
-              <button type="button" onClick={startEditing}>
-                Edit profile
-              </button>
-            )}
+            {!loading &&
+              candidateProfile &&
+              !editing && (
+                <button
+                  type="button"
+                  onClick={startEditing}
+                >
+                  Edit profile
+                </button>
+              )}
           </div>
 
           {loading && (
-            <p role="status" aria-live="polite">
-              Loading candidate profile...
-            </p>
+            <LoadingState message="Loading candidate profile..." />
           )}
 
-          {error && <p role="alert">{error}</p>}
+          {error && !loading && (
+            <ErrorState
+              title="Profile unavailable"
+              message={error}
+              onRetry={() => {
+                setError(null)
+                setRetryCount(
+                  (current) => current + 1,
+                )
+              }}
+            />
+          )}
 
-          {success && <p role="status">{success}</p>}
+          {success && (
+            <p role="status">{success}</p>
+          )}
 
           {!loading && editing && (
             <ProfileForm
@@ -419,61 +537,84 @@ function ProfilePage() {
             />
           )}
 
-          {!loading && !editing && candidateProfile && (
-            <>
-              <dl className="profile-details">
-                <div>
-                  <dt>Headline</dt>
-                  <dd>{formatNullable(candidateProfile.headline)}</dd>
-                </div>
+          {!loading &&
+            !editing &&
+            candidateProfile && (
+              <>
+                <dl className="profile-details">
+                  <div>
+                    <dt>Headline</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.headline,
+                      )}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt>Summary</dt>
-                  <dd>{formatNullable(candidateProfile.summary)}</dd>
-                </div>
+                  <div>
+                    <dt>Summary</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.summary,
+                      )}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt>Location</dt>
-                  <dd>{formatNullable(candidateProfile.location)}</dd>
-                </div>
+                  <div>
+                    <dt>Location</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.location,
+                      )}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt>Salary</dt>
-                  <dd>
-                    {formatSalary(
-                      candidateProfile.salaryMin,
-                      candidateProfile.salaryMax,
-                      candidateProfile.currency,
-                    )}
-                  </dd>
-                </div>
+                  <div>
+                    <dt>Salary</dt>
+                    <dd>
+                      {formatSalary(
+                        candidateProfile.salaryMin,
+                        candidateProfile.salaryMax,
+                        candidateProfile.currency,
+                      )}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt>Remote preference</dt>
-                  <dd>
-                    {formatNullable(candidateProfile.remotePreference)}
-                  </dd>
-                </div>
+                  <div>
+                    <dt>Remote preference</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.remotePreference,
+                      )}
+                    </dd>
+                  </div>
 
-                <div>
-                  <dt>Availability</dt>
-                  <dd>{formatDate(candidateProfile.availabilityDate)}</dd>
-                </div>
-              </dl>
+                  <div>
+                    <dt>Availability</dt>
+                    <dd>
+                      {formatDate(
+                        candidateProfile.availabilityDate,
+                      )}
+                    </dd>
+                  </div>
+                </dl>
 
-              <CandidateSkills />
-            </>
-          )}
+                <CandidateSkills />
+              </>
+            )}
 
-          {!loading && !editing && !candidateProfile && !error && (
-            <ProfileForm
-              value={formValue}
-              submitting={submitting}
-              submitLabel="Create profile"
-              onChange={setFormValue}
-              onSubmit={() => void handleSubmit()}
-            />
-          )}
+          {!loading &&
+            !editing &&
+            !candidateProfile &&
+            !error && (
+              <ProfileForm
+                value={formValue}
+                submitting={submitting}
+                submitLabel="Create profile"
+                onChange={setFormValue}
+                onSubmit={() => void handleSubmit()}
+              />
+            )}
         </section>
       )}
     </section>

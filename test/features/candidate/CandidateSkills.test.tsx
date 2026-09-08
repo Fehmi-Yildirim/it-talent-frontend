@@ -78,7 +78,9 @@ describe('CandidateSkills', () => {
     it('loads and displays candidate skills', async () => {
         renderSkills()
 
-        expect(screen.getByText('Loading skills...')).toBeInTheDocument()
+        expect(screen.getByRole('status')).toHaveTextContent(
+            'Loading skills...',
+        )
 
         await waitFor(() => {
             expect(screen.getByText('React')).toBeInTheDocument()
@@ -121,7 +123,9 @@ describe('CandidateSkills', () => {
         renderSkills()
 
         await waitFor(() => {
-            expect(screen.getByRole('option', { name: 'TypeScript' })).toBeInTheDocument()
+            expect(
+                screen.getByRole('option', { name: 'TypeScript' }),
+            ).toBeInTheDocument()
         })
 
         fireEvent.change(screen.getByLabelText('Skill'), {
@@ -146,7 +150,9 @@ describe('CandidateSkills', () => {
             })
         })
 
-        expect(screen.getByText('Skill added successfully.')).toBeInTheDocument()
+        expect(
+            screen.getByText('Skill added successfully.'),
+        ).toBeInTheDocument()
         expect(screen.getAllByText('TypeScript').length).toBeGreaterThan(0)
     })
 
@@ -188,7 +194,9 @@ describe('CandidateSkills', () => {
             )
         })
 
-        expect(screen.getByText('Skill updated successfully.')).toBeInTheDocument()
+        expect(
+            screen.getByText('Skill updated successfully.'),
+        ).toBeInTheDocument()
     })
 
     it('removes a skill after confirmation', async () => {
@@ -208,8 +216,13 @@ describe('CandidateSkills', () => {
             )
         })
 
-        expect(screen.queryByText('Proficiency: 4/5')).not.toBeInTheDocument()
-        expect(screen.getByText('Skill removed successfully.')).toBeInTheDocument()
+        expect(
+            screen.queryByText('Proficiency: 4/5'),
+        ).not.toBeInTheDocument()
+
+        expect(
+            screen.getByText('Skill removed successfully.'),
+        ).toBeInTheDocument()
     })
 
     it('does not remove a skill when confirmation is cancelled', async () => {
@@ -234,7 +247,9 @@ describe('CandidateSkills', () => {
         renderSkills()
 
         await waitFor(() => {
-            expect(screen.getByRole('option', { name: 'TypeScript' })).toBeInTheDocument()
+            expect(
+                screen.getByRole('option', { name: 'TypeScript' }),
+            ).toBeInTheDocument()
         })
 
         fireEvent.change(screen.getByLabelText('Skill'), {
@@ -258,7 +273,9 @@ describe('CandidateSkills', () => {
         renderSkills()
 
         await waitFor(() => {
-            expect(screen.getByRole('option', { name: 'TypeScript' })).toBeInTheDocument()
+            expect(
+                screen.getByRole('option', { name: 'TypeScript' }),
+            ).toBeInTheDocument()
         })
 
         fireEvent.change(screen.getByLabelText('Skill'), {
@@ -274,10 +291,10 @@ describe('CandidateSkills', () => {
         })
     })
 
-    it('handles loading errors', async () => {
-        mockedGetCandidateSkills.mockRejectedValueOnce(
-            new ApiError(500, 'Server error'),
-        )
+    it('handles loading errors and allows retry', async () => {
+        mockedGetCandidateSkills
+            .mockRejectedValueOnce(new ApiError(500, 'Server error'))
+            .mockResolvedValueOnce([candidateReactSkill])
 
         renderSkills()
 
@@ -286,5 +303,16 @@ describe('CandidateSkills', () => {
                 'Unable to load your skills.',
             )
         })
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Try again' }),
+        )
+
+        await waitFor(() => {
+            expect(mockedGetCandidateSkills).toHaveBeenCalledTimes(2)
+            expect(mockedGetSkills).toHaveBeenCalledTimes(2)
+        })
+
+        expect(screen.getByText('React')).toBeInTheDocument()
     })
 })

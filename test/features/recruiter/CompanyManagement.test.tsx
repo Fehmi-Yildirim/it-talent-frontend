@@ -1,5 +1,16 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import {
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+} from '@testing-library/react'
+import {
+    beforeEach,
+    describe,
+    expect,
+    it,
+    vi,
+} from 'vitest'
 import CompanyManagement from '../../../src/features/recruiter/CompanyManagement'
 import { apiClient } from '../../../src/services/api/apiClient'
 
@@ -16,7 +27,7 @@ const company = {
     name: 'Tech Company',
     slug: 'tech-company',
     website: null,
-    description: 'Een IT-bedrijf',
+    description: 'An IT company',
     location: null,
     createdAt: '2026-01-01',
     updatedAt: '2026-01-01',
@@ -35,7 +46,7 @@ describe('CompanyManagement', () => {
         render(<CompanyManagement />)
 
         expect(
-            screen.getByText('Bedrijfsgegevens laden...'),
+            screen.getByText('Loading company information...'),
         ).toBeInTheDocument()
     })
 
@@ -44,9 +55,12 @@ describe('CompanyManagement', () => {
 
         render(<CompanyManagement />)
 
-        expect(await screen.findByDisplayValue('Tech Company')).toBeInTheDocument()
         expect(
-            screen.getByDisplayValue('Een IT-bedrijf'),
+            await screen.findByDisplayValue('Tech Company'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('An IT company'),
         ).toBeInTheDocument()
 
         expect(apiClient.get).toHaveBeenCalledWith('/companies/me')
@@ -60,13 +74,21 @@ describe('CompanyManagement', () => {
         render(<CompanyManagement />)
 
         expect(
-            await screen.findByText(
-                'Je bent nog niet gekoppeld aan een bedrijf.',
-            ),
+            await screen.findByRole('heading', {
+                name: 'Company information unavailable',
+            }),
+        ).toBeInTheDocument()
+
+        expect(screen.getByRole('alert')).toHaveTextContent(
+            'Unable to load company information.',
+        )
+
+        expect(
+            screen.getByRole('button', { name: 'Try again' }),
         ).toBeInTheDocument()
 
         expect(
-            screen.getByRole('button', { name: 'Bedrijf aanmaken' }),
+            screen.getByRole('button', { name: 'Create company' }),
         ).toBeInTheDocument()
     })
 
@@ -78,15 +100,24 @@ describe('CompanyManagement', () => {
         render(<CompanyManagement />)
 
         fireEvent.click(
-            await screen.findByRole('button', { name: 'Bedrijf aanmaken' }),
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
         )
 
         expect(
-            screen.getByRole('heading', { name: 'Bedrijf aanmaken' }),
+            screen.getByRole('heading', {
+                name: 'Create company',
+            }),
         ).toBeInTheDocument()
 
-        expect(screen.getByLabelText('Bedrijfsnaam')).toBeInTheDocument()
-        expect(screen.getByLabelText('Beschrijving')).toBeInTheDocument()
+        expect(
+            screen.getByLabelText('Company name'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByLabelText('Description'),
+        ).toBeInTheDocument()
     })
 
     it('creates a company', async () => {
@@ -99,30 +130,45 @@ describe('CompanyManagement', () => {
         render(<CompanyManagement />)
 
         fireEvent.click(
-            await screen.findByRole('button', { name: 'Bedrijf aanmaken' }),
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
         )
 
-        fireEvent.change(screen.getByLabelText('Bedrijfsnaam'), {
-            target: { value: 'Tech Company' },
-        })
+        fireEvent.change(
+            screen.getByLabelText('Company name'),
+            {
+                target: { value: 'Tech Company' },
+            },
+        )
 
-        fireEvent.change(screen.getByLabelText('Beschrijving'), {
-            target: { value: 'Een IT-bedrijf' },
-        })
+        fireEvent.change(
+            screen.getByLabelText('Description'),
+            {
+                target: { value: 'An IT company' },
+            },
+        )
 
         fireEvent.click(
-            screen.getByRole('button', { name: 'Bedrijf aanmaken' }),
+            screen.getByRole('button', {
+                name: 'Create company',
+            }),
         )
 
         await waitFor(() => {
-            expect(apiClient.post).toHaveBeenCalledWith('/companies', {
-                name: 'Tech Company',
-                description: 'Een IT-bedrijf',
-            })
+            expect(apiClient.post).toHaveBeenCalledWith(
+                '/companies',
+                {
+                    name: 'Tech Company',
+                    description: 'An IT company',
+                },
+            )
         })
 
         expect(
-            await screen.findByText('Bedrijf succesvol aangemaakt.'),
+            await screen.findByText(
+                'Company created successfully.',
+            ),
         ).toBeInTheDocument()
     })
 
@@ -132,56 +178,70 @@ describe('CompanyManagement', () => {
         vi.mocked(apiClient.patch).mockResolvedValue({
             ...company,
             name: 'Updated Company',
-            description: 'Nieuwe beschrijving',
+            description: 'New description',
         })
 
         render(<CompanyManagement />)
 
-        const nameInput = await screen.findByDisplayValue('Tech Company')
-        const descriptionInput = screen.getByDisplayValue('Een IT-bedrijf')
+        const nameInput =
+            await screen.findByDisplayValue('Tech Company')
+
+        const descriptionInput =
+            screen.getByDisplayValue('An IT company')
 
         fireEvent.change(nameInput, {
             target: { value: 'Updated Company' },
         })
 
         fireEvent.change(descriptionInput, {
-            target: { value: 'Nieuwe beschrijving' },
+            target: { value: 'New description' },
         })
 
-        fireEvent.click(screen.getByRole('button', { name: 'Opslaan' }))
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Save' }),
+        )
 
         await waitFor(() => {
-            expect(apiClient.patch).toHaveBeenCalledWith('/companies/me', {
-                name: 'Updated Company',
-                description: 'Nieuwe beschrijving',
-            })
+            expect(apiClient.patch).toHaveBeenCalledWith(
+                '/companies/me',
+                {
+                    name: 'Updated Company',
+                    description: 'New description',
+                },
+            )
         })
 
         expect(
-            await screen.findByText('Bedrijfsgegevens opgeslagen.'),
+            await screen.findByText(
+                'Company information saved successfully.',
+            ),
         ).toBeInTheDocument()
     })
 
     it('shows error when company update fails', async () => {
         vi.mocked(apiClient.get).mockResolvedValue(company)
+
         vi.mocked(apiClient.patch).mockRejectedValue(
             new Error('Request failed'),
         )
 
         render(<CompanyManagement />)
 
-        const nameInput = await screen.findByDisplayValue('Tech Company')
+        const nameInput =
+            await screen.findByDisplayValue('Tech Company')
 
         fireEvent.change(nameInput, {
             target: { value: 'Updated Company' },
         })
 
-        fireEvent.click(screen.getByRole('button', { name: 'Opslaan' }))
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Save' }),
+        )
 
         expect(
-            await screen.findByText(
-                'Bedrijfsgegevens konden niet worden opgeslagen.',
-            ),
-        ).toBeInTheDocument()
+            await screen.findByRole('alert'),
+        ).toHaveTextContent(
+            'Unable to save company information.',
+        )
     })
 })

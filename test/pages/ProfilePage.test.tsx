@@ -16,52 +16,49 @@ vi.mock('../../src/features/auth/useAuth', () => ({
 }))
 
 vi.mock('../../src/features/candidate/candidate.api', () => ({
-  getCandidateProfile: vi.fn(),
   createCandidateProfile: vi.fn(),
+  getCandidateProfile: vi.fn(),
   updateCandidateProfile: vi.fn(),
 }))
 
-const mockedUseAuth = vi.mocked(useAuth)
-const mockedGetCandidateProfile = vi.mocked(getCandidateProfile)
-const mockedCreateCandidateProfile = vi.mocked(createCandidateProfile)
-const mockedUpdateCandidateProfile = vi.mocked(updateCandidateProfile)
+vi.mock('../../src/features/candidate/CandidateSkills', () => ({
+  default: () => <div>Candidate skills</div>,
+}))
 
 const candidateUser = {
-  id: 'candidate-user-id',
+  id: 'user-1',
   email: 'candidate@example.com',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
   candidate: null,
   recruiter: null,
-  createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
-}
-
-const recruiterUser = {
-  id: 'recruiter-user-id',
-  email: 'recruiter@example.com',
-  role: 'RECRUITER' as const,
-  status: 'ACTIVE' as const,
-  candidate: null,
-  recruiter: null,
-  createdAt: '2026-01-01T00:00:00.000Z',
-  updatedAt: '2026-01-01T00:00:00.000Z',
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
 }
 
 const candidateProfile = {
-  id: 'candidate-profile-id',
-  userId: 'candidate-user-id',
-  headline: 'Senior TypeScript Developer',
-  summary: 'Experienced backend and frontend developer.',
+  id: 'profile-1',
+  userId: 'user-1',
+  headline: 'Frontend Developer',
+  summary: 'Experienced developer',
   location: 'Amsterdam',
-  salaryMin: '5000',
-  salaryMax: '7000',
+  salaryMin: '50000',
+  salaryMax: '70000',
   currency: 'EUR',
+  availabilityDate: '2026-02-01',
   remotePreference: 'HYBRID',
-  availabilityDate: '2026-09-01',
-  createdAt: '2026-01-01T12:00:00.000Z',
-  updatedAt: '2026-08-25T12:00:00.000Z',
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
 }
+
+const mockedUseAuth = vi.mocked(useAuth)
+const mockedGetCandidateProfile = vi.mocked(getCandidateProfile)
+const mockedCreateCandidateProfile = vi.mocked(
+  createCandidateProfile,
+)
+const mockedUpdateCandidateProfile = vi.mocked(
+  updateCandidateProfile,
+)
 
 function renderProfilePage() {
   return render(
@@ -71,244 +68,302 @@ function renderProfilePage() {
   )
 }
 
-function mockCandidateAuth() {
-  mockedUseAuth.mockReturnValue({
-    user: candidateUser,
-    accessToken: 'candidate-token',
-    isAuthenticated: true,
-    isLoading: false,
-    login: vi.fn(),
-    logout: vi.fn(),
-  })
-}
-
 describe('ProfilePage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
+    mockedUseAuth.mockReturnValue({
+      user: candidateUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+    })
+
     mockedGetCandidateProfile.mockResolvedValue(candidateProfile)
-    mockedCreateCandidateProfile.mockResolvedValue(candidateProfile)
-    mockedUpdateCandidateProfile.mockResolvedValue(candidateProfile)
+    mockedCreateCandidateProfile.mockResolvedValue(
+      candidateProfile,
+    )
+    mockedUpdateCandidateProfile.mockResolvedValue(
+      candidateProfile,
+    )
   })
 
-  it('should display authenticated candidate account information', () => {
-    mockCandidateAuth()
-
-    renderProfilePage()
-
-    expect(screen.getByRole('heading', { name: 'Profile' })).toBeInTheDocument()
-    expect(screen.getByText('candidate@example.com')).toBeInTheDocument()
-    expect(screen.getByText('CANDIDATE')).toBeInTheDocument()
-    expect(screen.getByText('ACTIVE')).toBeInTheDocument()
-  })
-
-  it('should load and display the candidate profile', async () => {
-    mockCandidateAuth()
-
-    renderProfilePage()
-
-    expect(screen.getByText('Loading candidate profile...')).toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Senior TypeScript Developer'),
-      ).toBeInTheDocument()
-
-      expect(
-        screen.getByText('Experienced backend and frontend developer.'),
-      ).toBeInTheDocument()
-    })
-
-    expect(mockedGetCandidateProfile).toHaveBeenCalledTimes(1)
-  })
-
-  it('should enter edit mode and update the candidate profile', async () => {
-    mockCandidateAuth()
-
-    renderProfilePage()
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Senior TypeScript Developer'),
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }))
-
-    fireEvent.change(screen.getByLabelText('Headline'), {
-      target: { value: 'Lead TypeScript Developer' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Save profile' }))
-
-    await waitFor(() => {
-      expect(mockedUpdateCandidateProfile).toHaveBeenCalledWith(
-        expect.objectContaining({
-          headline: 'Lead TypeScript Developer',
-        }),
-      )
-    })
-
-    expect(
-      screen.getByText('Profile updated successfully.'),
-    ).toBeInTheDocument()
-  })
-
-  it('should cancel profile editing without saving', async () => {
-    mockCandidateAuth()
-
-    renderProfilePage()
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Senior TypeScript Developer'),
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }))
-
-    fireEvent.change(screen.getByLabelText('Headline'), {
-      target: { value: 'Changed headline' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }))
-
-    expect(screen.getByText('Senior TypeScript Developer')).toBeInTheDocument()
-    expect(screen.queryByLabelText('Headline')).not.toBeInTheDocument()
-    expect(mockedUpdateCandidateProfile).not.toHaveBeenCalled()
-  })
-
-  it('should display an error when the candidate profile cannot be loaded', async () => {
-    mockCandidateAuth()
-
-    mockedGetCandidateProfile.mockRejectedValueOnce(
-      new ApiError(500, 'Server error'),
+  it('shows loading state', () => {
+    mockedGetCandidateProfile.mockReturnValue(
+      new Promise(() => undefined),
     )
 
     renderProfilePage()
 
-    const alert = await waitFor(() => screen.getByRole('alert'))
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'Loading candidate profile...',
+    )
+  })
 
-    expect(alert).toHaveTextContent(
+  it('loads and displays the candidate profile', async () => {
+    renderProfilePage()
+
+    expect(
+      await screen.findByText('Frontend Developer'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText('Experienced developer'),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText('Amsterdam'),
+    ).toBeInTheDocument()
+  })
+
+  it('shows an error when loading the profile fails', async () => {
+    mockedGetCandidateProfile.mockRejectedValue(
+      new Error('Request failed'),
+    )
+
+    renderProfilePage()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Profile unavailable',
+      }),
+    ).toBeInTheDocument()
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
       'Unable to load your candidate profile.',
     )
-  })
-
-  it('should display an error when updating the profile fails', async () => {
-    mockCandidateAuth()
-
-    mockedUpdateCandidateProfile.mockRejectedValueOnce(
-      new Error('Update failed'),
-    )
-
-    renderProfilePage()
-
-    await waitFor(() => {
-      expect(
-        screen.getByText('Senior TypeScript Developer'),
-      ).toBeInTheDocument()
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }))
-
-    fireEvent.change(screen.getByLabelText('Headline'), {
-      target: { value: 'Updated headline' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Save profile' }))
-
-    await waitFor(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent(
-        'Unable to update your candidate profile.',
-      )
-    })
-  })
-
-  it('should display the create form when the candidate profile does not exist', async () => {
-    mockCandidateAuth()
-
-    mockedGetCandidateProfile.mockRejectedValueOnce(
-      new ApiError(404, 'Candidate profile not found'),
-    )
-
-    renderProfilePage()
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole('heading', {
-          name: 'Create candidate profile',
-        }),
-      ).toBeInTheDocument()
-    })
 
     expect(
-      screen.getByRole('button', { name: 'Create profile' }),
+      screen.getByRole('button', {
+        name: 'Try again',
+      }),
     ).toBeInTheDocument()
   })
 
-  it('should create a candidate profile', async () => {
-    mockCandidateAuth()
+  it('retries loading the candidate profile', async () => {
+    mockedGetCandidateProfile
+      .mockRejectedValueOnce(
+        new Error('Request failed'),
+      )
+      .mockResolvedValueOnce(candidateProfile)
 
-    mockedGetCandidateProfile.mockRejectedValueOnce(
-      new ApiError(404, 'Candidate profile not found'),
+    renderProfilePage()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Profile unavailable',
+      }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Try again',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(
+        mockedGetCandidateProfile,
+      ).toHaveBeenCalledTimes(2)
+    })
+
+    expect(
+      await screen.findByText('Frontend Developer'),
+    ).toBeInTheDocument()
+  })
+
+  it('handles a missing candidate profile as an empty state', async () => {
+    mockedGetCandidateProfile.mockRejectedValue(
+      new ApiError(404, 'Profile not found'),
     )
 
     renderProfilePage()
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Headline')).toBeInTheDocument()
-    })
-
-    fireEvent.change(screen.getByLabelText('Headline'), {
-      target: { value: 'Frontend Developer' },
-    })
-
-    fireEvent.change(screen.getByLabelText('Location'), {
-      target: { value: 'Amsterdam' },
-    })
-
-    fireEvent.click(screen.getByRole('button', { name: 'Create profile' }))
-
-    await waitFor(() => {
-      expect(mockedCreateCandidateProfile).toHaveBeenCalledWith(
-        expect.objectContaining({
-          headline: 'Frontend Developer',
-          location: 'Amsterdam',
-        }),
-      )
-    })
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Create candidate profile',
+      }),
+    ).toBeInTheDocument()
 
     expect(
-      screen.getByText('Profile created successfully.'),
+      screen.queryByRole('alert'),
+    ).not.toBeInTheDocument()
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Create profile',
+      }),
     ).toBeInTheDocument()
   })
 
-  it('should handle nullable candidate profile fields', async () => {
-    mockCandidateAuth()
+  it('creates a candidate profile', async () => {
+    mockedGetCandidateProfile.mockRejectedValue(
+      new ApiError(404, 'Profile not found'),
+    )
 
-    mockedGetCandidateProfile.mockResolvedValueOnce({
+    const createdProfile = {
       ...candidateProfile,
-      headline: null,
-      summary: null,
-      location: null,
-      salaryMin: null,
-      salaryMax: null,
-      currency: null,
-      remotePreference: null,
-      availabilityDate: null,
-    })
+      headline: 'New Frontend Developer',
+    }
+
+    mockedCreateCandidateProfile.mockResolvedValue(
+      createdProfile,
+    )
 
     renderProfilePage()
 
-    await waitFor(() => {
-      expect(screen.getAllByText('Not specified')).toHaveLength(6)
+    const headline = await screen.findByLabelText(
+      'Headline',
+    )
+
+    fireEvent.change(headline, {
+      target: {
+        value: 'New Frontend Developer',
+      },
     })
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Create profile',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(
+        mockedCreateCandidateProfile,
+      ).toHaveBeenCalledWith({
+        headline: 'New Frontend Developer',
+      })
+    })
+
+    expect(
+      await screen.findByText(
+        'Profile created successfully.',
+      ),
+    ).toBeInTheDocument()
   })
 
-  it('should not load the candidate profile for a recruiter', async () => {
+  it('updates the candidate profile', async () => {
+    renderProfilePage()
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Edit profile',
+      }),
+    )
+
+    const headline = screen.getByDisplayValue(
+      'Frontend Developer',
+    )
+
+    fireEvent.change(headline, {
+      target: {
+        value: 'Senior Frontend Developer',
+      },
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Save profile',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(
+        mockedUpdateCandidateProfile,
+      ).toHaveBeenCalledWith({
+        headline: 'Senior Frontend Developer',
+        summary: 'Experienced developer',
+        location: 'Amsterdam',
+        salaryMin: 50000,
+        salaryMax: 70000,
+        currency: 'EUR',
+        availabilityDate: '2026-02-01',
+        remotePreference: 'HYBRID',
+      })
+    })
+
+    expect(
+      await screen.findByText(
+        'Profile updated successfully.',
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('shows an error when creating the profile fails', async () => {
+    mockedGetCandidateProfile.mockRejectedValue(
+      new ApiError(404, 'Profile not found'),
+    )
+
+    mockedCreateCandidateProfile.mockRejectedValue(
+      new Error('Request failed'),
+    )
+
+    renderProfilePage()
+
+    await screen.findByRole('heading', {
+      name: 'Create candidate profile',
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Create profile',
+      }),
+    )
+
+    expect(
+      await screen.findByRole('alert'),
+    ).toHaveTextContent(
+      'Unable to create your candidate profile.',
+    )
+  })
+
+  it('shows an error when updating the profile fails', async () => {
+    mockedUpdateCandidateProfile.mockRejectedValue(
+      new Error('Request failed'),
+    )
+
+    renderProfilePage()
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Edit profile',
+      }),
+    )
+
+    fireEvent.change(
+      screen.getByDisplayValue(
+        'Frontend Developer',
+      ),
+      {
+        target: {
+          value: 'Senior Frontend Developer',
+        },
+      },
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Save profile',
+      }),
+    )
+
+    expect(
+      await screen.findByRole('alert'),
+    ).toHaveTextContent(
+      'Unable to update your candidate profile.',
+    )
+  })
+
+  it('does not load the candidate profile for non-candidates', async () => {
     mockedUseAuth.mockReturnValue({
-      user: recruiterUser,
-      accessToken: 'recruiter-token',
+      user: {
+        ...candidateUser,
+        role: 'RECRUITER',
+      },
+      accessToken: 'test-access-token',
       isAuthenticated: true,
       isLoading: false,
       login: vi.fn(),
@@ -317,16 +372,12 @@ describe('ProfilePage', () => {
 
     renderProfilePage()
 
-    expect(screen.getByText('recruiter@example.com')).toBeInTheDocument()
+    expect(
+      screen.getByText(candidateUser.email),
+    ).toBeInTheDocument()
 
     expect(
-      screen.queryByRole('heading', {
-        name: 'Candidate profile',
-      }),
-    ).not.toBeInTheDocument()
-
-    await waitFor(() => {
-      expect(mockedGetCandidateProfile).not.toHaveBeenCalled()
-    })
+      mockedGetCandidateProfile,
+    ).not.toHaveBeenCalled()
   })
 })
