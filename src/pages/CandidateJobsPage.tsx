@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ApiError } from '../services/api/apiError'
 import { getCandidateJobs } from '../features/jobs/jobs.api'
 import { getSkills } from '../features/candidate/candidate.api'
+import { useTranslation } from '../i18n/context'
 import type {
     EmploymentType,
     JobDiscoveryQuery,
@@ -14,36 +15,16 @@ import './CandidateJobsPage.css'
 
 const PAGE_SIZE = 20
 
-const employmentTypes: Array<{
-    value: EmploymentType
-    label: string
-}> = [
-        { value: 'FULL_TIME', label: 'Full-time' },
-        { value: 'PART_TIME', label: 'Part-time' },
-        { value: 'CONTRACT', label: 'Contract' },
-        { value: 'FREELANCE', label: 'Freelance' },
-        { value: 'INTERNSHIP', label: 'Internship' },
-    ]
-
-const workModes: Array<{
-    value: WorkMode
-    label: string
-}> = [
-        { value: 'REMOTE', label: 'Remote' },
-        { value: 'HYBRID', label: 'Hybrid' },
-        { value: 'ONSITE', label: 'On-site' },
-        { value: 'FLEXIBLE', label: 'Flexible' },
-    ]
-
 function formatSalary(
     salaryMin: string | number | null,
     salaryMax: string | number | null,
     currency: string | null,
+    from: string,
+    upTo: string,
 ): string | null {
     if (salaryMin === null && salaryMax === null) {
         return null
     }
-
 
     const currencyLabel = currency ? ` ${currency}` : ''
 
@@ -52,40 +33,65 @@ function formatSalary(
     }
 
     if (salaryMin !== null) {
-        return `From ${salaryMin}${currencyLabel}`
+        return `${from} ${salaryMin}${currencyLabel}`
     }
 
-    return `Up to ${salaryMax}${currencyLabel}`
-
-
+    return `${upTo} ${salaryMax}${currencyLabel}`
 }
 
-function formatDate(value: string | null): string {
+function formatDate(
+    value: string | null,
+    locale: string,
+    notSpecified: string,
+): string {
     if (!value) {
-        return 'Not specified'
+        return notSpecified
     }
 
-
-    return new Intl.DateTimeFormat('en', {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
     }).format(new Date(value))
-
 }
 
 function CandidateJobsPage() {
-    const [response, setResponse] = useState<JobDiscoveryResponse | null>(null)
+    const { language, t } = useTranslation()
+
+    const employmentTypes: Array<{
+        value: EmploymentType
+        label: string
+    }> = [
+            { value: 'FULL_TIME', label: t('candidateJobs.fullTime') },
+            { value: 'PART_TIME', label: t('candidateJobs.partTime') },
+            { value: 'CONTRACT', label: t('candidateJobs.contract') },
+            { value: 'FREELANCE', label: t('candidateJobs.freelance') },
+            { value: 'INTERNSHIP', label: t('candidateJobs.internship') },
+        ]
+
+    const workModes: Array<{
+        value: WorkMode
+        label: string
+    }> = [
+            { value: 'REMOTE', label: t('candidateJobs.remote') },
+            { value: 'HYBRID', label: t('candidateJobs.hybrid') },
+            { value: 'ONSITE', label: t('candidateJobs.onsite') },
+            { value: 'FLEXIBLE', label: t('candidateJobs.flexible') },
+        ]
+
+    const [response, setResponse] =
+        useState<JobDiscoveryResponse | null>(null)
     const [skills, setSkills] = useState<Skill[]>([])
 
     const [search, setSearch] = useState('')
     const [location, setLocation] = useState('')
     const [workMode, setWorkMode] = useState<WorkMode | ''>('')
-    const [employmentType, setEmploymentType] = useState<
-        EmploymentType | ''
-    >('')
+    const [employmentType, setEmploymentType] =
+        useState<EmploymentType | ''>('')
     const [salaryMin, setSalaryMin] = useState('')
     const [salaryMax, setSalaryMax] = useState('')
-    const [selectedSkillIds, setSelectedSkillIds] = useState<string[]>([])
-    const [sort, setSort] = useState<JobDiscoveryQuery['sort']>('newest')
+    const [selectedSkillIds, setSelectedSkillIds] =
+        useState<string[]>([])
+    const [sort, setSort] =
+        useState<JobDiscoveryQuery['sort']>('newest')
     const [page, setPage] = useState(1)
 
     const [loading, setLoading] = useState(true)
@@ -156,13 +162,16 @@ function CandidateJobsPage() {
                 }
             } catch (caught) {
                 if (!cancelled) {
-                    if (caught instanceof ApiError && caught.status === 400) {
+                    if (
+                        caught instanceof ApiError &&
+                        caught.status === 400
+                    ) {
                         setError(
                             caught.message ||
-                            'The search request is invalid. Please check your filters.',
+                            t('candidateJobs.invalidSearch'),
                         )
                     } else {
-                        setError('Unable to load jobs. Please try again.')
+                        setError(t('candidateJobs.loadError'))
                     }
                 }
             } finally {
@@ -189,6 +198,7 @@ function CandidateJobsPage() {
         sort,
         page,
         retryCount,
+        t,
     ])
 
     function handleSearchSubmit(
@@ -221,17 +231,19 @@ function CandidateJobsPage() {
 
     const items = response?.items ?? []
     const totalPages = response?.totalPages ?? 0
+    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
 
     return (
         <section className="candidate-jobs-page">
             <header className="candidate-jobs-header">
                 <div>
-                    <p className="candidate-jobs-eyebrow">Candidate</p>
-                    <h1>Find your next opportunity</h1>
-                    <p>
-                        Search published jobs and filter them by your
-                        preferences.
+                    <p className="candidate-jobs-eyebrow">
+                        {t('candidateJobs.eyebrow')}
                     </p>
+
+                    <h1>{t('candidateJobs.title')}</h1>
+
+                    <p>{t('candidateJobs.description')}</p>
                 </div>
             </header>
 
@@ -239,16 +251,21 @@ function CandidateJobsPage() {
                 className="candidate-jobs-filters"
                 aria-labelledby="job-search-heading"
             >
-                <h2 id="job-search-heading">Search jobs</h2>
+                <h2 id="job-search-heading">
+                    {t('candidateJobs.searchJobs')}
+                </h2>
 
                 <form onSubmit={handleSearchSubmit}>
                     <div className="candidate-jobs-filter-grid">
                         <label>
-                            Search
+                            {t('candidateJobs.search')}
+
                             <input
                                 type="search"
                                 value={search}
-                                placeholder="Title, description or company"
+                                placeholder={t(
+                                    'candidateJobs.searchPlaceholder',
+                                )}
                                 onChange={(event) =>
                                     setSearch(event.target.value)
                                 }
@@ -256,11 +273,14 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Location
+                            {t('candidateJobs.location')}
+
                             <input
                                 type="text"
                                 value={location}
-                                placeholder="Amsterdam"
+                                placeholder={t(
+                                    'candidateJobs.locationPlaceholder',
+                                )}
                                 onChange={(event) => {
                                     setLocation(event.target.value)
                                     setPage(1)
@@ -269,17 +289,25 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Work mode
+                            {t('candidateJobs.workMode')}
+
                             <select
                                 value={workMode}
                                 onChange={(event) => {
                                     setWorkMode(
-                                        event.target.value as WorkMode | '',
+                                        event.target.value as
+                                        | WorkMode
+                                        | '',
                                     )
                                     setPage(1)
                                 }}
                             >
-                                <option value="">All work modes</option>
+                                <option value="">
+                                    {t(
+                                        'candidateJobs.allWorkModes',
+                                    )}
+                                </option>
+
                                 {workModes.map((option) => (
                                     <option
                                         key={option.value}
@@ -292,18 +320,25 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Employment type
+                            {t('candidateJobs.employmentType')}
+
                             <select
                                 value={employmentType}
                                 onChange={(event) => {
                                     setEmploymentType(
-                                        event.target
-                                            .value as EmploymentType | '',
+                                        event.target.value as
+                                        | EmploymentType
+                                        | '',
                                     )
                                     setPage(1)
                                 }}
                             >
-                                <option value="">All employment types</option>
+                                <option value="">
+                                    {t(
+                                        'candidateJobs.allEmploymentTypes',
+                                    )}
+                                </option>
+
                                 {employmentTypes.map((option) => (
                                     <option
                                         key={option.value}
@@ -316,7 +351,8 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Minimum salary
+                            {t('candidateJobs.minimumSalary')}
+
                             <input
                                 type="number"
                                 min="0"
@@ -330,7 +366,8 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Maximum salary
+                            {t('candidateJobs.maximumSalary')}
+
                             <input
                                 type="number"
                                 min="0"
@@ -344,7 +381,8 @@ function CandidateJobsPage() {
                         </label>
 
                         <label>
-                            Sort
+                            {t('candidateJobs.sort')}
+
                             <select
                                 value={sort}
                                 onChange={(event) => {
@@ -355,20 +393,32 @@ function CandidateJobsPage() {
                                     setPage(1)
                                 }}
                             >
-                                <option value="newest">Newest</option>
-                                <option value="salary">Salary</option>
-                                <option value="title">Title</option>
+                                <option value="newest">
+                                    {t('candidateJobs.newest')}
+                                </option>
+
+                                <option value="salary">
+                                    {t('candidateJobs.salary')}
+                                </option>
+
+                                <option value="title">
+                                    {t('candidateJobs.titleSort')}
+                                </option>
                             </select>
                         </label>
                     </div>
 
                     <fieldset className="candidate-jobs-skills">
-                        <legend>Skills</legend>
+                        <legend>
+                            {t('candidateJobs.skills')}
+                        </legend>
 
                         {skillsLoading ? (
-                            <p>Loading skills...</p>
+                            <p>
+                                {t('candidateJobs.loadingSkills')}
+                            </p>
                         ) : skills.length === 0 ? (
-                            <p>No skills available.</p>
+                            <p>{t('candidateJobs.noSkills')}</p>
                         ) : (
                             <div className="candidate-jobs-skill-list">
                                 {skills.map((skill) => (
@@ -382,6 +432,7 @@ function CandidateJobsPage() {
                                                 toggleSkill(skill.id)
                                             }
                                         />
+
                                         {skill.name}
                                     </label>
                                 ))}
@@ -390,14 +441,16 @@ function CandidateJobsPage() {
                     </fieldset>
 
                     <div className="candidate-jobs-filter-actions">
-                        <button type="submit">Search</button>
+                        <button type="submit">
+                            {t('candidateJobs.search')}
+                        </button>
 
                         <button
                             type="button"
                             className="candidate-jobs-secondary-button"
                             onClick={clearFilters}
                         >
-                            Clear filters
+                            {t('candidateJobs.clearFilters')}
                         </button>
                     </div>
                 </form>
@@ -408,13 +461,21 @@ function CandidateJobsPage() {
                     className="candidate-jobs-state candidate-jobs-state-error"
                     role="alert"
                 >
-                    <h2>Unable to load jobs</h2>
+                    <h2>
+                        {t('candidateJobs.unableToLoadJobs')}
+                    </h2>
+
                     <p>{error}</p>
+
                     <button
                         type="button"
-                        onClick={() => setRetryCount((current) => current + 1)}
+                        onClick={() =>
+                            setRetryCount(
+                                (current) => current + 1,
+                            )
+                        }
                     >
-                        Try again
+                        {t('candidateJobs.tryAgain')}
                     </button>
                 </section>
             )}
@@ -425,19 +486,21 @@ function CandidateJobsPage() {
                     role="status"
                     aria-live="polite"
                 >
-                    Loading jobs...
+                    {t('candidateJobs.loadingJobs')}
                 </p>
             )}
 
             {!error && response && response.total === 0 && (
                 <section className="candidate-jobs-state">
-                    <h2>No jobs found</h2>
-                    <p>
-                        No published jobs match your current search and
-                        filters.
-                    </p>
-                    <button type="button" onClick={clearFilters}>
-                        Clear filters
+                    <h2>{t('candidateJobs.noJobsFound')}</h2>
+
+                    <p>{t('candidateJobs.noJobsMatch')}</p>
+
+                    <button
+                        type="button"
+                        onClick={clearFilters}
+                    >
+                        {t('candidateJobs.clearFilters')}
                     </button>
                 </section>
             )}
@@ -447,11 +510,15 @@ function CandidateJobsPage() {
                     <div className="candidate-jobs-results-header">
                         <p>
                             {response.total}{' '}
-                            {response.total === 1 ? 'job' : 'jobs'} found
+                            {response.total === 1
+                                ? t('candidateJobs.jobFound')
+                                : t('candidateJobs.jobsFound')}
                         </p>
 
                         {pageLoading && (
-                            <span role="status">Loading page...</span>
+                            <span role="status">
+                                {t('candidateJobs.loadingPage')}
+                            </span>
                         )}
                     </div>
 
@@ -464,6 +531,8 @@ function CandidateJobsPage() {
                                 job.salaryMin,
                                 job.salaryMax,
                                 job.currency,
+                                t('candidateJobs.from'),
+                                t('candidateJobs.upTo'),
                             )
 
                             return (
@@ -473,7 +542,9 @@ function CandidateJobsPage() {
                                 >
                                     <div className="candidate-job-card-main">
                                         <h2>
-                                            <Link to={`/jobs/${job.id}`}>
+                                            <Link
+                                                to={`/jobs/${job.id}`}
+                                            >
                                                 {job.title}
                                             </Link>
                                         </h2>
@@ -484,11 +555,22 @@ function CandidateJobsPage() {
 
                                         <div className="candidate-job-meta">
                                             {job.location && (
-                                                <span>{job.location}</span>
+                                                <span>
+                                                    {job.location}
+                                                </span>
                                             )}
-                                            <span>{job.workMode}</span>
-                                            <span>{job.employmentType}</span>
-                                            {salary && <span>{salary}</span>}
+
+                                            <span>
+                                                {job.workMode}
+                                            </span>
+
+                                            <span>
+                                                {job.employmentType}
+                                            </span>
+
+                                            {salary && (
+                                                <span>{salary}</span>
+                                            )}
                                         </div>
 
                                         {job.requirements.length > 0 && (
@@ -496,11 +578,14 @@ function CandidateJobsPage() {
                                                 {job.requirements.map(
                                                     (requirement) => (
                                                         <span
-                                                            key={requirement.id}
+                                                            key={
+                                                                requirement.id
+                                                            }
                                                         >
                                                             {
                                                                 requirement
-                                                                    .skill.name
+                                                                    .skill
+                                                                    .name
                                                             }
                                                         </span>
                                                     ),
@@ -509,8 +594,16 @@ function CandidateJobsPage() {
                                         )}
 
                                         <p className="candidate-job-published">
-                                            Published{' '}
-                                            {formatDate(job.publishedAt)}
+                                            {t(
+                                                'candidateJobs.published',
+                                            )}{' '}
+                                            {formatDate(
+                                                job.publishedAt,
+                                                locale,
+                                                t(
+                                                    'candidateJobs.notSpecified',
+                                                ),
+                                            )}
                                         </p>
                                     </div>
 
@@ -518,7 +611,9 @@ function CandidateJobsPage() {
                                         to={`/jobs/${job.id}`}
                                         className="candidate-job-view-button"
                                     >
-                                        View job
+                                        {t(
+                                            'candidateJobs.viewJob',
+                                        )}
                                     </Link>
                                 </article>
                             )
@@ -528,30 +623,45 @@ function CandidateJobsPage() {
                     {totalPages > 1 && (
                         <nav
                             className="candidate-jobs-pagination"
-                            aria-label="Job results pagination"
+                            aria-label={t(
+                                'candidateJobs.pagination',
+                            )}
                         >
                             <button
                                 type="button"
-                                disabled={page <= 1 || pageLoading}
+                                disabled={
+                                    page <= 1 || pageLoading
+                                }
                                 onClick={() =>
-                                    setPage((current) => current - 1)
+                                    setPage(
+                                        (current) =>
+                                            current - 1,
+                                    )
                                 }
                             >
-                                Previous
+                                {t('candidateJobs.previous')}
                             </button>
 
                             <span>
-                                Page {page} of {totalPages}
+                                {t('candidateJobs.page')} {page}{' '}
+                                {t('candidateJobs.of')}{' '}
+                                {totalPages}
                             </span>
 
                             <button
                                 type="button"
-                                disabled={page >= totalPages || pageLoading}
+                                disabled={
+                                    page >= totalPages ||
+                                    pageLoading
+                                }
                                 onClick={() =>
-                                    setPage((current) => current + 1)
+                                    setPage(
+                                        (current) =>
+                                            current + 1,
+                                    )
                                 }
                             >
-                                Next
+                                {t('candidateJobs.next')}
                             </button>
                         </nav>
                     )}
@@ -559,8 +669,6 @@ function CandidateJobsPage() {
             )}
         </section>
     )
-
-
 }
 
 export default CandidateJobsPage

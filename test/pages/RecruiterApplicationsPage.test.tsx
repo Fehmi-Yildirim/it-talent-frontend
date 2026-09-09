@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen, } from '../test-utils'
 import { MemoryRouter } from 'react-router-dom'
 import RecruiterApplicationsPage from '../../src/pages/RecruiterApplicationsPage'
 import type { RecruiterApplication } from '../../src/types/application'

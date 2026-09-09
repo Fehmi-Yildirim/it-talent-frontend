@@ -5,43 +5,58 @@ import {
     withdrawApplication,
 } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { useTranslation } from '../i18n/context'
 import type {
     ApplicationStatus,
     CandidateApplicationDetail,
 } from '../types/application'
 import './CandidateApplicationDetailsPage.css'
 
-function formatStatus(status: ApplicationStatus): string {
+function formatStatus(
+    status: ApplicationStatus,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     switch (status) {
         case 'PENDING':
-            return 'Pending'
+            return t('candidateApplications.pending')
         case 'REVIEWING':
-            return 'Reviewing'
+            return t('candidateApplications.reviewing')
         case 'ACCEPTED':
-            return 'Accepted'
+            return t('candidateApplications.accepted')
         case 'REJECTED':
-            return 'Rejected'
+            return t('candidateApplications.rejected')
         case 'WITHDRAWN':
-            return 'Withdrawn'
+            return t('candidateApplications.withdrawn')
     }
 }
 
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
+function formatDate(
+    value: string,
+    locale: string,
+): string {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value))
 }
 
 function CandidateApplicationDetailsPage() {
-    const { applicationId } = useParams<{ applicationId: string }>()
+    const { applicationId } =
+        useParams<{ applicationId: string }>()
+
+    const { language, t } = useTranslation()
 
     const [application, setApplication] =
         useState<CandidateApplicationDetail | null>(null)
     const [loading, setLoading] = useState(true)
     const [withdrawing, setWithdrawing] = useState(false)
-    const [errorStatus, setErrorStatus] = useState<number | null>(null)
-    const [withdrawError, setWithdrawError] = useState<string | null>(null)
+    const [errorStatus, setErrorStatus] =
+        useState<number | null>(null)
+    const [withdrawError, setWithdrawError] =
+        useState<string | null>(null)
+
+    const locale =
+        language === 'nl' ? 'nl-NL' : 'en-US'
 
     useEffect(() => {
         let cancelled = false
@@ -57,7 +72,8 @@ function CandidateApplicationDetailsPage() {
             setErrorStatus(null)
 
             try {
-                const result = await getMyApplication(applicationId)
+                const result =
+                    await getMyApplication(applicationId)
 
                 if (!cancelled) {
                     setApplication(result)
@@ -65,7 +81,9 @@ function CandidateApplicationDetailsPage() {
             } catch (caught) {
                 if (!cancelled) {
                     setErrorStatus(
-                        caught instanceof ApiError ? caught.status : 500,
+                        caught instanceof ApiError
+                            ? caught.status
+                            : 500,
                     )
                 }
             } finally {
@@ -88,7 +106,9 @@ function CandidateApplicationDetailsPage() {
         }
 
         const confirmed = window.confirm(
-            'Are you sure you want to withdraw this application?',
+            t(
+                'candidateApplications.details.withdrawConfirmation',
+            ),
         )
 
         if (!confirmed) {
@@ -107,22 +127,33 @@ function CandidateApplicationDetailsPage() {
             setApplication(updatedApplication)
         } catch (caught) {
             if (caught instanceof ApiError) {
-                if (caught.status === 401 || caught.status === 403) {
+                if (
+                    caught.status === 401 ||
+                    caught.status === 403
+                ) {
                     setWithdrawError(
-                        'You are not authorized to withdraw this application.',
+                        t(
+                            'candidateApplications.details.withdrawUnauthorized',
+                        ),
                     )
                 } else if (caught.status === 404) {
                     setWithdrawError(
-                        'The application could not be found.',
+                        t(
+                            'candidateApplications.details.withdrawNotFound',
+                        ),
                     )
                 } else {
                     setWithdrawError(
-                        'Unable to withdraw the application. Please try again.',
+                        t(
+                            'candidateApplications.details.withdrawError',
+                        ),
                     )
                 }
             } else {
                 setWithdrawError(
-                    'Unable to withdraw the application. Please try again.',
+                    t(
+                        'candidateApplications.details.withdrawError',
+                    ),
                 )
             }
         } finally {
@@ -138,14 +169,18 @@ function CandidateApplicationDetailsPage() {
                     role="status"
                     aria-live="polite"
                 >
-                    Loading application...
+                    {t(
+                        'candidateApplications.details.loading',
+                    )}
                 </p>
             </section>
         )
     }
 
     if (errorStatus !== null) {
-        const isAccessDenied = errorStatus === 401 || errorStatus === 403
+        const isAccessDenied =
+            errorStatus === 401 || errorStatus === 403
+
         const isNotFound = errorStatus === 404
 
         return (
@@ -156,22 +191,36 @@ function CandidateApplicationDetailsPage() {
                 >
                     <h1>
                         {isAccessDenied
-                            ? 'Access denied'
+                            ? t(
+                                'candidateApplications.details.accessDenied',
+                            )
                             : isNotFound
-                                ? 'Application not found'
-                                : 'Unable to load application'}
+                                ? t(
+                                    'candidateApplications.details.applicationNotFound',
+                                )
+                                : t(
+                                    'candidateApplications.details.unableToLoad',
+                                )}
                     </h1>
 
                     <p>
                         {isAccessDenied
-                            ? 'You are not authorized to view this application.'
+                            ? t(
+                                'candidateApplications.details.unauthorized',
+                            )
                             : isNotFound
-                                ? 'The application could not be found or is no longer available.'
-                                : 'Something went wrong while loading this application. Please try again later.'}
+                                ? t(
+                                    'candidateApplications.details.notFound',
+                                )
+                                : t(
+                                    'candidateApplications.details.loadError',
+                                )}
                     </p>
 
                     <Link to="/applications">
-                        Back to applications
+                        {t(
+                            'candidateApplications.details.backToApplications',
+                        )}
                     </Link>
                 </section>
             </section>
@@ -193,11 +242,16 @@ function CandidateApplicationDetailsPage() {
                     to="/applications"
                     className="candidate-application-details-back-link"
                 >
-                    ← Back to applications
+                    ←{' '}
+                    {t(
+                        'candidateApplications.details.backToApplications',
+                    )}
                 </Link>
 
                 <p className="candidate-application-details-eyebrow">
-                    Candidate application
+                    {t(
+                        'candidateApplications.details.eyebrow',
+                    )}
                 </p>
 
                 <div className="candidate-application-details-title-row">
@@ -212,45 +266,107 @@ function CandidateApplicationDetailsPage() {
                     <span
                         className={`candidate-application-details-status candidate-application-details-status-${application.status.toLowerCase()}`}
                     >
-                        {formatStatus(application.status)}
+                        {formatStatus(
+                            application.status,
+                            t,
+                        )}
                     </span>
                 </div>
             </header>
 
             <div className="candidate-application-details-grid">
                 <section className="candidate-application-details-card">
-                    <h2>Job details</h2>
+                    <h2>
+                        {t(
+                            'candidateApplications.details.jobDetails',
+                        )}
+                    </h2>
 
                     <dl>
                         {application.job.location && (
                             <>
-                                <dt>Location</dt>
-                                <dd>{application.job.location}</dd>
+                                <dt>
+                                    {t(
+                                        'candidateApplications.details.location',
+                                    )}
+                                </dt>
+
+                                <dd>
+                                    {application.job.location}
+                                </dd>
                             </>
                         )}
 
-                        <dt>Work mode</dt>
-                        <dd>{application.job.workMode}</dd>
+                        <dt>
+                            {t(
+                                'candidateApplications.details.workMode',
+                            )}
+                        </dt>
 
-                        <dt>Employment type</dt>
-                        <dd>{application.job.employmentType}</dd>
+                        <dd>
+                            {application.job.workMode}
+                        </dd>
+
+                        <dt>
+                            {t(
+                                'candidateApplications.details.employmentType',
+                            )}
+                        </dt>
+
+                        <dd>
+                            {application.job.employmentType}
+                        </dd>
                     </dl>
                 </section>
 
                 <section className="candidate-application-details-card">
-                    <h2>Application details</h2>
+                    <h2>
+                        {t(
+                            'candidateApplications.details.applicationDetails',
+                        )}
+                    </h2>
 
                     <dl>
-                        <dt>Status</dt>
-                        <dd>{formatStatus(application.status)}</dd>
+                        <dt>
+                            {t(
+                                'candidateApplications.details.status',
+                            )}
+                        </dt>
 
-                        <dt>Applied</dt>
-                        <dd>{formatDate(application.createdAt)}</dd>
+                        <dd>
+                            {formatStatus(
+                                application.status,
+                                t,
+                            )}
+                        </dd>
+
+                        <dt>
+                            {t(
+                                'candidateApplications.details.applied',
+                            )}
+                        </dt>
+
+                        <dd>
+                            {formatDate(
+                                application.createdAt,
+                                locale,
+                            )}
+                        </dd>
 
                         {application.updatedAt && (
                             <>
-                                <dt>Last updated</dt>
-                                <dd>{formatDate(application.updatedAt)}</dd>
+                                <dt>
+                                    {t(
+                                        'candidateApplications.details.lastUpdated',
+                                    )}
+                                </dt>
+
+                                <dd>
+                                    {formatDate(
+                                        application.updatedAt,
+                                        locale,
+                                    )}
+                                </dd>
                             </>
                         )}
                     </dl>
@@ -259,7 +375,11 @@ function CandidateApplicationDetailsPage() {
 
             {application.coverLetter && (
                 <section className="candidate-application-details-card">
-                    <h2>Cover letter</h2>
+                    <h2>
+                        {t(
+                            'candidateApplications.details.coverLetter',
+                        )}
+                    </h2>
 
                     <p className="candidate-application-details-cover-letter">
                         {application.coverLetter}
@@ -269,11 +389,16 @@ function CandidateApplicationDetailsPage() {
 
             {canWithdraw && (
                 <section className="candidate-application-details-card">
-                    <h2>Withdraw application</h2>
+                    <h2>
+                        {t(
+                            'candidateApplications.details.withdrawApplication',
+                        )}
+                    </h2>
 
                     <p>
-                        You can withdraw your application while it is still
-                        being processed.
+                        {t(
+                            'candidateApplications.details.withdrawDescription',
+                        )}
                     </p>
 
                     {withdrawError && (
@@ -288,8 +413,12 @@ function CandidateApplicationDetailsPage() {
                         disabled={withdrawing}
                     >
                         {withdrawing
-                            ? 'Withdrawing...'
-                            : 'Withdraw application'}
+                            ? t(
+                                'candidateApplications.details.withdrawing',
+                            )
+                            : t(
+                                'candidateApplications.details.withdrawApplication',
+                            )}
                     </button>
                 </section>
             )}

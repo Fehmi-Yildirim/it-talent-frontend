@@ -5,8 +5,45 @@ import {
     updateUser,
 } from '../features/admin/admin.api'
 import type { User, UserRole, UserStatus } from '../types/user'
+import { useTranslation } from '../i18n/context'
+
+function formatRole(
+    role: UserRole,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (role) {
+        case 'CANDIDATE':
+            return t('adminUsers.candidate')
+        case 'RECRUITER':
+            return t('adminUsers.recruiter')
+        case 'ADMIN':
+            return t('adminUsers.admin')
+        default:
+            return role
+    }
+}
+
+function formatStatus(
+    status: UserStatus,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (status) {
+        case 'ACTIVE':
+            return t('adminUsers.active')
+        case 'PENDING':
+            return t('adminUsers.pending')
+        case 'SUSPENDED':
+            return t('adminUsers.suspended')
+        case 'DELETED':
+            return t('adminUsers.deleted')
+        default:
+            return status
+    }
+}
 
 function AdminUsersPage() {
+    const { language, t } = useTranslation()
+
     const [users, setUsers] = useState<User[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
@@ -23,7 +60,7 @@ function AdminUsersPage() {
             const data = await getUsers()
             setUsers(data)
         } catch {
-            setError('Failed to load users.')
+            setError(t('adminUsers.loadError'))
         } finally {
             setIsLoading(false)
         }
@@ -61,7 +98,7 @@ function AdminUsersPage() {
 
             setEditingUserId(null)
         } catch {
-            setError('Failed to update user.')
+            setError(t('adminUsers.updateError'))
         } finally {
             setIsSaving(false)
         }
@@ -69,7 +106,7 @@ function AdminUsersPage() {
 
     const handleDelete = async (user: User) => {
         const confirmed = window.confirm(
-            `Are you sure you want to delete ${user.email}?`,
+            `${t('adminUsers.deleteConfirmation')} ${user.email}`,
         )
 
         if (!confirmed) {
@@ -82,20 +119,28 @@ function AdminUsersPage() {
             await deleteUser(user.id)
 
             setUsers((currentUsers) =>
-                currentUsers.filter((currentUser) => currentUser.id !== user.id),
+                currentUsers.filter(
+                    (currentUser) => currentUser.id !== user.id,
+                ),
             )
         } catch {
-            setError('Failed to delete user.')
+            setError(t('adminUsers.deleteError'))
         }
     }
 
+    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+
     if (isLoading) {
-        return <main>Loading users...</main>
+        return (
+            <main>
+                {t('adminUsers.loading')}
+            </main>
+        )
     }
 
     return (
         <main>
-            <h1>Admin — User Management</h1>
+            <h1>{t('adminUsers.title')}</h1>
 
             {error && (
                 <p role="alert">
@@ -103,27 +148,31 @@ function AdminUsersPage() {
                 </p>
             )}
 
-            <button type="button" onClick={() => void loadUsers()}>
-                Refresh
+            <button
+                type="button"
+                onClick={() => void loadUsers()}
+            >
+                {t('adminUsers.refresh')}
             </button>
 
             {users.length === 0 ? (
-                <p>No users found.</p>
+                <p>{t('adminUsers.noUsers')}</p>
             ) : (
                 <table>
                     <thead>
                         <tr>
-                            <th>Email</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Actions</th>
+                            <th>{t('adminUsers.email')}</th>
+                            <th>{t('adminUsers.role')}</th>
+                            <th>{t('adminUsers.status')}</th>
+                            <th>{t('adminUsers.created')}</th>
+                            <th>{t('adminUsers.actions')}</th>
                         </tr>
                     </thead>
 
                     <tbody>
                         {users.map((user) => {
-                            const isEditing = editingUserId === user.id
+                            const isEditing =
+                                editingUserId === user.id
 
                             return (
                                 <tr key={user.id}>
@@ -134,16 +183,24 @@ function AdminUsersPage() {
                                             <select
                                                 value={editRole}
                                                 onChange={(event) =>
-                                                    setEditRole(event.target.value as UserRole)
+                                                    setEditRole(
+                                                        event.target.value as UserRole,
+                                                    )
                                                 }
                                                 disabled={isSaving}
                                             >
-                                                <option value="CANDIDATE">CANDIDATE</option>
-                                                <option value="RECRUITER">RECRUITER</option>
-                                                <option value="ADMIN">ADMIN</option>
+                                                <option value="CANDIDATE">
+                                                    {t('adminUsers.candidate')}
+                                                </option>
+                                                <option value="RECRUITER">
+                                                    {t('adminUsers.recruiter')}
+                                                </option>
+                                                <option value="ADMIN">
+                                                    {t('adminUsers.admin')}
+                                                </option>
                                             </select>
                                         ) : (
-                                            user.role
+                                            formatRole(user.role, t)
                                         )}
                                     </td>
 
@@ -152,22 +209,34 @@ function AdminUsersPage() {
                                             <select
                                                 value={editStatus}
                                                 onChange={(event) =>
-                                                    setEditStatus(event.target.value as UserStatus)
+                                                    setEditStatus(
+                                                        event.target.value as UserStatus,
+                                                    )
                                                 }
                                                 disabled={isSaving}
                                             >
-                                                <option value="ACTIVE">ACTIVE</option>
-                                                <option value="PENDING">PENDING</option>
-                                                <option value="SUSPENDED">SUSPENDED</option>
-                                                <option value="DELETED">DELETED</option>
+                                                <option value="ACTIVE">
+                                                    {t('adminUsers.active')}
+                                                </option>
+                                                <option value="PENDING">
+                                                    {t('adminUsers.pending')}
+                                                </option>
+                                                <option value="SUSPENDED">
+                                                    {t('adminUsers.suspended')}
+                                                </option>
+                                                <option value="DELETED">
+                                                    {t('adminUsers.deleted')}
+                                                </option>
                                             </select>
                                         ) : (
-                                            user.status
+                                            formatStatus(user.status, t)
                                         )}
                                     </td>
 
                                     <td>
-                                        {new Date(user.createdAt).toLocaleDateString()}
+                                        {new Date(
+                                            user.createdAt,
+                                        ).toLocaleDateString(locale)}
                                     </td>
 
                                     <td>
@@ -175,10 +244,14 @@ function AdminUsersPage() {
                                             <>
                                                 <button
                                                     type="button"
-                                                    onClick={() => void saveUser(user.id)}
+                                                    onClick={() =>
+                                                        void saveUser(user.id)
+                                                    }
                                                     disabled={isSaving}
                                                 >
-                                                    {isSaving ? 'Saving...' : 'Save'}
+                                                    {isSaving
+                                                        ? t('adminUsers.saving')
+                                                        : t('adminUsers.save')}
                                                 </button>
 
                                                 <button
@@ -186,23 +259,27 @@ function AdminUsersPage() {
                                                     onClick={cancelEditing}
                                                     disabled={isSaving}
                                                 >
-                                                    Cancel
+                                                    {t('adminUsers.cancel')}
                                                 </button>
                                             </>
                                         ) : (
                                             <>
                                                 <button
                                                     type="button"
-                                                    onClick={() => startEditing(user)}
+                                                    onClick={() =>
+                                                        startEditing(user)
+                                                    }
                                                 >
-                                                    Edit
+                                                    {t('adminUsers.edit')}
                                                 </button>
 
                                                 <button
                                                     type="button"
-                                                    onClick={() => void handleDelete(user)}
+                                                    onClick={() =>
+                                                        void handleDelete(user)
+                                                    }
                                                 >
-                                                    Delete
+                                                    {t('adminUsers.delete')}
                                                 </button>
                                             </>
                                         )}

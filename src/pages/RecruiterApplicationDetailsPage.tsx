@@ -9,33 +9,14 @@ import type {
     ApplicationStatus,
     RecruiterApplicationDetail,
 } from '../types/application'
-
-function formatStatus(status: ApplicationStatus): string {
-    switch (status) {
-        case 'PENDING':
-            return 'Pending'
-        case 'REVIEWING':
-            return 'Reviewing'
-        case 'ACCEPTED':
-            return 'Accepted'
-        case 'REJECTED':
-            return 'Rejected'
-        case 'WITHDRAWN':
-            return 'Withdrawn'
-    }
-}
-
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-    }).format(new Date(value))
-}
+import { useTranslation } from '../i18n/context'
 
 function RecruiterApplicationDetailsPage() {
     const { applicationId } = useParams<{
         applicationId: string
     }>()
+
+    const { language, t } = useTranslation()
 
     const [application, setApplication] =
         useState<RecruiterApplicationDetail | null>(null)
@@ -43,6 +24,31 @@ function RecruiterApplicationDetailsPage() {
     const [updating, setUpdating] = useState(false)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [updateError, setUpdateError] = useState<string | null>(null)
+
+    function formatStatus(status: ApplicationStatus): string {
+        switch (status) {
+            case 'PENDING':
+                return t('recruiterApplications.pending')
+            case 'REVIEWING':
+                return t('recruiterApplications.reviewing')
+            case 'ACCEPTED':
+                return t('recruiterApplications.accepted')
+            case 'REJECTED':
+                return t('recruiterApplications.rejected')
+            case 'WITHDRAWN':
+                return t('recruiterApplications.withdrawn')
+        }
+    }
+
+    function formatDate(value: string): string {
+        return new Intl.DateTimeFormat(
+            language === 'nl' ? 'nl-NL' : 'en-US',
+            {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+            },
+        ).format(new Date(value))
+    }
 
     useEffect(() => {
         let cancelled = false
@@ -64,7 +70,9 @@ function RecruiterApplicationDetailsPage() {
             } catch (caught) {
                 if (!cancelled) {
                     setErrorStatus(
-                        caught instanceof ApiError ? caught.status : 500,
+                        caught instanceof ApiError
+                            ? caught.status
+                            : 500,
                     )
                 }
             } finally {
@@ -105,20 +113,28 @@ function RecruiterApplicationDetailsPage() {
                     caught.status === 403
                 ) {
                     setUpdateError(
-                        'You are not authorized to update this application.',
+                        t(
+                            'recruiterApplications.details.updateUnauthorized',
+                        ),
                     )
                 } else if (caught.status === 400) {
                     setUpdateError(
-                        'This application status is not valid.',
+                        t(
+                            'recruiterApplications.details.invalidStatus',
+                        ),
                     )
                 } else {
                     setUpdateError(
-                        'Unable to update the application status.',
+                        t(
+                            'recruiterApplications.details.updateError',
+                        ),
                     )
                 }
             } else {
                 setUpdateError(
-                    'Unable to update the application status.',
+                    t(
+                        'recruiterApplications.details.updateError',
+                    ),
                 )
             }
         } finally {
@@ -130,7 +146,7 @@ function RecruiterApplicationDetailsPage() {
         return (
             <section>
                 <p role="status" aria-live="polite">
-                    Loading application...
+                    {t('recruiterApplications.details.loading')}
                 </p>
             </section>
         )
@@ -146,22 +162,36 @@ function RecruiterApplicationDetailsPage() {
                 <section role="alert">
                     <h1>
                         {isAccessDenied
-                            ? 'Access denied'
+                            ? t(
+                                'recruiterApplications.details.accessDenied',
+                            )
                             : isNotFound
-                                ? 'Application not found'
-                                : 'Unable to load application'}
+                                ? t(
+                                    'recruiterApplications.details.applicationNotFound',
+                                )
+                                : t(
+                                    'recruiterApplications.details.unableToLoad',
+                                )}
                     </h1>
 
                     <p>
                         {isAccessDenied
-                            ? 'You are not authorized to view this application.'
+                            ? t(
+                                'recruiterApplications.details.unauthorized',
+                            )
                             : isNotFound
-                                ? 'The application could not be found.'
-                                : 'Something went wrong while loading this application.'}
+                                ? t(
+                                    'recruiterApplications.details.notFound',
+                                )
+                                : t(
+                                    'recruiterApplications.details.loadError',
+                                )}
                     </p>
 
                     <Link to="/recruiter/applications">
-                        Back to applications
+                        {t(
+                            'recruiterApplications.details.backToApplications',
+                        )}
                     </Link>
                 </section>
             </section>
@@ -176,10 +206,17 @@ function RecruiterApplicationDetailsPage() {
         <section>
             <header>
                 <Link to="/recruiter/applications">
-                    ← Back to applications
+                    ←{' '}
+                    {t(
+                        'recruiterApplications.details.backToApplications',
+                    )}
                 </Link>
 
-                <p>Recruiter application</p>
+                <p>
+                    {t(
+                        'recruiterApplications.details.eyebrow',
+                    )}
+                </p>
 
                 <h1>{application.job.title}</h1>
 
@@ -190,30 +227,57 @@ function RecruiterApplicationDetailsPage() {
             </header>
 
             <section>
-                <h2>Application</h2>
+                <h2>
+                    {t(
+                        'recruiterApplications.details.application',
+                    )}
+                </h2>
 
                 <dl>
-                    <dt>Status</dt>
+                    <dt>
+                        {t(
+                            'recruiterApplications.status',
+                        )}
+                    </dt>
                     <dd>{formatStatus(application.status)}</dd>
 
-                    <dt>Applied</dt>
+                    <dt>
+                        {t(
+                            'recruiterApplications.details.applied',
+                        )}
+                    </dt>
                     <dd>{formatDate(application.createdAt)}</dd>
 
                     {application.updatedAt && (
                         <>
-                            <dt>Last updated</dt>
+                            <dt>
+                                {t(
+                                    'recruiterApplications.details.lastUpdated',
+                                )}
+                            </dt>
                             <dd>
-                                {formatDate(application.updatedAt)}
+                                {formatDate(
+                                    application.updatedAt,
+                                )}
                             </dd>
                         </>
                     )}
                 </dl>
             </section>
+
             <section>
-                <h2>Candidate</h2>
+                <h2>
+                    {t(
+                        'recruiterApplications.details.candidate',
+                    )}
+                </h2>
 
                 <dl>
-                    <dt>Name</dt>
+                    <dt>
+                        {t(
+                            'recruiterApplications.details.name',
+                        )}
+                    </dt>
                     <dd>
                         {application.candidate.firstName}{' '}
                         {application.candidate.lastName}
@@ -223,7 +287,12 @@ function RecruiterApplicationDetailsPage() {
 
             {application.coverLetter && (
                 <section>
-                    <h2>Cover letter</h2>
+                    <h2>
+                        {t(
+                            'recruiterApplications.details.coverLetter',
+                        )}
+                    </h2>
+
                     <p style={{ whiteSpace: 'pre-wrap' }}>
                         {application.coverLetter}
                     </p>
@@ -232,7 +301,11 @@ function RecruiterApplicationDetailsPage() {
 
             {application.status !== 'WITHDRAWN' && (
                 <section>
-                    <h2>Update status</h2>
+                    <h2>
+                        {t(
+                            'recruiterApplications.details.updateStatus',
+                        )}
+                    </h2>
 
                     {updateError && (
                         <p role="alert">{updateError}</p>
@@ -245,7 +318,9 @@ function RecruiterApplicationDetailsPage() {
                             void handleStatusChange('PENDING')
                         }
                     >
-                        Pending
+                        {t(
+                            'recruiterApplications.pending',
+                        )}
                     </button>
 
                     <button
@@ -255,7 +330,9 @@ function RecruiterApplicationDetailsPage() {
                             void handleStatusChange('REVIEWING')
                         }
                     >
-                        Reviewing
+                        {t(
+                            'recruiterApplications.reviewing',
+                        )}
                     </button>
 
                     <button
@@ -265,7 +342,9 @@ function RecruiterApplicationDetailsPage() {
                             void handleStatusChange('ACCEPTED')
                         }
                     >
-                        Accept
+                        {t(
+                            'recruiterApplications.details.accept',
+                        )}
                     </button>
 
                     <button
@@ -275,12 +354,16 @@ function RecruiterApplicationDetailsPage() {
                             void handleStatusChange('REJECTED')
                         }
                     >
-                        Reject
+                        {t(
+                            'recruiterApplications.details.reject',
+                        )}
                     </button>
 
                     {updating && (
                         <p role="status">
-                            Updating status...
+                            {t(
+                                'recruiterApplications.details.updatingStatus',
+                            )}
                         </p>
                     )}
                 </section>

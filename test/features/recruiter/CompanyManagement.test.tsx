@@ -3,7 +3,7 @@ import {
     render,
     screen,
     waitFor,
-} from '@testing-library/react'
+} from '../../test-utils'
 import {
     beforeEach,
     describe,

@@ -6,6 +6,7 @@ import {
   getCandidateDashboard,
   getRecruiterDashboard,
 } from '../features/dashboard/dashboard.api'
+import { useTranslation } from '../i18n/context'
 import type {
   CandidateDashboard,
   RecruiterDashboard,
@@ -14,6 +15,7 @@ import './DashboardPage.css'
 
 function DashboardPage() {
   const { user } = useAuth()
+  const { t } = useTranslation()
 
   const [candidateDashboard, setCandidateDashboard] =
     useState<CandidateDashboard | null>(null)
@@ -42,11 +44,11 @@ function DashboardPage() {
         setRecruiterDashboard(await getRecruiterDashboard())
       }
     } catch {
-      setError('Unable to load the dashboard. Please try again.')
+      setError(t('dashboard.loadError'))
     } finally {
       setLoading(false)
     }
-  }, [isAdmin, isCandidate, isRecruiter, user])
+  }, [isAdmin, isCandidate, isRecruiter, t, user])
 
   useEffect(() => {
     void loadDashboard()
@@ -56,7 +58,7 @@ function DashboardPage() {
     return (
       <section className="dashboard-page" aria-busy="true">
         <div className="dashboard-state">
-          <p>Loading dashboard...</p>
+          <p>{t('dashboard.loading')}</p>
         </div>
       </section>
     )
@@ -66,14 +68,14 @@ function DashboardPage() {
     return (
       <section className="dashboard-page">
         <div className="dashboard-state dashboard-state--error">
-          <h1>Dashboard unavailable</h1>
+          <h1>{t('dashboard.unavailable')}</h1>
           <p>{error}</p>
           <button
             type="button"
             className="dashboard-action dashboard-action--primary"
             onClick={() => void loadDashboard()}
           >
-            Retry
+            {t('dashboard.retry')}
           </button>
         </div>
       </section>
@@ -84,64 +86,102 @@ function DashboardPage() {
     <section className="dashboard-page">
       <div className="dashboard-header">
         <div>
-          <p className="dashboard-eyebrow">IT Talent Dashboard</p>
-          <h1>Dashboard</h1>
-          <p className="dashboard-welcome">Welcome back</p>
+          <p className="dashboard-eyebrow">
+            {t('dashboard.eyebrow')}
+          </p>
+
+          <h1>{t('dashboard.title')}</h1>
+
+          <p className="dashboard-welcome">
+            {t('dashboard.welcomeBack')}
+          </p>
         </div>
 
         <Link to="/profile" className="dashboard-profile-link">
-          View profile
+          {t('dashboard.viewProfile')}
         </Link>
       </div>
 
       {isCandidate && candidateDashboard && (
-        <section className="dashboard-content" aria-label="Candidate dashboard">
+        <section
+          className="dashboard-content"
+          aria-label={t('dashboard.candidate.dashboardLabel')}
+        >
           <section className="dashboard-grid">
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Profile</p>
-              <h2>{candidateDashboard.profile.completionPercentage}% complete</h2>
-              <p>Status: {candidateDashboard.profile.status}</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.candidate.profile')}
+              </p>
+
+              <h2>
+                {candidateDashboard.profile.completionPercentage}%{' '}
+                {t('dashboard.candidate.complete')}
+              </h2>
+
+              <p>
+                {t('dashboard.candidate.status')}:{' '}
+                {candidateDashboard.profile.status}
+              </p>
+
               <Link
                 to="/profile"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Edit profile
+                {t('dashboard.candidate.editProfile')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Applications</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.candidate.applications')}
+              </p>
+
               <h2>{candidateDashboard.applications.total}</h2>
-              <p>Total applications</p>
+
+              <p>{t('dashboard.candidate.totalApplications')}</p>
+
               <Link
                 to="/applications"
                 className="dashboard-action dashboard-action--secondary"
               >
-                View applications
+                {t('dashboard.candidate.viewApplications')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Available jobs</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.candidate.availableJobs')}
+              </p>
+
               <h2>{candidateDashboard.jobs.availableCount}</h2>
-              <p>{candidateDashboard.jobs.recommendedCount} recommended</p>
+
+              <p>
+                {candidateDashboard.jobs.recommendedCount}{' '}
+                {t('dashboard.candidate.recommended')}
+              </p>
+
               <Link
                 to="/jobs"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Browse jobs
+                {t('dashboard.candidate.browseJobs')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Skills</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.candidate.skills')}
+              </p>
+
               <h2>{candidateDashboard.skills.total}</h2>
-              <p>Skills in your profile</p>
+
+              <p>{t('dashboard.candidate.skillsInProfile')}</p>
+
               <Link
                 to="/profile"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Manage profile
+                {t('dashboard.candidate.manageProfile')}
               </Link>
             </article>
           </section>
@@ -149,8 +189,13 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Application overview</p>
-                <h2>Applications by status</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.candidate.applicationOverview')}
+                </p>
+
+                <h2>
+                  {t('dashboard.candidate.applicationsByStatus')}
+                </h2>
               </div>
             </div>
 
@@ -169,16 +214,23 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Recent applications</p>
-                <h2>Your latest applications</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.candidate.recentApplications')}
+                </p>
+
+                <h2>
+                  {t('dashboard.candidate.latestApplications')}
+                </h2>
               </div>
 
-              <Link to="/applications">View all</Link>
+              <Link to="/applications">
+                {t('dashboard.candidate.viewAll')}
+              </Link>
             </div>
 
             {candidateDashboard.applications.recent.length === 0 ? (
               <p className="dashboard-empty">
-                You have not submitted any applications yet.
+                {t('dashboard.candidate.noApplications')}
               </p>
             ) : (
               <div className="dashboard-list">
@@ -192,6 +244,7 @@ function DashboardPage() {
                       <strong>{application.job.title}</strong>
                       <span>{application.job.company.name}</span>
                     </div>
+
                     <span>{application.status}</span>
                   </Link>
                 ))}
@@ -202,16 +255,23 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Recent jobs</p>
-                <h2>Latest opportunities</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.candidate.recentJobs')}
+                </p>
+
+                <h2>
+                  {t('dashboard.candidate.latestOpportunities')}
+                </h2>
               </div>
 
-              <Link to="/jobs">Browse all</Link>
+              <Link to="/jobs">
+                {t('dashboard.candidate.browseAll')}
+              </Link>
             </div>
 
             {candidateDashboard.jobs.recent.length === 0 ? (
               <p className="dashboard-empty">
-                No published jobs are currently available.
+                {t('dashboard.candidate.noJobs')}
               </p>
             ) : (
               <div className="dashboard-list">
@@ -225,6 +285,7 @@ function DashboardPage() {
                       <strong>{job.title}</strong>
                       <span>{job.company.name}</span>
                     </div>
+
                     <span>{job.workMode}</span>
                   </Link>
                 ))}
@@ -235,58 +296,90 @@ function DashboardPage() {
       )}
 
       {isRecruiter && recruiterDashboard && (
-        <section className="dashboard-content" aria-label="Recruiter dashboard">
+        <section
+          className="dashboard-content"
+          aria-label={t('dashboard.recruiter.dashboardLabel')}
+        >
           <section className="dashboard-grid">
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Company</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.recruiter.company')}
+              </p>
+
               <h2>
-                {recruiterDashboard.profile.company?.name ?? 'No company'}
+                {recruiterDashboard.profile.company?.name ??
+                  t('dashboard.recruiter.noCompany')}
               </h2>
-              <p>Status: {recruiterDashboard.profile.status}</p>
+
+              <p>
+                {t('dashboard.recruiter.status')}:{' '}
+                {recruiterDashboard.profile.status}
+              </p>
+
               <Link
                 to="/recruiter/company"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Manage company
+                {t('dashboard.recruiter.manageCompany')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Jobs</p>
-              <h2>{recruiterDashboard.jobs.total}</h2>
-              <p>
-                {recruiterDashboard.jobs.published} published ·{' '}
-                {recruiterDashboard.jobs.draft} draft ·{' '}
-                {recruiterDashboard.jobs.closed} closed
+              <p className="dashboard-eyebrow">
+                {t('dashboard.recruiter.jobs')}
               </p>
+
+              <h2>{recruiterDashboard.jobs.total}</h2>
+
+              <p>
+                {recruiterDashboard.jobs.published}{' '}
+                {t('dashboard.recruiter.published')} ·{' '}
+                {recruiterDashboard.jobs.draft}{' '}
+                {t('dashboard.recruiter.draft')} ·{' '}
+                {recruiterDashboard.jobs.closed}{' '}
+                {t('dashboard.recruiter.closed')}
+              </p>
+
               <Link
                 to="/recruiter/jobs"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Manage jobs
+                {t('dashboard.recruiter.manageJobs')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Applications</p>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.recruiter.applications')}
+              </p>
+
               <h2>{recruiterDashboard.applications.total}</h2>
-              <p>Total applications</p>
+
+              <p>{t('dashboard.recruiter.totalApplications')}</p>
+
               <Link
                 to="/recruiter/applications"
                 className="dashboard-action dashboard-action--secondary"
               >
-                View applications
+                {t('dashboard.recruiter.viewApplications')}
               </Link>
             </article>
 
             <article className="dashboard-card">
-              <p className="dashboard-eyebrow">Recruiter</p>
-              <h2>{recruiterDashboard.profile.jobTitle ?? 'Recruiter'}</h2>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.recruiter.recruiter')}
+              </p>
+
+              <h2>
+                {recruiterDashboard.profile.jobTitle ??
+                  t('dashboard.recruiter.recruiter')}
+              </h2>
+
               <Link
                 to="/recruiter/profile"
                 className="dashboard-action dashboard-action--secondary"
               >
-                Edit profile
+                {t('dashboard.recruiter.editProfile')}
               </Link>
             </article>
           </section>
@@ -294,8 +387,13 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Application overview</p>
-                <h2>Applications by status</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.recruiter.applicationOverview')}
+                </p>
+
+                <h2>
+                  {t('dashboard.recruiter.applicationsByStatus')}
+                </h2>
               </div>
             </div>
 
@@ -314,16 +412,23 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Recent applications</p>
-                <h2>Latest candidates</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.recruiter.recentApplications')}
+                </p>
+
+                <h2>
+                  {t('dashboard.recruiter.latestCandidates')}
+                </h2>
               </div>
 
-              <Link to="/recruiter/applications">View all</Link>
+              <Link to="/recruiter/applications">
+                {t('dashboard.recruiter.viewAll')}
+              </Link>
             </div>
 
             {recruiterDashboard.applications.recent.length === 0 ? (
               <p className="dashboard-empty">
-                No applications have been received yet.
+                {t('dashboard.recruiter.noApplications')}
               </p>
             ) : (
               <div className="dashboard-list">
@@ -335,10 +440,13 @@ function DashboardPage() {
                   >
                     <div>
                       <strong>
-                        {application.candidate.headline ?? 'Candidate'}
+                        {application.candidate.headline ??
+                          t('dashboard.recruiter.candidate')}
                       </strong>
+
                       <span>{application.job.title}</span>
                     </div>
+
                     <span>{application.status}</span>
                   </Link>
                 ))}
@@ -349,16 +457,23 @@ function DashboardPage() {
           <section className="dashboard-panel">
             <div className="dashboard-section-header">
               <div>
-                <p className="dashboard-eyebrow">Recent jobs</p>
-                <h2>Latest vacancies</h2>
+                <p className="dashboard-eyebrow">
+                  {t('dashboard.recruiter.recentJobs')}
+                </p>
+
+                <h2>
+                  {t('dashboard.recruiter.latestVacancies')}
+                </h2>
               </div>
 
-              <Link to="/recruiter/jobs">View all</Link>
+              <Link to="/recruiter/jobs">
+                {t('dashboard.recruiter.viewAll')}
+              </Link>
             </div>
 
             {recruiterDashboard.jobs.recent.length === 0 ? (
               <p className="dashboard-empty">
-                No jobs have been created yet.
+                {t('dashboard.recruiter.noJobs')}
               </p>
             ) : (
               <div className="dashboard-list">
@@ -372,6 +487,7 @@ function DashboardPage() {
                       <strong>{job.title}</strong>
                       <span>{job.status}</span>
                     </div>
+
                     <span>
                       {new Date(job.createdAt).toLocaleDateString()}
                     </span>
@@ -390,13 +506,18 @@ function DashboardPage() {
         >
           <div className="dashboard-section-header">
             <div>
-              <p className="dashboard-eyebrow">Administration</p>
-              <h2 id="admin-tools-heading">Admin tools</h2>
+              <p className="dashboard-eyebrow">
+                {t('dashboard.admin.administration')}
+              </p>
+
+              <h2 id="admin-tools-heading">
+                {t('dashboard.admin.tools')}
+              </h2>
             </div>
           </div>
 
           <p className="dashboard-admin-description">
-            Manage users and platform administration.
+            {t('dashboard.admin.description')}
           </p>
 
           <div className="dashboard-admin-actions">
@@ -404,34 +525,42 @@ function DashboardPage() {
               to="/admin/users"
               className="dashboard-action dashboard-action--primary"
             >
-              Manage users
+              {t('dashboard.admin.manageUsers')}
             </Link>
           </div>
         </section>
       )}
 
-      <section className="dashboard-account" aria-labelledby="account-heading">
+      <section
+        className="dashboard-account"
+        aria-labelledby="account-heading"
+      >
         <div className="dashboard-section-header">
           <div>
-            <p className="dashboard-eyebrow">Account</p>
-            <h2 id="account-heading">Your account</h2>
+            <p className="dashboard-eyebrow">
+              {t('dashboard.account.account')}
+            </p>
+
+            <h2 id="account-heading">
+              {t('dashboard.account.yourAccount')}
+            </h2>
           </div>
         </div>
 
         {user && (
           <dl className="dashboard-account-details">
             <div className="dashboard-account-item">
-              <dt>Email</dt>
+              <dt>{t('dashboard.account.email')}</dt>
               <dd>{user.email}</dd>
             </div>
 
             <div className="dashboard-account-item">
-              <dt>Role</dt>
+              <dt>{t('dashboard.account.role')}</dt>
               <dd>{user.role}</dd>
             </div>
 
             <div className="dashboard-account-item">
-              <dt>Status</dt>
+              <dt>{t('dashboard.account.status')}</dt>
               <dd>{user.status}</dd>
             </div>
           </dl>
