@@ -10,6 +10,7 @@ import NotFoundPage from '../pages/NotFoundPage'
 import ProfilePage from '../pages/ProfilePage'
 import RegisterPage from '../pages/RegisterPage'
 import AdminUsersPage from '../pages/AdminUsersPage'
+import AdminSkillsPage from '../pages/AdminSkillsPage'
 import RecruiterJobsPage from '../pages/RecruiterJobsPage'
 import RecruiterJobFormPage from '../pages/RecruiterJobFormPage'
 import RecruiterProfile from '../features/recruiter/RecruiterProfile'
@@ -115,6 +116,10 @@ export const router = createBrowserRouter([
               {
                 path: 'admin/users',
                 element: <AdminUsersPage />,
+              },
+              {
+                path: 'admin/skills',
+                element: <AdminSkillsPage />,
               },
             ],
           },
