@@ -10,49 +10,66 @@ import {
   getCandidateProfile,
   updateCandidateProfile,
 } from '../features/candidate/candidate.api'
+import { useTranslation } from '../i18n/context'
 import { ApiError } from '../services/api/apiError'
 import type {
   CandidateProfile,
   CandidateProfileInput,
 } from '../types/candidate'
+import type { Language } from '../i18n'
 import './ProfilePage.css'
 
-function formatNullable(value: string | null) {
-  return value || 'Not specified'
+function formatNullable(
+  value: string | null,
+  notSpecified: string,
+) {
+  return value || notSpecified
 }
 
 function formatSalary(
   min: string | null,
   max: string | null,
   currency: string | null,
+  language: Language,
+  upTo: string,
+  from: string,
+  notSpecified: string,
 ) {
   if ((min === null && max === null) || !currency) {
-    return 'Not specified'
+    return notSpecified
   }
 
-  const formatter = new Intl.NumberFormat('en-US', {
+  const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+
+  const formatter = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency,
     maximumFractionDigits: 0,
   })
 
   if (min === null) {
-    return `Up to ${formatter.format(Number(max))}`
+    return `${upTo} ${formatter.format(Number(max))}`
   }
 
   if (max === null) {
-    return `From ${formatter.format(Number(min))}`
+    return `${from} ${formatter.format(Number(min))}`
   }
 
   return `${formatter.format(Number(min))} – ${formatter.format(Number(max))}`
 }
 
-function formatDate(value: string | null) {
+function formatDate(
+  value: string | null,
+  language: Language,
+  notSpecified: string,
+) {
   if (!value) {
-    return 'Not specified'
+    return notSpecified
   }
 
-  return new Intl.DateTimeFormat('en-GB', {
+  const locale = language === 'nl' ? 'nl-NL' : 'en-GB'
+
+  return new Intl.DateTimeFormat(locale, {
     day: 'numeric',
     month: 'long',
     year: 'numeric',
@@ -98,6 +115,8 @@ interface ProfileFormProps {
   value: CandidateProfileInput
   submitting: boolean
   submitLabel: string
+  savingLabel: string
+  cancelLabel: string
   onChange: (value: CandidateProfileInput) => void
   onSubmit: () => void
   onCancel?: () => void
@@ -107,10 +126,14 @@ function ProfileForm({
   value,
   submitting,
   submitLabel,
+  savingLabel,
+  cancelLabel,
   onChange,
   onSubmit,
   onCancel,
 }: ProfileFormProps) {
+  const { t } = useTranslation()
+
   return (
     <form
       className="profile-form"
@@ -120,7 +143,7 @@ function ProfileForm({
       }}
     >
       <label>
-        Headline
+        {t('profile.headline')}
         <input
           value={value.headline ?? ''}
           onChange={(event) =>
@@ -133,7 +156,7 @@ function ProfileForm({
       </label>
 
       <label>
-        Summary
+        {t('profile.summary')}
         <textarea
           value={value.summary ?? ''}
           onChange={(event) =>
@@ -146,7 +169,7 @@ function ProfileForm({
       </label>
 
       <label>
-        Location
+        {t('profile.location')}
         <input
           value={value.location ?? ''}
           onChange={(event) =>
@@ -160,7 +183,7 @@ function ProfileForm({
 
       <div className="profile-form-row">
         <label>
-          Minimum salary
+          {t('profile.minimumSalary')}
           <input
             type="number"
             min="0"
@@ -178,7 +201,7 @@ function ProfileForm({
         </label>
 
         <label>
-          Maximum salary
+          {t('profile.maximumSalary')}
           <input
             type="number"
             min="0"
@@ -197,7 +220,7 @@ function ProfileForm({
       </div>
 
       <label>
-        Currency
+        {t('profile.currency')}
         <input
           value={value.currency ?? ''}
           onChange={(event) =>
@@ -211,7 +234,7 @@ function ProfileForm({
       </label>
 
       <label>
-        Availability date
+        {t('profile.availabilityDate')}
         <input
           type="date"
           value={value.availabilityDate?.slice(0, 10) ?? ''}
@@ -226,7 +249,7 @@ function ProfileForm({
       </label>
 
       <label>
-        Remote preference
+        {t('profile.remotePreference')}
         <input
           value={value.remotePreference ?? ''}
           onChange={(event) =>
@@ -244,7 +267,7 @@ function ProfileForm({
           type="submit"
           disabled={submitting}
         >
-          {submitting ? 'Saving...' : submitLabel}
+          {submitting ? savingLabel : submitLabel}
         </button>
 
         {onCancel && (
@@ -253,7 +276,7 @@ function ProfileForm({
             onClick={onCancel}
             disabled={submitting}
           >
-            Cancel
+            {cancelLabel}
           </button>
         )}
       </div>
@@ -263,6 +286,7 @@ function ProfileForm({
 
 function ProfilePage() {
   const { user } = useAuth()
+  const { language, t } = useTranslation()
 
   const [candidateProfile, setCandidateProfile] =
     useState<CandidateProfile | null>(null)
@@ -308,27 +332,19 @@ function ProfilePage() {
             (caught.status === 401 ||
               caught.status === 403)
           ) {
-            setError(
-              'You are not authorized to access your candidate profile.',
-            )
+            setError(t('profile.unauthorizedAccess'))
           } else if (
             caught instanceof ApiError &&
             caught.status === 500
           ) {
-            setError(
-              'The server encountered an error while loading your candidate profile.',
-            )
+            setError(t('profile.serverLoadError'))
           } else if (
             caught instanceof ApiError &&
             caught.status === 0
           ) {
-            setError(
-              'Unable to connect to the server. Please check your connection and try again.',
-            )
+            setError(t('profile.connectionError'))
           } else {
-            setError(
-              'Unable to load your candidate profile.',
-            )
+            setError(t('profile.loadError'))
           }
         }
       } finally {
@@ -343,7 +359,7 @@ function ProfilePage() {
     return () => {
       cancelled = true
     }
-  }, [user, retryCount])
+  }, [user, retryCount, t])
 
   async function handleSubmit() {
     setSubmitting(true)
@@ -361,8 +377,8 @@ function ProfilePage() {
 
       setSuccess(
         candidateProfile
-          ? 'Profile updated successfully.'
-          : 'Profile created successfully.',
+          ? t('profile.profileUpdated')
+          : t('profile.profileCreated'),
       )
     } catch (caught) {
       if (
@@ -370,49 +386,37 @@ function ProfilePage() {
         (caught.status === 401 ||
           caught.status === 403)
       ) {
-        setError(
-          'You are not authorized to modify your candidate profile.',
-        )
+        setError(t('profile.unauthorizedModify'))
       } else if (
         caught instanceof ApiError &&
         caught.status === 400
       ) {
-        setError(
-          'Please check your profile information and try again.',
-        )
+        setError(t('profile.invalidInformation'))
       } else if (
         caught instanceof ApiError &&
         caught.status === 409
       ) {
-        setError(
-          'A candidate profile already exists.',
-        )
+        setError(t('profile.profileAlreadyExists'))
       } else if (
         caught instanceof ApiError &&
         caught.status === 422
       ) {
-        setError(
-          'The profile information could not be processed. Please check your input.',
-        )
+        setError(t('profile.processingError'))
       } else if (
         caught instanceof ApiError &&
         caught.status === 500
       ) {
-        setError(
-          'The server encountered an error. Please try again later.',
-        )
+        setError(t('profile.serverError'))
       } else if (
         caught instanceof ApiError &&
         caught.status === 0
       ) {
-        setError(
-          'Unable to connect to the server. Please check your connection and try again.',
-        )
+        setError(t('profile.connectionError'))
       } else {
         setError(
           candidateProfile
-            ? 'Unable to update your candidate profile.'
-            : 'Unable to create your candidate profile.',
+            ? t('profile.updateError')
+            : t('profile.createError'),
         )
       }
     } finally {
@@ -439,11 +443,12 @@ function ProfilePage() {
       <div className="profile-header">
         <div>
           <p className="profile-eyebrow">IT Talent</p>
-          <h1>Profile</h1>
+
+          <h1>{t('profile.title')}</h1>
         </div>
 
         <Link to="/dashboard">
-          Back to dashboard
+          {t('profile.backToDashboard')}
         </Link>
       </div>
 
@@ -451,25 +456,27 @@ function ProfilePage() {
         className="profile-section"
         aria-labelledby="account-heading"
       >
-        <p className="profile-eyebrow">Account</p>
+        <p className="profile-eyebrow">
+          {t('profile.account')}
+        </p>
 
         <h2 id="account-heading">
-          Account information
+          {t('profile.accountInformation')}
         </h2>
 
         <dl className="profile-details">
           <div>
-            <dt>Email</dt>
+            <dt>{t('profile.email')}</dt>
             <dd>{user?.email}</dd>
           </div>
 
           <div>
-            <dt>Role</dt>
+            <dt>{t('profile.role')}</dt>
             <dd>{user?.role}</dd>
           </div>
 
           <div>
-            <dt>Status</dt>
+            <dt>{t('profile.status')}</dt>
             <dd>{user?.status}</dd>
           </div>
         </dl>
@@ -483,13 +490,13 @@ function ProfilePage() {
           <div className="profile-section-header">
             <div>
               <p className="profile-eyebrow">
-                Candidate
+                {t('profile.candidate')}
               </p>
 
               <h2 id="candidate-heading">
                 {candidateProfile
-                  ? 'Candidate profile'
-                  : 'Create candidate profile'}
+                  ? t('profile.candidateProfile')
+                  : t('profile.createCandidateProfile')}
               </h2>
             </div>
 
@@ -500,18 +507,18 @@ function ProfilePage() {
                   type="button"
                   onClick={startEditing}
                 >
-                  Edit profile
+                  {t('profile.editProfile')}
                 </button>
               )}
           </div>
 
           {loading && (
-            <LoadingState message="Loading candidate profile..." />
+            <LoadingState message={t('profile.loading')} />
           )}
 
           {error && !loading && (
             <ErrorState
-              title="Profile unavailable"
+              title={t('profile.profileUnavailable')}
               message={error}
               onRetry={() => {
                 setError(null)
@@ -530,7 +537,9 @@ function ProfilePage() {
             <ProfileForm
               value={formValue}
               submitting={submitting}
-              submitLabel="Save profile"
+              submitLabel={t('profile.saveProfile')}
+              savingLabel={t('profile.saving')}
+              cancelLabel={t('profile.cancel')}
               onChange={setFormValue}
               onSubmit={() => void handleSubmit()}
               onCancel={cancelEditing}
@@ -543,57 +552,67 @@ function ProfilePage() {
               <>
                 <dl className="profile-details">
                   <div>
-                    <dt>Headline</dt>
+                    <dt>{t('profile.headline')}</dt>
                     <dd>
                       {formatNullable(
                         candidateProfile.headline,
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>Summary</dt>
+                    <dt>{t('profile.summary')}</dt>
                     <dd>
                       {formatNullable(
                         candidateProfile.summary,
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>Location</dt>
+                    <dt>{t('profile.location')}</dt>
                     <dd>
                       {formatNullable(
                         candidateProfile.location,
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>Salary</dt>
+                    <dt>{t('profile.salary')}</dt>
                     <dd>
                       {formatSalary(
                         candidateProfile.salaryMin,
                         candidateProfile.salaryMax,
                         candidateProfile.currency,
+                        language,
+                        t('profile.upTo'),
+                        t('profile.from'),
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>Remote preference</dt>
+                    <dt>{t('profile.remotePreference')}</dt>
                     <dd>
                       {formatNullable(
                         candidateProfile.remotePreference,
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
 
                   <div>
-                    <dt>Availability</dt>
+                    <dt>{t('profile.availability')}</dt>
                     <dd>
                       {formatDate(
                         candidateProfile.availabilityDate,
+                        language,
+                        t('profile.notSpecified'),
                       )}
                     </dd>
                   </div>
@@ -610,7 +629,9 @@ function ProfilePage() {
               <ProfileForm
                 value={formValue}
                 submitting={submitting}
-                submitLabel="Create profile"
+                submitLabel={t('profile.createProfile')}
+                savingLabel={t('profile.saving')}
+                cancelLabel={t('profile.cancel')}
                 onChange={setFormValue}
                 onSubmit={() => void handleSubmit()}
               />

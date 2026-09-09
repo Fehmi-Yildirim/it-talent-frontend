@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom/vitest'
-import { render, screen } from '@testing-library/react'
+import { render, screen } from '../test-utils'
 import { describe, expect, it, vi } from 'vitest'
 
 import LoadingState from '../../src/components/feedback/LoadingState'

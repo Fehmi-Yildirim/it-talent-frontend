@@ -1,27 +1,70 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getJobs } from '../features/jobs/jobs.api'
+import { useTranslation } from '../i18n/context'
 import type { Job } from '../types/job'
 import './RecruiterJobsPage.css'
 
-function formatEmploymentType(value: Job['employmentType']): string {
-    return value
-        .split('_')
-        .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
-        .join(' ')
+function formatEmploymentType(
+    value: Job['employmentType'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'FULL_TIME':
+            return t('recruiterJobs.fullTime')
+        case 'PART_TIME':
+            return t('recruiterJobs.partTime')
+        case 'CONTRACT':
+            return t('recruiterJobs.contract')
+        case 'FREELANCE':
+            return t('recruiterJobs.freelance')
+        case 'INTERNSHIP':
+            return t('recruiterJobs.internship')
+        default:
+            return value
+    }
 }
 
-function formatWorkMode(value: Job['workMode']): string {
-    return value.charAt(0) + value.slice(1).toLowerCase()
+function formatWorkMode(
+    value: Job['workMode'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'REMOTE':
+            return t('recruiterJobs.remote')
+        case 'HYBRID':
+            return t('recruiterJobs.hybrid')
+        case 'ONSITE':
+            return t('recruiterJobs.onsite')
+        case 'FLEXIBLE':
+            return t('recruiterJobs.flexible')
+        default:
+            return value
+    }
 }
 
-function formatStatus(value: Job['status']): string {
-    return value.charAt(0) + value.slice(1).toLowerCase()
+function formatStatus(
+    value: Job['status'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'DRAFT':
+            return t('recruiterJobs.draft')
+        case 'PUBLISHED':
+            return t('recruiterJobs.published')
+        case 'CLOSED':
+            return t('recruiterJobs.closed')
+        default:
+            return value
+    }
 }
 
-function formatSalary(job: Job): string {
+function formatSalary(
+    job: Job,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     if (job.salaryMin === null && job.salaryMax === null) {
-        return 'Salary not specified'
+        return t('recruiterJobs.salaryNotSpecified')
     }
 
     const currency = job.currency ?? ''
@@ -34,10 +77,12 @@ function formatSalary(job: Job): string {
         return `${currency} ${job.salaryMin}+`
     }
 
-    return `Up to ${currency} ${job.salaryMax}`
+    return `${t('recruiterJobs.upTo')} ${currency} ${job.salaryMax}`
 }
 
 export default function RecruiterJobsPage() {
+    const { t } = useTranslation()
+
     const [jobs, setJobs] = useState<Job[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
@@ -57,7 +102,7 @@ export default function RecruiterJobsPage() {
                 }
             } catch {
                 if (active) {
-                    setError('Unable to load your jobs. Please try again.')
+                    setError(t('recruiterJobs.loadError'))
                 }
             } finally {
                 if (active) {
@@ -71,20 +116,26 @@ export default function RecruiterJobsPage() {
         return () => {
             active = false
         }
-    }, [])
+    }, [t])
 
     if (loading) {
         return (
             <main className="recruiter-jobs-page">
                 <div className="recruiter-jobs-header">
                     <div>
-                        <h1>Jobs</h1>
-                        <p>Manage your company&apos;s job vacancies.</p>
+                        <h1>{t('recruiterJobs.title')}</h1>
+
+                        <p>
+                            {t('recruiterJobs.description')}
+                        </p>
                     </div>
                 </div>
 
-                <div className="recruiter-jobs-state" role="status">
-                    Loading jobs...
+                <div
+                    className="recruiter-jobs-state"
+                    role="status"
+                >
+                    {t('recruiterJobs.loading')}
                 </div>
             </main>
         )
@@ -95,15 +146,18 @@ export default function RecruiterJobsPage() {
             <main className="recruiter-jobs-page">
                 <div className="recruiter-jobs-header">
                     <div>
-                        <h1>Jobs</h1>
-                        <p>Manage your company&apos;s job vacancies.</p>
+                        <h1>{t('recruiterJobs.title')}</h1>
+
+                        <p>
+                            {t('recruiterJobs.description')}
+                        </p>
                     </div>
 
                     <Link
                         className="recruiter-jobs-primary-button"
                         to="/recruiter/jobs/new"
                     >
-                        New Job
+                        {t('recruiterJobs.newJob')}
                     </Link>
                 </div>
 
@@ -113,9 +167,11 @@ export default function RecruiterJobsPage() {
                     <button
                         type="button"
                         className="recruiter-jobs-secondary-button"
-                        onClick={() => window.location.reload()}
+                        onClick={() =>
+                            window.location.reload()
+                        }
                     >
-                        Try again
+                        {t('recruiterJobs.tryAgain')}
                     </button>
                 </div>
             </main>
@@ -126,34 +182,48 @@ export default function RecruiterJobsPage() {
         <main className="recruiter-jobs-page">
             <div className="recruiter-jobs-header">
                 <div>
-                    <h1>Jobs</h1>
-                    <p>Manage your company&apos;s job vacancies.</p>
+                    <h1>{t('recruiterJobs.title')}</h1>
+
+                    <p>
+                        {t('recruiterJobs.description')}
+                    </p>
                 </div>
 
                 <Link
                     className="recruiter-jobs-primary-button"
                     to="/recruiter/jobs/new"
                 >
-                    New Job
+                    {t('recruiterJobs.newJob')}
                 </Link>
             </div>
 
             {jobs.length === 0 ? (
                 <section className="recruiter-jobs-state">
-                    <h2>No jobs yet</h2>
-                    <p>Create your first job vacancy to start recruiting.</p>
+                    <h2>{t('recruiterJobs.noJobs')}</h2>
+
+                    <p>
+                        {t(
+                            'recruiterJobs.noJobsDescription',
+                        )}
+                    </p>
 
                     <Link
                         className="recruiter-jobs-primary-button"
                         to="/recruiter/jobs/new"
                     >
-                        Create your first job
+                        {t('recruiterJobs.createFirstJob')}
                     </Link>
                 </section>
             ) : (
-                <section className="recruiter-jobs-list" aria-label="Your jobs">
+                <section
+                    className="recruiter-jobs-list"
+                    aria-label={t('recruiterJobs.yourJobs')}
+                >
                     {jobs.map((job) => (
-                        <article className="recruiter-job-card" key={job.id}>
+                        <article
+                            className="recruiter-job-card"
+                            key={job.id}
+                        >
                             <div className="recruiter-job-card-main">
                                 <div className="recruiter-job-card-title">
                                     <h2>{job.title}</h2>
@@ -161,18 +231,38 @@ export default function RecruiterJobsPage() {
                                     <span
                                         className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
                                     >
-                                        {formatStatus(job.status)}
+                                        {formatStatus(
+                                            job.status,
+                                            t,
+                                        )}
                                     </span>
                                 </div>
 
                                 <p className="recruiter-job-location">
-                                    {job.location ?? 'Location not specified'}
+                                    {job.location ??
+                                        t(
+                                            'recruiterJobs.locationNotSpecified',
+                                        )}
                                 </p>
 
                                 <div className="recruiter-job-meta">
-                                    <span>{formatEmploymentType(job.employmentType)}</span>
-                                    <span>{formatWorkMode(job.workMode)}</span>
-                                    <span>{formatSalary(job)}</span>
+                                    <span>
+                                        {formatEmploymentType(
+                                            job.employmentType,
+                                            t,
+                                        )}
+                                    </span>
+
+                                    <span>
+                                        {formatWorkMode(
+                                            job.workMode,
+                                            t,
+                                        )}
+                                    </span>
+
+                                    <span>
+                                        {formatSalary(job, t)}
+                                    </span>
                                 </div>
                             </div>
 
@@ -181,14 +271,14 @@ export default function RecruiterJobsPage() {
                                     className="recruiter-jobs-secondary-button"
                                     to={`/recruiter/jobs/${job.id}`}
                                 >
-                                    View
+                                    {t('recruiterJobs.view')}
                                 </Link>
 
                                 <Link
                                     className="recruiter-jobs-secondary-button"
                                     to={`/recruiter/jobs/${job.id}/edit`}
                                 >
-                                    Edit
+                                    {t('recruiterJobs.edit')}
                                 </Link>
                             </div>
                         </article>

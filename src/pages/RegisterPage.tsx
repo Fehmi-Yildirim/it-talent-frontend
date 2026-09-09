@@ -2,9 +2,11 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register } from '../features/auth/auth.api'
+import { useTranslation } from '../i18n/context'
 
 function RegisterPage() {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,17 +21,17 @@ function RegisterPage() {
     const normalizedEmail = email.trim()
 
     if (!normalizedEmail) {
-      setError('Email is required.')
+      setError(t('auth.emailRequired'))
       return
     }
 
     if (!normalizedEmail.includes('@')) {
-      setError('Please enter a valid email address.')
+      setError(t('auth.invalidEmail'))
       return
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.')
+      setError(t('auth.passwordMinLength'))
       return
     }
 
@@ -53,7 +55,11 @@ function RegisterPage() {
 
       navigate('/dashboard')
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Registration failed.')
+      setError(
+        error instanceof Error
+          ? error.message
+          : t('auth.registrationFailed'),
+      )
     } finally {
       setIsSubmitting(false)
     }
@@ -61,11 +67,11 @@ function RegisterPage() {
 
   return (
     <main>
-      <h1>Register</h1>
+      <h1>{t('auth.register')}</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t('auth.email')}</label>
           <input
             id="email"
             name="email"
@@ -78,7 +84,7 @@ function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{t('auth.password')}</label>
           <input
             id="password"
             name="password"
@@ -91,7 +97,7 @@ function RegisterPage() {
         </div>
 
         <div>
-          <label htmlFor="role">Account type</label>
+          <label htmlFor="role">{t('auth.accountType')}</label>
           <select
             id="role"
             name="role"
@@ -100,8 +106,8 @@ function RegisterPage() {
               setRole(event.target.value as 'CANDIDATE' | 'RECRUITER')
             }
           >
-            <option value="CANDIDATE">Candidate</option>
-            <option value="RECRUITER">Recruiter</option>
+            <option value="CANDIDATE">{t('auth.candidate')}</option>
+            <option value="RECRUITER">{t('auth.recruiter')}</option>
           </select>
         </div>
 
@@ -112,7 +118,9 @@ function RegisterPage() {
         )}
 
         <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
-          {isSubmitting ? 'Creating account...' : 'Register'}
+          {isSubmitting
+            ? t('auth.creatingAccount')
+            : t('auth.register')}
         </button>
       </form>
     </main>

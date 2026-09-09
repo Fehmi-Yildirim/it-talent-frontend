@@ -3,7 +3,8 @@ import {
     render,
     screen,
     waitFor,
-} from '@testing-library/react'
+} from '../test-utils'
+
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 

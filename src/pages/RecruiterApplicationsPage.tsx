@@ -2,34 +2,45 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getRecruiterApplications } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { useTranslation } from '../i18n/context'
 import type {
     ApplicationStatus,
     RecruiterApplication,
 } from '../types/application'
 
-function formatStatus(status: ApplicationStatus): string {
+function formatStatus(
+    status: ApplicationStatus,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     switch (status) {
         case 'PENDING':
-            return 'Pending'
+            return t('recruiterApplications.pending')
         case 'REVIEWING':
-            return 'Reviewing'
+            return t('recruiterApplications.reviewing')
         case 'ACCEPTED':
-            return 'Accepted'
+            return t('recruiterApplications.accepted')
         case 'REJECTED':
-            return 'Rejected'
+            return t('recruiterApplications.rejected')
         case 'WITHDRAWN':
-            return 'Withdrawn'
+            return t('recruiterApplications.withdrawn')
+        default:
+            return status
     }
 }
 
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
+function formatDate(
+    value: string,
+    locale: string,
+): string {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
         timeStyle: 'short',
     }).format(new Date(value))
 }
 
 function RecruiterApplicationsPage() {
+    const { language, t } = useTranslation()
+
     const [applications, setApplications] = useState<
         RecruiterApplication[]
     >([])
@@ -38,6 +49,9 @@ function RecruiterApplicationsPage() {
         useState<ApplicationStatus | ''>('')
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
+
+    const locale =
+        language === 'nl' ? 'nl-NL' : 'en-US'
 
     useEffect(() => {
         let cancelled = false
@@ -55,7 +69,9 @@ function RecruiterApplicationsPage() {
             } catch (caught) {
                 if (!cancelled) {
                     setErrorStatus(
-                        caught instanceof ApiError ? caught.status : 500,
+                        caught instanceof ApiError
+                            ? caught.status
+                            : 500,
                     )
                 }
             } finally {
@@ -104,8 +120,11 @@ function RecruiterApplicationsPage() {
     if (loading) {
         return (
             <section className="recruiter-applications-page">
-                <p role="status" aria-live="polite">
-                    Loading applications...
+                <p
+                    role="status"
+                    aria-live="polite"
+                >
+                    {t('recruiterApplications.loading')}
                 </p>
             </section>
         )
@@ -120,14 +139,22 @@ function RecruiterApplicationsPage() {
                 <section role="alert">
                     <h1>
                         {isAccessDenied
-                            ? 'Access denied'
-                            : 'Unable to load applications'}
+                            ? t(
+                                'recruiterApplications.accessDenied',
+                            )
+                            : t(
+                                'recruiterApplications.unableToLoad',
+                            )}
                     </h1>
 
                     <p>
                         {isAccessDenied
-                            ? 'You are not authorized to view recruiter applications.'
-                            : 'Something went wrong while loading applications. Please try again later.'}
+                            ? t(
+                                'recruiterApplications.unauthorized',
+                            )
+                            : t(
+                                'recruiterApplications.loadError',
+                            )}
                     </p>
                 </section>
             </section>
@@ -137,27 +164,42 @@ function RecruiterApplicationsPage() {
     return (
         <section className="recruiter-applications-page">
             <header>
-                <p>Recruiter</p>
-                <h1>Applications</h1>
+                <p>{t('recruiterApplications.eyebrow')}</p>
+
+                <h1>{t('recruiterApplications.title')}</h1>
+
                 <p>
-                    Review applications submitted to your job
-                    postings.
+                    {t(
+                        'recruiterApplications.description',
+                    )}
                 </p>
             </header>
 
-            <section aria-label="Application filters">
+            <section
+                aria-label={t(
+                    'recruiterApplications.filters',
+                )}
+            >
                 <label>
-                    Job
+                    {t('recruiterApplications.job')}
+
                     <select
                         value={selectedJob}
                         onChange={(event) =>
                             setSelectedJob(event.target.value)
                         }
                     >
-                        <option value="">All jobs</option>
+                        <option value="">
+                            {t(
+                                'recruiterApplications.allJobs',
+                            )}
+                        </option>
 
                         {jobs.map(([jobId, jobTitle]) => (
-                            <option key={jobId} value={jobId}>
+                            <option
+                                key={jobId}
+                                value={jobId}
+                            >
                                 {jobTitle}
                             </option>
                         ))}
@@ -165,7 +207,8 @@ function RecruiterApplicationsPage() {
                 </label>
 
                 <label>
-                    Status
+                    {t('recruiterApplications.status')}
+
                     <select
                         value={selectedStatus}
                         onChange={(event) =>
@@ -176,15 +219,40 @@ function RecruiterApplicationsPage() {
                             )
                         }
                     >
-                        <option value="">All statuses</option>
-                        <option value="PENDING">Pending</option>
-                        <option value="REVIEWING">
-                            Reviewing
+                        <option value="">
+                            {t(
+                                'recruiterApplications.allStatuses',
+                            )}
                         </option>
-                        <option value="ACCEPTED">Accepted</option>
-                        <option value="REJECTED">Rejected</option>
+
+                        <option value="PENDING">
+                            {t(
+                                'recruiterApplications.pending',
+                            )}
+                        </option>
+
+                        <option value="REVIEWING">
+                            {t(
+                                'recruiterApplications.reviewing',
+                            )}
+                        </option>
+
+                        <option value="ACCEPTED">
+                            {t(
+                                'recruiterApplications.accepted',
+                            )}
+                        </option>
+
+                        <option value="REJECTED">
+                            {t(
+                                'recruiterApplications.rejected',
+                            )}
+                        </option>
+
                         <option value="WITHDRAWN">
-                            Withdrawn
+                            {t(
+                                'recruiterApplications.withdrawn',
+                            )}
                         </option>
                     </select>
                 </label>
@@ -192,44 +260,77 @@ function RecruiterApplicationsPage() {
 
             {filteredApplications.length === 0 ? (
                 <section>
-                    <h2>No applications found</h2>
+                    <h2>
+                        {t(
+                            'recruiterApplications.noApplications',
+                        )}
+                    </h2>
+
                     <p>
-                        No applications match the selected filters.
+                        {t(
+                            'recruiterApplications.noApplicationsMatch',
+                        )}
                     </p>
                 </section>
             ) : (
                 <div>
-                    {filteredApplications.map((application) => (
-                        <article key={application.id}>
-                            <header>
-                                <h2>
-                                    <Link
-                                        to={`/recruiter/applications/${application.id}`}
-                                    >
-                                        {application.job.title}
-                                    </Link>
-                                </h2>
+                    {filteredApplications.map(
+                        (application) => (
+                            <article
+                                key={application.id}
+                            >
+                                <header>
+                                    <h2>
+                                        <Link
+                                            to={`/recruiter/applications/${application.id}`}
+                                        >
+                                            {
+                                                application.job
+                                                    .title
+                                            }
+                                        </Link>
+                                    </h2>
 
-                                <span>
-                                    {formatStatus(application.status)}
-                                </span>
-                            </header>
+                                    <span>
+                                        {formatStatus(
+                                            application.status,
+                                            t,
+                                        )}
+                                    </span>
+                                </header>
 
-                            <p>
-                                {application.candidate.firstName}{' '}
-                                {application.candidate.lastName}
-                            </p>
+                                <p>
+                                    {
+                                        application.candidate
+                                            .firstName
+                                    }{' '}
+                                    {
+                                        application.candidate
+                                            .lastName
+                                    }
+                                </p>
 
-                            <p>
-                                Applied:{' '}
-                                {formatDate(application.createdAt)}
-                            </p>
+                                <p>
+                                    {t(
+                                        'recruiterApplications.applied',
+                                    )}
+                                    {': '}
+                                    {formatDate(
+                                        application.createdAt,
+                                        locale,
+                                    )}
+                                </p>
 
-                            {application.coverLetter && (
-                                <p>Cover letter included</p>
-                            )}
-                        </article>
-                    ))}
+                                {application.coverLetter && (
+                                    <p>
+                                        {t(
+                                            'recruiterApplications.coverLetterIncluded',
+                                        )}
+                                    </p>
+                                )}
+                            </article>
+                        ),
+                    )}
                 </div>
             )}
         </section>

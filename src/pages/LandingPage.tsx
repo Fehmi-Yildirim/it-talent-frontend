@@ -1,38 +1,41 @@
 import { Link } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
+import { useTranslation } from '../i18n/context'
 import './LandingPage.css'
 
 function LandingPage() {
+  const { t } = useTranslation()
   const { isAuthenticated } = useAuth()
 
   return (
     <div className="landing-page">
       <section className="landing-hero">
         <div className="landing-hero-content">
-          <span className="landing-eyebrow">IT Talent Platform</span>
+          <span className="landing-eyebrow">
+            {t('landing.eyebrow')}
+          </span>
 
-          <h1>IT Talent</h1>
+          <h1>{t('landing.title')}</h1>
 
-          <h2>Connect talent with the right IT opportunities.</h2>
+          <h2>{t('landing.subtitle')}</h2>
 
           <p className="landing-hero-description">
-            IT Talent helps candidates and recruiters connect through a focused
-            platform for the IT job market.
+            {t('landing.description')}
           </p>
 
           <div className="landing-actions">
             {isAuthenticated ? (
               <Link to="/dashboard" className="landing-primary-button">
-                Go to dashboard
+                {t('landing.goToDashboard')}
               </Link>
             ) : (
               <>
                 <Link to="/register" className="landing-primary-button">
-                  Get started
+                  {t('landing.getStarted')} →
                 </Link>
 
                 <Link to="/login" className="landing-secondary-button">
-                  Login
+                  {t('landing.login')}
                 </Link>
               </>
             )}
@@ -42,32 +45,34 @@ function LandingPage() {
 
       <section className="landing-audience">
         <article className="landing-card">
-          <span className="landing-card-label">For candidates</span>
+          <span className="landing-card-label">
+            {t('landing.candidates.label')}
+          </span>
 
-          <h2>Build your IT career</h2>
+          <h2>{t('landing.candidates.title')}</h2>
 
-          <p>
-            Create your profile and present your skills and experience to
-            potential employers.
-          </p>
+          <p>{t('landing.candidates.description')}</p>
 
           {!isAuthenticated && (
-            <Link to="/register">Create your account →</Link>
+            <Link to="/register">
+              {t('landing.candidates.createAccount')} →
+            </Link>
           )}
         </article>
 
         <article className="landing-card">
-          <span className="landing-card-label">For recruiters</span>
+          <span className="landing-card-label">
+            {t('landing.recruiters.label')}
+          </span>
 
-          <h2>Find IT talent</h2>
+          <h2>{t('landing.recruiters.title')}</h2>
 
-          <p>
-            Build your recruiter profile and connect with professionals for
-            your hiring needs.
-          </p>
+          <p>{t('landing.recruiters.description')}</p>
 
           {!isAuthenticated && (
-            <Link to="/register">Get started →</Link>
+            <Link to="/register">
+              {t('landing.recruiters.getStarted')} →
+            </Link>
           )}
         </article>
       </section>

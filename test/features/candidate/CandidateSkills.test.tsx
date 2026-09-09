@@ -1,4 +1,9 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+} from '../../test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import CandidateSkills from '../../../src/features/candidate/CandidateSkills'

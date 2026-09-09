@@ -5,23 +5,72 @@ import {
     getJobById,
     publishJob,
 } from '../features/jobs/jobs.api'
+import { useTranslation } from '../i18n/context'
 import type { Job, JobRequirement } from '../types/job'
 import './RecruiterJobDetailsPage.css'
 
-function formatLabel(value: string): string {
-    return value
-        .split('_')
-        .map((part) => part.charAt(0) + part.slice(1).toLowerCase())
-        .join(' ')
+function formatEmploymentType(
+    value: Job['employmentType'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'FULL_TIME':
+            return t('recruiterJobs.fullTime')
+        case 'PART_TIME':
+            return t('recruiterJobs.partTime')
+        case 'CONTRACT':
+            return t('recruiterJobs.contract')
+        case 'FREELANCE':
+            return t('recruiterJobs.freelance')
+        case 'INTERNSHIP':
+            return t('recruiterJobs.internship')
+        default:
+            return value
+    }
+}
+
+function formatWorkMode(
+    value: Job['workMode'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'REMOTE':
+            return t('recruiterJobs.remote')
+        case 'HYBRID':
+            return t('recruiterJobs.hybrid')
+        case 'ONSITE':
+            return t('recruiterJobs.onsite')
+        case 'FLEXIBLE':
+            return t('recruiterJobs.flexible')
+        default:
+            return value
+    }
+}
+
+function formatStatus(
+    value: Job['status'],
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
+    switch (value) {
+        case 'DRAFT':
+            return t('recruiterJobs.draft')
+        case 'PUBLISHED':
+            return t('recruiterJobs.published')
+        case 'CLOSED':
+            return t('recruiterJobs.closed')
+        default:
+            return value
+    }
 }
 
 function formatSalary(
     salaryMin: string | number | null,
     salaryMax: string | number | null,
     currency: string | null,
+    t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (salaryMin === null && salaryMax === null) {
-        return 'Not specified'
+        return t('recruiterJobs.salaryNotSpecified')
     }
 
     const symbol = currency ? `${currency} ` : ''
@@ -34,21 +83,29 @@ function formatSalary(
         return `${symbol}${salaryMin}+`
     }
 
-    return `Up to ${symbol}${salaryMax}`
+    return `${t('recruiterJobs.upTo')} ${symbol}${salaryMax}`
 }
 
-function formatDate(value: string | null): string {
+function formatDate(
+    value: string | null,
+    locale: string,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     if (!value) {
-        return 'Not specified'
+        return t('recruiterJobs.salaryNotSpecified')
     }
 
-    return new Date(value).toLocaleDateString()
+    return new Intl.DateTimeFormat(locale, {
+        dateStyle: 'medium',
+    }).format(new Date(value))
 }
 
 function RequirementRow({
     requirement,
+    t,
 }: {
     requirement: JobRequirement
+    t: (key: import('../i18n').TranslationKey) => string
 }) {
     return (
         <div className="recruiter-job-requirement">
@@ -56,12 +113,15 @@ function RequirementRow({
                 <strong>{requirement.skill.name}</strong>
 
                 <span>
-                    {requirement.required ? 'Required' : 'Preferred'}
+                    {requirement.required
+                        ? t('recruiterJobs.required')
+                        : t('recruiterJobs.preferred')}
                 </span>
             </div>
 
             <span>
-                Minimum level: {requirement.minimumLevel}
+                {t('recruiterJobs.minimumLevel')}:{' '}
+                {requirement.minimumLevel}
             </span>
         </div>
     )
@@ -70,6 +130,7 @@ function RequirementRow({
 export default function RecruiterJobDetailsPage() {
     const navigate = useNavigate()
     const { jobId } = useParams()
+    const { language, t } = useTranslation()
 
     const [job, setJob] = useState<Job | null>(null)
     const [loading, setLoading] = useState(true)
@@ -77,9 +138,11 @@ export default function RecruiterJobDetailsPage() {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
+    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+
     useEffect(() => {
         if (!jobId) {
-            setError('Job ID is missing.')
+            setError(t('recruiterJobs.jobIdMissing'))
             setLoading(false)
             return
         }
@@ -99,7 +162,7 @@ export default function RecruiterJobDetailsPage() {
                 }
             } catch {
                 if (active) {
-                    setError('Unable to load this job.')
+                    setError(t('recruiterJobs.unableToLoadDetails'))
                 }
             } finally {
                 if (active) {
@@ -113,7 +176,7 @@ export default function RecruiterJobDetailsPage() {
         return () => {
             active = false
         }
-    }, [jobId])
+    }, [jobId, t])
 
     async function handlePublish() {
         if (!jobId || !job) {
@@ -127,9 +190,9 @@ export default function RecruiterJobDetailsPage() {
         try {
             const response = await publishJob(jobId)
             setJob(response)
-            setSuccess('Job published successfully.')
+            setSuccess(t('recruiterJobs.publishedSuccessfully'))
         } catch {
-            setError('Unable to publish this job. Please try again.')
+            setError(t('recruiterJobs.publishError'))
         } finally {
             setActionLoading(false)
         }
@@ -147,9 +210,9 @@ export default function RecruiterJobDetailsPage() {
         try {
             const response = await closeJob(jobId)
             setJob(response)
-            setSuccess('Job closed successfully.')
+            setSuccess(t('recruiterJobs.closedSuccessfully'))
         } catch {
-            setError('Unable to close this job. Please try again.')
+            setError(t('recruiterJobs.closeError'))
         } finally {
             setActionLoading(false)
         }
@@ -162,7 +225,7 @@ export default function RecruiterJobDetailsPage() {
                     className="recruiter-job-details-state"
                     role="status"
                 >
-                    Loading job...
+                    {t('recruiterJobForm.loading')}
                 </div>
             </main>
         )
@@ -178,7 +241,7 @@ export default function RecruiterJobDetailsPage() {
                         className="recruiter-job-details-secondary-button"
                         to="/recruiter/jobs"
                     >
-                        Back to jobs
+                        {t('recruiterJobs.backToJobs')}
                     </Link>
                 </div>
             </main>
@@ -189,7 +252,7 @@ export default function RecruiterJobDetailsPage() {
         return (
             <main className="recruiter-job-details-page">
                 <div className="recruiter-job-details-state">
-                    Job not found.
+                    {t('recruiterJobs.jobNotFound')}
                 </div>
             </main>
         )
@@ -211,7 +274,7 @@ export default function RecruiterJobDetailsPage() {
                         className="recruiter-job-details-back"
                         to="/recruiter/jobs"
                     >
-                        ← Back to jobs
+                        ← {t('recruiterJobs.backToJobs')}
                     </Link>
 
                     <h1>{job.title}</h1>
@@ -220,11 +283,19 @@ export default function RecruiterJobDetailsPage() {
                         <span
                             className={`recruiter-job-details-status recruiter-job-details-status-${job.status.toLowerCase()}`}
                         >
-                            {formatLabel(job.status)}
+                            {formatStatus(job.status, t)}
                         </span>
 
-                        <span>{formatLabel(job.employmentType)}</span>
-                        <span>{formatLabel(job.workMode)}</span>
+                        <span>
+                            {formatEmploymentType(
+                                job.employmentType,
+                                t,
+                            )}
+                        </span>
+
+                        <span>
+                            {formatWorkMode(job.workMode, t)}
+                        </span>
 
                         {job.location && (
                             <span>{job.location}</span>
@@ -239,7 +310,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                Edit
+                                {t('recruiterJobs.edit')}
                             </Link>
 
                             <button
@@ -249,8 +320,8 @@ export default function RecruiterJobDetailsPage() {
                                 disabled={actionLoading}
                             >
                                 {actionLoading
-                                    ? 'Publishing...'
-                                    : 'Publish job'}
+                                    ? t('recruiterJobs.publishing')
+                                    : t('recruiterJobs.publish')}
                             </button>
                         </>
                     )}
@@ -261,7 +332,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                Edit
+                                {t('recruiterJobs.edit')}
                             </Link>
 
                             <button
@@ -271,8 +342,8 @@ export default function RecruiterJobDetailsPage() {
                                 disabled={actionLoading}
                             >
                                 {actionLoading
-                                    ? 'Closing...'
-                                    : 'Close job'}
+                                    ? t('recruiterJobs.closing')
+                                    : t('recruiterJobs.close')}
                             </button>
                         </>
                     )}
@@ -282,7 +353,7 @@ export default function RecruiterJobDetailsPage() {
                             className="recruiter-job-details-secondary-button"
                             to={`/recruiter/jobs/${job.id}/edit`}
                         >
-                            Edit
+                            {t('recruiterJobs.edit')}
                         </Link>
                     )}
                 </div>
@@ -308,7 +379,7 @@ export default function RecruiterJobDetailsPage() {
 
             <div className="recruiter-job-details-layout">
                 <section className="recruiter-job-details-card">
-                    <h2>Job description</h2>
+                    <h2>{t('recruiterJobs.jobDescription')}</h2>
 
                     <p className="recruiter-job-details-description">
                         {job.description}
@@ -316,43 +387,66 @@ export default function RecruiterJobDetailsPage() {
                 </section>
 
                 <section className="recruiter-job-details-card">
-                    <h2>Job information</h2>
+                    <h2>{t('recruiterJobs.jobInformation')}</h2>
 
                     <dl className="recruiter-job-details-list">
                         <div>
-                            <dt>Employment type</dt>
-                            <dd>{formatLabel(job.employmentType)}</dd>
-                        </div>
-
-                        <div>
-                            <dt>Work mode</dt>
-                            <dd>{formatLabel(job.workMode)}</dd>
-                        </div>
-
-                        <div>
-                            <dt>Location</dt>
-                            <dd>{job.location || 'Not specified'}</dd>
-                        </div>
-
-                        <div>
-                            <dt>Salary</dt>
+                            <dt>{t('recruiterJobs.employmentType')}</dt>
                             <dd>
-                                {formatSalary(
-                                    job.salaryMin,
-                                    job.salaryMax,
-                                    job.currency,
+                                {formatEmploymentType(
+                                    job.employmentType,
+                                    t,
                                 )}
                             </dd>
                         </div>
 
                         <div>
-                            <dt>Expiration date</dt>
-                            <dd>{formatDate(job.expiresAt)}</dd>
+                            <dt>{t('recruiterJobs.workMode')}</dt>
+                            <dd>
+                                {formatWorkMode(job.workMode, t)}
+                            </dd>
                         </div>
 
                         <div>
-                            <dt>Published</dt>
-                            <dd>{formatDate(job.publishedAt)}</dd>
+                            <dt>{t('recruiterJobs.locationNotSpecified')}</dt>
+                            <dd>
+                                {job.location ||
+                                    t('recruiterJobs.locationNotSpecified')}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>{t('recruiterJobs.salary')}</dt>
+                            <dd>
+                                {formatSalary(
+                                    job.salaryMin,
+                                    job.salaryMax,
+                                    job.currency,
+                                    t,
+                                )}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>{t('recruiterJobs.expirationDate')}</dt>
+                            <dd>
+                                {formatDate(
+                                    job.expiresAt,
+                                    locale,
+                                    t,
+                                )}
+                            </dd>
+                        </div>
+
+                        <div>
+                            <dt>{t('recruiterJobs.published')}</dt>
+                            <dd>
+                                {formatDate(
+                                    job.publishedAt,
+                                    locale,
+                                    t,
+                                )}
+                            </dd>
                         </div>
                     </dl>
                 </section>
@@ -360,11 +454,12 @@ export default function RecruiterJobDetailsPage() {
                 <section className="recruiter-job-details-card">
                     <div className="recruiter-job-details-section-header">
                         <div>
-                            <h2>Requirements</h2>
+                            <h2>{t('recruiterJobs.requirements')}</h2>
 
                             <p>
-                                Skills required or preferred for this
-                                position.
+                                {t(
+                                    'recruiterJobs.requirementsDescription',
+                                )}
                             </p>
                         </div>
 
@@ -372,25 +467,30 @@ export default function RecruiterJobDetailsPage() {
                             className="recruiter-job-details-secondary-button"
                             to={`/recruiter/jobs/${job.id}/edit`}
                         >
-                            Manage requirements
+                            {t('recruiterJobs.manageRequirements')}
                         </Link>
                     </div>
 
                     {job.requirements.length === 0 ? (
                         <p className="recruiter-job-details-muted">
-                            No requirements configured.
+                            {t('recruiterJobs.noRequirements')}
                         </p>
                     ) : (
                         <div className="recruiter-job-details-requirements">
                             {requiredRequirements.length > 0 && (
                                 <div>
-                                    <h3>Required skills</h3>
+                                    <h3>
+                                        {t(
+                                            'recruiterJobs.requiredSkills',
+                                        )}
+                                    </h3>
 
                                     {requiredRequirements.map(
                                         (requirement) => (
                                             <RequirementRow
                                                 key={requirement.id}
                                                 requirement={requirement}
+                                                t={t}
                                             />
                                         ),
                                     )}
@@ -399,13 +499,18 @@ export default function RecruiterJobDetailsPage() {
 
                             {preferredRequirements.length > 0 && (
                                 <div>
-                                    <h3>Preferred skills</h3>
+                                    <h3>
+                                        {t(
+                                            'recruiterJobs.preferredSkills',
+                                        )}
+                                    </h3>
 
                                     {preferredRequirements.map(
                                         (requirement) => (
                                             <RequirementRow
                                                 key={requirement.id}
                                                 requirement={requirement}
+                                                t={t}
                                             />
                                         ),
                                     )}
@@ -422,7 +527,7 @@ export default function RecruiterJobDetailsPage() {
                     type="button"
                     onClick={() => navigate('/recruiter/jobs')}
                 >
-                    Back to jobs
+                    {t('recruiterJobs.backToJobs')}
                 </button>
             </footer>
         </main>

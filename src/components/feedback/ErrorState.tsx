@@ -1,3 +1,5 @@
+import { useTranslation } from '../../i18n/context'
+
 interface ErrorStateProps {
     title?: string
     message: string
@@ -6,19 +8,27 @@ interface ErrorStateProps {
 }
 
 function ErrorState({
-    title = 'Something went wrong',
+    title,
     message,
     onRetry,
-    retryLabel = 'Try again',
+    retryLabel,
 }: ErrorStateProps) {
+    const { t } = useTranslation()
+
+    const resolvedTitle =
+        title ?? t('feedback.somethingWentWrong')
+
+    const resolvedRetryLabel =
+        retryLabel ?? t('feedback.tryAgain')
+
     return (
         <div role="alert">
-            <h2>{title}</h2>
+            <h2>{resolvedTitle}</h2>
             <p>{message}</p>
 
             {onRetry && (
                 <button type="button" onClick={onRetry}>
-                    {retryLabel}
+                    {resolvedRetryLabel}
                 </button>
             )}
         </div>

@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
+import { useTranslation } from '../i18n/context'
 import type { CandidateJob } from '../types/job'
 import './CandidateJobDetailsPage.css'
 
@@ -10,9 +11,10 @@ function formatSalary(
     salaryMin: string | number | null,
     salaryMax: string | number | null,
     currency: string | null,
+    t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (salaryMin === null && salaryMax === null) {
-        return 'Not specified'
+        return t('candidateJobDetails.notSpecified')
     }
 
     const currencyLabel = currency ? ` ${currency} ` : ''
@@ -22,18 +24,22 @@ function formatSalary(
     }
 
     if (salaryMin !== null) {
-        return `From ${salaryMin}${currencyLabel}`
+        return `${t('candidateJobDetails.from')} ${salaryMin}${currencyLabel}`
     }
 
-    return `Up to ${salaryMax}${currencyLabel}`
+    return `${t('candidateJobDetails.upTo')} ${salaryMax}${currencyLabel}`
 }
 
-function formatDate(value: string | null): string {
+function formatDate(
+    value: string | null,
+    locale: string,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     if (!value) {
-        return 'Not specified'
+        return t('candidateJobDetails.notSpecified')
     }
 
-    return new Intl.DateTimeFormat('en', {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: 'long',
     }).format(new Date(value))
 }
@@ -41,6 +47,7 @@ function formatDate(value: string | null): string {
 function CandidateJobDetailsPage() {
     const { jobId } = useParams()
     const navigate = useNavigate()
+    const { language, t } = useTranslation()
 
     const [job, setJob] = useState<CandidateJob | null>(null)
     const [loading, setLoading] = useState(true)
@@ -56,6 +63,8 @@ function CandidateJobDetailsPage() {
     const [applicationError, setApplicationError] = useState<string | null>(
         null,
     )
+
+    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
 
     useEffect(() => {
         let cancelled = false
@@ -120,11 +129,11 @@ function CandidateJobDetailsPage() {
                 setApplicationAlreadyExists(true)
             } else if (caught instanceof ApiError) {
                 setApplicationError(
-                    'Unable to submit your application. Please try again.',
+                    t('candidateJobDetails.submitError'),
                 )
             } else {
                 setApplicationError(
-                    'Something went wrong while submitting your application.',
+                    t('candidateJobDetails.submitUnexpectedError'),
                 )
             }
         } finally {
@@ -136,7 +145,7 @@ function CandidateJobDetailsPage() {
         return (
             <section className="candidate-job-details-page">
                 <p role="status" aria-live="polite">
-                    Loading job...
+                    {t('candidateJobDetails.loading')}
                 </p>
             </section>
         )
@@ -153,14 +162,14 @@ function CandidateJobDetailsPage() {
                 >
                     <h1>
                         {notFound
-                            ? 'Job not found'
-                            : 'Unable to load job'}
+                            ? t('candidateJobDetails.jobNotFound')
+                            : t('candidateJobDetails.unableToLoad')}
                     </h1>
 
                     <p>
                         {notFound
-                            ? 'This job is no longer available or could not be found.'
-                            : 'Something went wrong while loading this job. Please try again.'}
+                            ? t('candidateJobDetails.jobUnavailable')
+                            : t('candidateJobDetails.loadError')}
                     </p>
 
                     <div className="candidate-job-details-actions">
@@ -171,7 +180,7 @@ function CandidateJobDetailsPage() {
                                     setRetryCount((current) => current + 1)
                                 }
                             >
-                                Try again
+                                {t('candidateJobDetails.tryAgain')}
                             </button>
                         )}
 
@@ -179,7 +188,7 @@ function CandidateJobDetailsPage() {
                             type="button"
                             onClick={() => navigate('/jobs')}
                         >
-                            Back to jobs
+                            {t('candidateJobDetails.backToJobs')}
                         </button>
                     </div>
                 </div>
@@ -201,14 +210,14 @@ function CandidateJobDetailsPage() {
                 to="/jobs"
                 className="candidate-job-details-back"
             >
-                ← Back to jobs
+                ← {t('candidateJobDetails.backToJobs')}
             </Link>
 
             <article className="candidate-job-details">
                 <header className="candidate-job-details-header">
                     <div>
                         <p className="candidate-job-details-eyebrow">
-                            Job opportunity
+                            {t('candidateJobDetails.jobOpportunity')}
                         </p>
 
                         <h1>{job.title}</h1>
@@ -222,35 +231,36 @@ function CandidateJobDetailsPage() {
                 <div className="candidate-job-details-meta">
                     {job.location && (
                         <div>
-                            <dt>Location</dt>
+                            <dt>{t('candidateJobDetails.location')}</dt>
                             <dd>{job.location}</dd>
                         </div>
                     )}
 
                     <div>
-                        <dt>Work mode</dt>
+                        <dt>{t('candidateJobDetails.workMode')}</dt>
                         <dd>{job.workMode}</dd>
                     </div>
 
                     <div>
-                        <dt>Employment type</dt>
+                        <dt>{t('candidateJobDetails.employmentType')}</dt>
                         <dd>{job.employmentType}</dd>
                     </div>
 
                     <div>
-                        <dt>Salary</dt>
+                        <dt>{t('candidateJobDetails.salary')}</dt>
                         <dd>
                             {formatSalary(
                                 job.salaryMin,
                                 job.salaryMax,
                                 job.currency,
+                                t,
                             )}
                         </dd>
                     </div>
                 </div>
 
                 <section className="candidate-job-details-section">
-                    <h2>About the job</h2>
+                    <h2>{t('candidateJobDetails.aboutTheJob')}</h2>
 
                     <div className="candidate-job-description">
                         {job.description
@@ -264,7 +274,7 @@ function CandidateJobDetailsPage() {
                 </section>
 
                 <section className="candidate-job-details-section candidate-job-application-section">
-                    <h2>Apply for this job</h2>
+                    <h2>{t('candidateJobDetails.applyForThisJob')}</h2>
 
                     {applicationSubmitted ? (
                         <div
@@ -272,14 +282,16 @@ function CandidateJobDetailsPage() {
                             role="status"
                             aria-live="polite"
                         >
-                            <strong>Application submitted</strong>
+                            <strong>
+                                {t('candidateJobDetails.applicationSubmitted')}
+                            </strong>
 
                             <p>
-                                You have successfully applied for this job.
+                                {t('candidateJobDetails.applicationSuccess')}
                             </p>
 
                             <Link to="/applications">
-                                View my applications
+                                {t('candidateJobDetails.viewMyApplications')}
                             </Link>
                         </div>
                     ) : applicationAlreadyExists ? (
@@ -288,27 +300,34 @@ function CandidateJobDetailsPage() {
                             role="status"
                             aria-live="polite"
                         >
-                            <strong>Already applied</strong>
+                            <strong>
+                                {t('candidateJobDetails.alreadyApplied')}
+                            </strong>
 
                             <p>
-                                You have already applied for this job.
+                                {t(
+                                    'candidateJobDetails.alreadyAppliedDescription',
+                                )}
                             </p>
 
                             <Link to="/applications">
-                                View my applications
+                                {t('candidateJobDetails.viewMyApplications')}
                             </Link>
                         </div>
                     ) : (
                         <>
                             <p>
-                                Submit your application for this position.
+                                {t('candidateJobDetails.submitApplication')}
                             </p>
 
                             <label
                                 htmlFor="cover-letter"
                                 className="candidate-job-application-label"
                             >
-                                Cover letter <span>(optional)</span>
+                                {t('candidateJobDetails.coverLetter')}{' '}
+                                <span>
+                                    ({t('candidateJobDetails.optional')})
+                                </span>
                             </label>
 
                             <textarea
@@ -319,7 +338,9 @@ function CandidateJobDetailsPage() {
                                 }
                                 maxLength={2000}
                                 rows={8}
-                                placeholder="Tell the recruiter why you are a good fit for this role..."
+                                placeholder={t(
+                                    'candidateJobDetails.coverLetterPlaceholder',
+                                )}
                                 disabled={isSubmittingApplication}
                             />
 
@@ -339,18 +360,20 @@ function CandidateJobDetailsPage() {
                                 disabled={isSubmittingApplication}
                             >
                                 {isSubmittingApplication
-                                    ? 'Submitting...'
-                                    : 'Apply now'}
+                                    ? t('candidateJobDetails.submitting')
+                                    : t('candidateJobDetails.applyNow')}
                             </button>
                         </>
                     )}
                 </section>
 
                 <section className="candidate-job-details-section">
-                    <h2>Required skills</h2>
+                    <h2>{t('candidateJobDetails.requiredSkills')}</h2>
 
                     {requiredSkills.length === 0 ? (
-                        <p>No required skills specified.</p>
+                        <p>
+                            {t('candidateJobDetails.noRequiredSkills')}
+                        </p>
                     ) : (
                         <ul className="candidate-job-skill-list">
                             {requiredSkills.map((requirement) => (
@@ -360,7 +383,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        Minimum level:{' '}
+                                        {t('candidateJobDetails.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -370,10 +393,12 @@ function CandidateJobDetailsPage() {
                 </section>
 
                 <section className="candidate-job-details-section">
-                    <h2>Preferred skills</h2>
+                    <h2>{t('candidateJobDetails.preferredSkills')}</h2>
 
                     {preferredSkills.length === 0 ? (
-                        <p>No preferred skills specified.</p>
+                        <p>
+                            {t('candidateJobDetails.noPreferredSkills')}
+                        </p>
                     ) : (
                         <ul className="candidate-job-skill-list">
                             {preferredSkills.map((requirement) => (
@@ -383,7 +408,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        Minimum level:{' '}
+                                        {t('candidateJobDetails.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -393,24 +418,24 @@ function CandidateJobDetailsPage() {
                 </section>
 
                 <section className="candidate-job-details-section">
-                    <h2>Company</h2>
+                    <h2>{t('candidateJobDetails.company')}</h2>
 
                     <dl className="candidate-job-company-details">
                         <div>
-                            <dt>Name</dt>
+                            <dt>{t('candidateJobDetails.name')}</dt>
                             <dd>{job.company.name}</dd>
                         </div>
 
                         {job.company.location && (
                             <div>
-                                <dt>Location</dt>
+                                <dt>{t('candidateJobDetails.location')}</dt>
                                 <dd>{job.company.location}</dd>
                             </div>
                         )}
 
                         {job.company.website && (
                             <div>
-                                <dt>Website</dt>
+                                <dt>{t('candidateJobDetails.website')}</dt>
                                 <dd>
                                     <a
                                         href={job.company.website}
@@ -431,15 +456,31 @@ function CandidateJobDetailsPage() {
 
                 <footer className="candidate-job-details-footer">
                     <div>
-                        <strong>Published</strong>
+                        <strong>
+                            {t('candidateJobDetails.published')}
+                        </strong>
 
-                        <span>{formatDate(job.publishedAt)}</span>
+                        <span>
+                            {formatDate(
+                                job.publishedAt,
+                                locale,
+                                t,
+                            )}
+                        </span>
                     </div>
 
                     <div>
-                        <strong>Expires</strong>
+                        <strong>
+                            {t('candidateJobDetails.expires')}
+                        </strong>
 
-                        <span>{formatDate(job.expiresAt)}</span>
+                        <span>
+                            {formatDate(
+                                job.expiresAt,
+                                locale,
+                                t,
+                            )}
+                        </span>
                     </div>
                 </footer>
             </article>

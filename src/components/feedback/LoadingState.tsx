@@ -1,13 +1,20 @@
+import { useTranslation } from '../../i18n/context'
+
 interface LoadingStateProps {
     message?: string
 }
 
 function LoadingState({
-    message = 'Loading...',
+    message,
 }: LoadingStateProps) {
+    const { t } = useTranslation()
+
+    const resolvedMessage =
+        message ?? t('feedback.loading')
+
     return (
         <div role="status" aria-live="polite" aria-busy="true">
-            <p>{message}</p>
+            <p>{resolvedMessage}</p>
         </div>
     )
 }

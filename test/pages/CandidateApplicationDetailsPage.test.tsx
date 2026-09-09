@@ -1,5 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import {
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+} from '../test-utils'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import CandidateApplicationDetailsPage from '../../src/pages/CandidateApplicationDetailsPage'
 import type { CandidateApplicationDetail } from '../../src/types/application'

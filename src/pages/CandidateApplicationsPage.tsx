@@ -2,40 +2,48 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getMyApplications } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { useTranslation } from '../i18n/context'
 import type {
     ApplicationStatus,
     CandidateApplication,
 } from '../types/application'
 import './CandidateApplicationsPage.css'
 
-function formatStatus(status: ApplicationStatus): string {
+function formatStatus(
+    status: ApplicationStatus,
+    t: (key: import('../i18n').TranslationKey) => string,
+): string {
     switch (status) {
         case 'PENDING':
-            return 'Pending'
+            return t('candidateApplications.pending')
         case 'REVIEWING':
-            return 'Reviewing'
+            return t('candidateApplications.reviewing')
         case 'ACCEPTED':
-            return 'Accepted'
+            return t('candidateApplications.accepted')
         case 'REJECTED':
-            return 'Rejected'
+            return t('candidateApplications.rejected')
         case 'WITHDRAWN':
-            return 'Withdrawn'
+            return t('candidateApplications.withdrawn')
     }
 }
 
-function formatDate(value: string): string {
-    return new Intl.DateTimeFormat('en', {
+function formatDate(value: string, locale: string): string {
+    return new Intl.DateTimeFormat(locale, {
         dateStyle: 'medium',
     }).format(new Date(value))
 }
 
 function CandidateApplicationsPage() {
+    const { language, t } = useTranslation()
+
     const [applications, setApplications] = useState<
         CandidateApplication[] | null
     >(null)
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+
+    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
 
     useEffect(() => {
         let cancelled = false
@@ -72,14 +80,21 @@ function CandidateApplicationsPage() {
         }
     }, [retryCount])
 
+    const pageHeader = (
+        <>
+            <p className="candidate-applications-eyebrow">
+                {t('candidateApplications.eyebrow')}
+            </p>
+
+            <h1>{t('candidateApplications.title')}</h1>
+        </>
+    )
+
     if (loading && !applications) {
         return (
             <section className="candidate-applications-page">
                 <header className="candidate-applications-header">
-                    <p className="candidate-applications-eyebrow">
-                        Candidate
-                    </p>
-                    <h1>My applications</h1>
+                    {pageHeader}
                 </header>
 
                 <p
@@ -87,7 +102,7 @@ function CandidateApplicationsPage() {
                     role="status"
                     aria-live="polite"
                 >
-                    Loading applications...
+                    {t('candidateApplications.loading')}
                 </p>
             </section>
         )
@@ -98,21 +113,28 @@ function CandidateApplicationsPage() {
             return (
                 <section className="candidate-applications-page">
                     <header className="candidate-applications-header">
-                        <p className="candidate-applications-eyebrow">
-                            Candidate
-                        </p>
-                        <h1>My applications</h1>
+                        {pageHeader}
                     </header>
 
                     <section
                         className="candidate-applications-state candidate-applications-state-error"
                         role="alert"
                     >
-                        <h2>Access denied</h2>
+                        <h2>
+                            {t('candidateApplications.accessDenied')}
+                        </h2>
+
                         <p>
-                            You are not authorized to view your applications.
+                            {t(
+                                'candidateApplications.unauthorized',
+                            )}
                         </p>
-                        <Link to="/dashboard">Back to dashboard</Link>
+
+                        <Link to="/dashboard">
+                            {t(
+                                'candidateApplications.backToDashboard',
+                            )}
+                        </Link>
                     </section>
                 </section>
             )
@@ -122,27 +144,34 @@ function CandidateApplicationsPage() {
             return (
                 <section className="candidate-applications-page">
                     <header className="candidate-applications-header">
-                        <p className="candidate-applications-eyebrow">
-                            Candidate
-                        </p>
-                        <h1>My applications</h1>
+                        {pageHeader}
                     </header>
 
                     <section
                         className="candidate-applications-state candidate-applications-state-error"
                         role="alert"
                     >
-                        <h2>Applications not found</h2>
+                        <h2>
+                            {t(
+                                'candidateApplications.applicationsNotFound',
+                            )}
+                        </h2>
+
                         <p>
-                            We could not find your applications right now.
+                            {t(
+                                'candidateApplications.notFoundDescription',
+                            )}
                         </p>
+
                         <button
                             type="button"
                             onClick={() =>
-                                setRetryCount((current) => current + 1)
+                                setRetryCount(
+                                    (current) => current + 1,
+                                )
                             }
                         >
-                            Try again
+                            {t('candidateApplications.tryAgain')}
                         </button>
                     </section>
                 </section>
@@ -152,28 +181,30 @@ function CandidateApplicationsPage() {
         return (
             <section className="candidate-applications-page">
                 <header className="candidate-applications-header">
-                    <p className="candidate-applications-eyebrow">
-                        Candidate
-                    </p>
-                    <h1>My applications</h1>
+                    {pageHeader}
                 </header>
 
                 <section
                     className="candidate-applications-state candidate-applications-state-error"
                     role="alert"
                 >
-                    <h2>Unable to load applications</h2>
+                    <h2>
+                        {t('candidateApplications.unableToLoad')}
+                    </h2>
+
                     <p>
-                        Something went wrong while loading your applications.
-                        Please try again.
+                        {t('candidateApplications.loadError')}
                     </p>
+
                     <button
                         type="button"
                         onClick={() =>
-                            setRetryCount((current) => current + 1)
+                            setRetryCount(
+                                (current) => current + 1,
+                            )
                         }
                     >
-                        Try again
+                        {t('candidateApplications.tryAgain')}
                     </button>
                 </section>
             </section>
@@ -187,28 +218,38 @@ function CandidateApplicationsPage() {
             <header className="candidate-applications-header">
                 <div>
                     <p className="candidate-applications-eyebrow">
-                        Candidate
+                        {t('candidateApplications.eyebrow')}
                     </p>
-                    <h1>My applications</h1>
+
+                    <h1>{t('candidateApplications.title')}</h1>
+
                     <p>
-                        Track the applications you have submitted and view
-                        their current status.
+                        {t(
+                            'candidateApplications.description',
+                        )}
                     </p>
                 </div>
             </header>
 
             {items.length === 0 ? (
                 <section className="candidate-applications-state">
-                    <h2>No applications yet</h2>
+                    <h2>
+                        {t(
+                            'candidateApplications.noApplications',
+                        )}
+                    </h2>
+
                     <p>
-                        You have not applied for any jobs yet. Explore
-                        available jobs to find your next opportunity.
+                        {t(
+                            'candidateApplications.noApplicationsDescription',
+                        )}
                     </p>
+
                     <Link
                         to="/jobs"
                         className="candidate-applications-primary-link"
                     >
-                        Browse jobs
+                        {t('candidateApplications.browseJobs')}
                     </Link>
                 </section>
             ) : (
@@ -217,8 +258,12 @@ function CandidateApplicationsPage() {
                         <p>
                             {items.length}{' '}
                             {items.length === 1
-                                ? 'application'
-                                : 'applications'}
+                                ? t(
+                                    'candidateApplications.application',
+                                )
+                                : t(
+                                    'candidateApplications.applications',
+                                )}
                         </p>
                     </div>
 
@@ -235,46 +280,74 @@ function CandidateApplicationsPage() {
                                                 <Link
                                                     to={`/applications/${application.id}`}
                                                 >
-                                                    {application.job.title}
+                                                    {
+                                                        application
+                                                            .job
+                                                            .title
+                                                    }
                                                 </Link>
                                             </h2>
 
                                             <p className="candidate-application-company">
-                                                {application.job.company.name}
+                                                {
+                                                    application.job
+                                                        .company
+                                                        .name
+                                                }
                                             </p>
                                         </div>
 
                                         <span
                                             className={`candidate-application-status candidate-application-status-${application.status.toLowerCase()}`}
                                         >
-                                            {formatStatus(application.status)}
+                                            {formatStatus(
+                                                application.status,
+                                                t,
+                                            )}
                                         </span>
                                     </div>
 
                                     <div className="candidate-application-meta">
                                         {application.job.location && (
                                             <span>
-                                                {application.job.location}
+                                                {
+                                                    application
+                                                        .job
+                                                        .location
+                                                }
                                             </span>
                                         )}
 
                                         <span>
-                                            {application.job.workMode}
+                                            {
+                                                application.job
+                                                    .workMode
+                                            }
                                         </span>
 
                                         <span>
-                                            {application.job.employmentType}
+                                            {
+                                                application.job
+                                                    .employmentType
+                                            }
                                         </span>
 
                                         <span>
-                                            Applied{' '}
-                                            {formatDate(application.createdAt)}
+                                            {t(
+                                                'candidateApplications.applied',
+                                            )}{' '}
+                                            {formatDate(
+                                                application.createdAt,
+                                                locale,
+                                            )}
                                         </span>
                                     </div>
 
                                     {application.coverLetter && (
                                         <p className="candidate-application-cover-letter">
-                                            Cover letter submitted
+                                            {t(
+                                                'candidateApplications.coverLetterSubmitted',
+                                            )}
                                         </p>
                                     )}
                                 </div>
@@ -283,7 +356,9 @@ function CandidateApplicationsPage() {
                                     to={`/applications/${application.id}`}
                                     className="candidate-application-view-link"
                                 >
-                                    View application
+                                    {t(
+                                        'candidateApplications.viewApplication',
+                                    )}
                                 </Link>
                             </article>
                         ))}

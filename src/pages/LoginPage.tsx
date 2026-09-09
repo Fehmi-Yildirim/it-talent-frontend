@@ -1,34 +1,35 @@
-import { useState, type FormEvent } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
+import { useTranslation } from '../i18n/context'
 
 function LoginPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
   const { login, isLoading } = useAuth()
+  const { t } = useTranslation()
+  const navigate = useNavigate()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
 
-  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     setError(null)
 
     const normalizedEmail = email.trim()
 
     if (!normalizedEmail) {
-      setError('Email is required.')
+      setError(t('auth.emailRequired'))
       return
     }
 
     if (!normalizedEmail.includes('@')) {
-      setError('Please enter a valid email address.')
+      setError(t('auth.invalidEmail'))
       return
     }
 
     if (password.length < 8) {
-      setError('Password must be at least 8 characters.')
+      setError(t('auth.passwordMinLength'))
       return
     }
 
@@ -36,24 +37,31 @@ function LoginPage() {
       const user = await login(normalizedEmail, password)
 
       if (user.status !== 'ACTIVE') {
-        setError('Account is not active.')
+        setError(t('auth.accountNotActive'))
         return
       }
 
-      const from = location.state?.from?.pathname ?? '/dashboard'
-      navigate(from, { replace: true })
+      if (user.role === 'CANDIDATE') {
+        navigate('/jobs')
+      } else {
+        navigate('/dashboard')
+      }
     } catch (error) {
-      setError(error instanceof Error ? error.message : 'Login failed.')
+      setError(
+        error instanceof Error
+          ? error.message
+          : t('auth.loginFailed'),
+      )
     }
   }
 
   return (
-    <main>
-      <h1>Login</h1>
+    <section>
+      <h1>{t('auth.login')}</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email">{t('auth.email')}</label>
           <input
             id="email"
             name="email"
@@ -66,7 +74,7 @@ function LoginPage() {
         </div>
 
         <div>
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password">{t('auth.password')}</label>
           <input
             id="password"
             name="password"
@@ -83,11 +91,12 @@ function LoginPage() {
             {error}
           </p>
         )}
-        <button type="submit" disabled={isLoading} aria-busy={isLoading}>
-          {isLoading ? 'Logging in...' : 'Login'}
+
+        <button type="submit" disabled={isLoading}>
+          {isLoading ? t('auth.loggingIn') : t('auth.login')}
         </button>
       </form>
-    </main>
+    </section>
   )
 }
 
