@@ -56,6 +56,65 @@ export const nl: DeepPartial<typeof en> = {
             'Weet je zeker dat je deze gebruiker wilt verwijderen?',
     },
 
+    adminSkills: {
+        title: 'Admin — Skills beheren',
+        loading: 'Skills laden...',
+        loadError: 'Skills konden niet worden geladen.',
+        createError: 'Skill kon niet worden aangemaakt.',
+        updateError: 'Skill kon niet worden bijgewerkt.',
+        deleteError: 'Skill kon niet worden verwijderd.',
+        duplicateSlug:
+            'Er bestaat al een skill met deze slug.',
+
+        refresh: 'Vernieuwen',
+        noSkills: 'Geen skills gevonden',
+        noSkillsMatch:
+            'Geen skills gevonden die overeenkomen met je zoekopdracht.',
+
+        search: 'Zoeken',
+        searchPlaceholder: 'Zoek naar skills...',
+
+        name: 'Naam',
+        slug: 'Slug',
+        category: 'Categorie',
+        description: 'Beschrijving',
+        actions: 'Acties',
+
+        createSkill: 'Skill aanmaken',
+        editSkill: 'Skill bewerken',
+        deleteSkill: 'Skill verwijderen',
+
+        saving: 'Opslaan...',
+        save: 'Opslaan',
+        cancel: 'Annuleren',
+        edit: 'Bewerken',
+        delete: 'Verwijderen',
+
+        nameRequired: 'Naam is verplicht.',
+        slugRequired: 'Slug is verplicht.',
+        categoryRequired: 'Categorie is verplicht.',
+
+        deleteConfirmation:
+            'Weet je zeker dat je deze skill wilt verwijderen?',
+
+        categories: {
+            frontend: 'Frontend',
+            backend: 'Backend',
+            fullstack: 'Fullstack',
+            mobile: 'Mobiel',
+            devops: 'DevOps',
+            cloud: 'Cloud',
+            data: 'Data',
+            aiMl: 'AI / ML',
+            security: 'Beveiliging',
+            database: 'Database',
+            testing: 'Testen',
+            projectManagement: 'Projectmanagement',
+            design: 'Design',
+            other: 'Overig',
+        },
+    },
+
     auth: {
         login: 'Inloggen',
         register: 'Registreren',
@@ -394,6 +453,7 @@ export const nl: DeepPartial<typeof en> = {
             description:
                 'Beheer gebruikers en platformadministratie.',
             manageUsers: 'Gebruikers beheren',
+            manageSkills: 'Skills beheren'
         },
 
         account: {

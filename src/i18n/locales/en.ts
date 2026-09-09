@@ -48,6 +48,65 @@ export const en = {
             'Are you sure you want to delete this user?',
     },
 
+    adminSkills: {
+        title: 'Admin — Skills Management',
+        loading: 'Loading skills...',
+        loadError: 'Failed to load skills.',
+        createError: 'Failed to create skill.',
+        updateError: 'Failed to update skill.',
+        deleteError: 'Failed to delete skill.',
+        duplicateSlug:
+            'A skill with this slug already exists.',
+
+        refresh: 'Refresh',
+        noSkills: 'No skills found',
+        noSkillsMatch:
+            'No skills match your search.',
+
+        search: 'Search',
+        searchPlaceholder: 'Search skills...',
+
+        name: 'Name',
+        slug: 'Slug',
+        category: 'Category',
+        description: 'Description',
+        actions: 'Actions',
+
+        createSkill: 'Create skill',
+        editSkill: 'Edit skill',
+        deleteSkill: 'Delete skill',
+
+        saving: 'Saving...',
+        save: 'Save',
+        cancel: 'Cancel',
+        edit: 'Edit',
+        delete: 'Delete',
+
+        nameRequired: 'Name is required.',
+        slugRequired: 'Slug is required.',
+        categoryRequired: 'Category is required.',
+
+        deleteConfirmation:
+            'Are you sure you want to delete this skill?',
+
+        categories: {
+            frontend: 'Frontend',
+            backend: 'Backend',
+            fullstack: 'Fullstack',
+            mobile: 'Mobile',
+            devops: 'DevOps',
+            cloud: 'Cloud',
+            data: 'Data',
+            aiMl: 'AI / ML',
+            security: 'Security',
+            database: 'Database',
+            testing: 'Testing',
+            projectManagement: 'Project Management',
+            design: 'Design',
+            other: 'Other',
+        },
+    },
+
     auth: {
         login: 'Login',
         register: 'Register',
@@ -356,8 +415,8 @@ export const en = {
             description:
                 'Manage users and platform administration.',
             manageUsers: 'Manage users',
+            manageSkills: 'Manage skills',
         },
-
         account: {
             account: 'Account',
             yourAccount: 'Your account',

@@ -527,7 +527,15 @@ function DashboardPage() {
             >
               {t('dashboard.admin.manageUsers')}
             </Link>
+
+            <Link
+              to="/admin/skills"
+              className="dashboard-action dashboard-action--primary"
+            >
+              {t('dashboard.admin.manageSkills')}
+            </Link>
           </div>
+
         </section>
       )}
 
