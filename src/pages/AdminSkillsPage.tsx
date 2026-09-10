@@ -7,6 +7,8 @@ import {
 } from '../features/admin/skills.api'
 import type { Skill } from '../types/candidate'
 import { useTranslation } from '../i18n/context'
+import Drawer from '../components/Drawer/Drawer'
+import ActionMenu from '../components/ActionMenu/ActionMenu'
 import './AdminSkillsPage.css'
 
 type SkillCategory =
@@ -105,6 +107,7 @@ function AdminSkillsPage() {
     const [error, setError] = useState<string | null>(null)
 
     const [search, setSearch] = useState('')
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false)
     const [editingSkillId, setEditingSkillId] =
         useState<string | null>(null)
 
@@ -143,6 +146,22 @@ function AdminSkillsPage() {
         setEditingSkillId(null)
     }
 
+    const openCreateDrawer = () => {
+        resetForm()
+        setError(null)
+        setIsDrawerOpen(true)
+    }
+
+    const closeDrawer = () => {
+        if (isSaving) {
+            return
+        }
+
+        setIsDrawerOpen(false)
+        resetForm()
+        setError(null)
+    }
+
     const startEditing = (skill: Skill) => {
         setEditingSkillId(skill.id)
 
@@ -152,6 +171,9 @@ function AdminSkillsPage() {
             category: skill.category as SkillCategory,
             description: skill.description ?? '',
         })
+
+        setError(null)
+        setIsDrawerOpen(true)
     }
 
     const validateForm = (): boolean => {
@@ -211,6 +233,7 @@ function AdminSkillsPage() {
                 ])
             }
 
+            setIsDrawerOpen(false)
             resetForm()
         } catch (requestError) {
             const message =
@@ -255,6 +278,7 @@ function AdminSkillsPage() {
             )
 
             if (editingSkillId === skill.id) {
+                setIsDrawerOpen(false)
                 resetForm()
             }
         } catch {
@@ -268,14 +292,14 @@ function AdminSkillsPage() {
 
     if (isLoading) {
         return (
-            <main className="admin-skills-page">
+            <div className="admin-skills-page">
                 <p>{t('adminSkills.loading')}</p>
-            </main>
+            </div>
         )
     }
 
     return (
-        <main className="admin-skills-page">
+        <div className="admin-skills-page">
             <h1>{t('adminSkills.title')}</h1>
 
             {error && (
@@ -288,12 +312,148 @@ function AdminSkillsPage() {
             )}
 
             <section className="admin-skills-page__section">
-                <h2>
-                    {editingSkillId
-                        ? t('adminSkills.editSkill')
-                        : t('adminSkills.createSkill')}
-                </h2>
+                <div className="admin-skills-page__actions">
+                    <button
+                        type="button"
+                        onClick={openCreateDrawer}
+                    >
+                        {t('adminSkills.createSkill')}
+                    </button>
+                </div>
+            </section>
 
+            <section className="admin-skills-page__section">
+                <h2>{t('adminSkills.search')}</h2>
+
+                <form
+                    className="admin-skills-page__search"
+                    onSubmit={(event) => {
+                        event.preventDefault()
+                        void handleSearch()
+                    }}
+                >
+                    <div className="admin-skills-page__field admin-skills-page__search-field">
+                        <label htmlFor="skill-search">
+                            {t('adminSkills.search')}
+                        </label>
+
+                        <input
+                            id="skill-search"
+                            className="admin-skills-page__search-input"
+                            type="search"
+                            placeholder={t(
+                                'adminSkills.searchPlaceholder',
+                            )}
+                            value={search}
+                            onChange={(event) =>
+                                setSearch(event.target.value)
+                            }
+                        />
+                    </div>
+
+                    <div className="admin-skills-page__search-actions">
+                        <button type="submit">
+                            {t('adminSkills.search')}
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setSearch('')
+                                void loadSkills('')
+                            }}
+                        >
+                            {t('adminSkills.refresh')}
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section className="admin-skills-page__section">
+                {skills.length === 0 ? (
+                    <p className="admin-skills-page__empty">
+                        {search.trim()
+                            ? t('adminSkills.noSkillsMatch')
+                            : t('adminSkills.noSkills')}
+                    </p>
+                ) : (
+                    <div className="admin-skills-page__table-wrapper">
+                        <table className="admin-skills-page__table">
+                            <thead>
+                                <tr>
+                                    <th>{t('adminSkills.name')}</th>
+                                    <th>{t('adminSkills.category')}</th>
+                                    <th>
+                                        {t(
+                                            'adminSkills.description',
+                                        )}
+                                    </th>
+                                    <th>{t('adminSkills.actions')}</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {skills.map((skill) => (
+                                    <tr key={skill.id}>
+                                        <td>{skill.name}</td>
+
+                                        <td>
+                                            {formatCategory(
+                                                skill.category,
+                                                t,
+                                            )}
+                                        </td>
+
+                                        <td>
+                                            {skill.description ?? '—'}
+                                        </td>
+
+                                        <td>
+                                            <ActionMenu
+                                                ariaLabel={`${t(
+                                                    'adminSkills.actions',
+                                                )}: ${skill.name}`}
+                                                actions={[
+                                                    {
+                                                        label: t(
+                                                            'adminSkills.edit',
+                                                        ),
+                                                        onClick: () =>
+                                                            startEditing(
+                                                                skill,
+                                                            ),
+                                                    },
+                                                    {
+                                                        label: t(
+                                                            'adminSkills.delete',
+                                                        ),
+                                                        onClick: () =>
+                                                            void handleDelete(
+                                                                skill,
+                                                            ),
+                                                        destructive: true,
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
+            </section>
+
+            <Drawer
+                open={isDrawerOpen}
+                onClose={closeDrawer}
+                title={
+                    editingSkillId
+                        ? t('adminSkills.editSkill')
+                        : t('adminSkills.createSkill')
+                }
+                closeLabel={t('adminSkills.cancel')}
+            >
                 <form
                     className="admin-skills-page__form"
                     onSubmit={(event) => {
@@ -398,143 +558,17 @@ function AdminSkillsPage() {
                                 : t('adminSkills.save')}
                         </button>
 
-                        {editingSkillId && (
-                            <button
-                                type="button"
-                                onClick={resetForm}
-                                disabled={isSaving}
-                            >
-                                {t('adminSkills.cancel')}
-                            </button>
-                        )}
-                    </div>
-                </form>
-            </section>
-
-            <section className="admin-skills-page__section">
-                <h2>{t('adminSkills.search')}</h2>
-
-                <form
-                    className="admin-skills-page__search"
-                    onSubmit={(event) => {
-                        event.preventDefault()
-                        void handleSearch()
-                    }}
-                >
-                    <div className="admin-skills-page__field admin-skills-page__search-field">
-                        <label htmlFor="skill-search">
-                            {t('adminSkills.search')}
-                        </label>
-
-                        <input
-                            id="skill-search"
-                            className="admin-skills-page__search-input"
-                            type="search"
-                            placeholder={t(
-                                'adminSkills.searchPlaceholder',
-                            )}
-                            value={search}
-                            onChange={(event) =>
-                                setSearch(event.target.value)
-                            }
-                        />
-                    </div>
-
-                    <div className="admin-skills-page__search-actions">
-                        <button type="submit">
-                            {t('adminSkills.search')}
-                        </button>
-
                         <button
                             type="button"
-                            onClick={() => {
-                                setSearch('')
-                                void loadSkills('')
-                            }}
+                            onClick={closeDrawer}
+                            disabled={isSaving}
                         >
-                            {t('adminSkills.refresh')}
+                            {t('adminSkills.cancel')}
                         </button>
                     </div>
                 </form>
-            </section>
-
-            <section className="admin-skills-page__section">
-                {skills.length === 0 ? (
-                    <p className="admin-skills-page__empty">
-                        {search.trim()
-                            ? t('adminSkills.noSkillsMatch')
-                            : t('adminSkills.noSkills')}
-                    </p>
-                ) : (
-                    <div className="admin-skills-page__table-wrapper">
-                        <table className="admin-skills-page__table">
-                            <thead>
-                                <tr>
-                                    <th>{t('adminSkills.name')}</th>
-                                    <th>{t('adminSkills.slug')}</th>
-                                    <th>
-                                        {t('adminSkills.category')}
-                                    </th>
-                                    <th>
-                                        {t(
-                                            'adminSkills.description',
-                                        )}
-                                    </th>
-                                    <th>{t('adminSkills.actions')}</th>
-                                </tr>
-                            </thead>
-
-                            <tbody>
-                                {skills.map((skill) => (
-                                    <tr key={skill.id}>
-                                        <td>{skill.name}</td>
-                                        <td>{skill.slug}</td>
-                                        <td>
-                                            {formatCategory(
-                                                skill.category,
-                                                t,
-                                            )}
-                                        </td>
-                                        <td>
-                                            {skill.description ?? '—'}
-                                        </td>
-                                        <td>
-                                            <div className="admin-skills-page__table-actions">
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        startEditing(
-                                                            skill,
-                                                        )
-                                                    }
-                                                >
-                                                    {t(
-                                                        'adminSkills.edit',
-                                                    )}
-                                                </button>
-
-                                                <button
-                                                    type="button"
-                                                    onClick={() =>
-                                                        void handleDelete(
-                                                            skill,
-                                                        )
-                                                    }
-                                                >
-                                                    {t(
-                                                        'adminSkills.delete',
-                                                    )}
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </section>
-        </main>
+            </Drawer>
+        </div>
     )
 }
 

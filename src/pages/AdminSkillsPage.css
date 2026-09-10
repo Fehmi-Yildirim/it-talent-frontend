@@ -1,11 +1,13 @@
 .admin-skills-page {
-    max-width: 1200px;
+    width: 100%;
+    max-width: 1100px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 1.5rem;
+    box-sizing: border-box;
 }
 
 .admin-skills-page h1 {
-    margin: 0 0 2rem;
+    margin: 0 0 1.5rem;
 }
 
 .admin-skills-page h2 {
@@ -26,11 +28,12 @@
 /* Sections */
 
 .admin-skills-page__section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    padding: 1.25rem;
     border: 1px solid #e5e7eb;
     border-radius: 0.75rem;
     background: #ffffff;
+    box-sizing: border-box;
 }
 
 /* Form */
@@ -78,14 +81,8 @@
 
 /* Buttons */
 
-.admin-skills-page__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
-    margin-top: 0.5rem;
-}
-
-.admin-skills-page button {
+.admin-skills-page button,
+.admin-skills-page__actions button {
     padding: 0.7rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
@@ -96,11 +93,13 @@
     cursor: pointer;
 }
 
-.admin-skills-page button:hover:not(:disabled) {
+.admin-skills-page button:hover:not(:disabled),
+.admin-skills-page__actions button:hover:not(:disabled) {
     background: #f3f4f6;
 }
 
-.admin-skills-page button:disabled {
+.admin-skills-page button:disabled,
+.admin-skills-page__actions button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
@@ -109,36 +108,41 @@
 
 .admin-skills-page__search {
     display: flex;
-    align-items: end;
+    align-items: flex-end;
     gap: 0.75rem;
 }
 
 .admin-skills-page__search-field {
-    flex: 1;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .admin-skills-page__search-actions {
     display: flex;
+    flex: 0 1 auto;
     gap: 0.75rem;
 }
 
 /* Table */
 
 .admin-skills-page__table-wrapper {
+    width: 100%;
     overflow-x: auto;
 }
 
 .admin-skills-page__table {
     width: 100%;
+    table-layout: fixed;
     border-collapse: collapse;
 }
 
 .admin-skills-page__table th,
 .admin-skills-page__table td {
-    padding: 0.875rem 1rem;
+    padding: 0.75rem 0.875rem;
     border-bottom: 1px solid #e5e7eb;
     text-align: left;
     vertical-align: top;
+    overflow-wrap: anywhere;
 }
 
 .admin-skills-page__table th {
@@ -150,10 +154,30 @@
     background: #f9fafb;
 }
 
-.admin-skills-page__table-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+/* Table columns */
+
+.admin-skills-page__table th:nth-child(1),
+.admin-skills-page__table td:nth-child(1) {
+    width: 20%;
+}
+
+.admin-skills-page__table th:nth-child(2),
+.admin-skills-page__table td:nth-child(2) {
+    width: 18%;
+    white-space: nowrap;
+    overflow-wrap: normal;
+}
+
+.admin-skills-page__table th:nth-child(3),
+.admin-skills-page__table td:nth-child(3) {
+    width: 52%;
+}
+
+.admin-skills-page__table th:nth-child(4),
+.admin-skills-page__table td:nth-child(4) {
+    width: 10%;
+    white-space: nowrap;
+    overflow-wrap: normal;
 }
 
 /* Empty state */
