@@ -89,3 +89,11 @@ svg {
     animation-iteration-count: 1 !important;
   }
 }
+
+.back-to-dashboard {
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-bottom: 16px;
+  text-decoration: none;
+}
