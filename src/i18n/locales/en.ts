@@ -1,4 +1,27 @@
 export const en = {
+    common: {
+        backToDashboard: 'Back to dashboard',
+        confirmDeleteTitle: 'Confirm deletion',
+        delete: 'Delete',
+        cancel: 'Cancel',
+        refresh: 'Refresh',
+        actions: 'Actions',
+        email: 'Email',
+        role: 'Role',
+        status: 'Status',
+        created: 'Created',
+        candidate: 'Candidate',
+        recruiter: 'Recruiter',
+        admin: 'Admin',
+        active: 'Active',
+        pending: 'Pending',
+        suspended: 'Suspended',
+        deleted: 'Deleted',
+        saving: 'Saving...',
+        save: 'Save',
+        edit: 'Edit',
+        close: 'Close',
+    },
     navigation: {
         dashboard: 'Dashboard',
         findJobs: 'Find jobs',
@@ -20,32 +43,9 @@ export const en = {
         loadError: 'Failed to load users.',
         updateError: 'Failed to update user.',
         deleteError: 'Failed to delete user.',
-        refresh: 'Refresh',
         noUsers: 'No users found',
-
-        email: 'Email',
-        role: 'Role',
-        status: 'Status',
-        created: 'Created',
-        actions: 'Actions',
-
-        candidate: 'Candidate',
-        recruiter: 'Recruiter',
-        admin: 'Admin',
-
-        active: 'Active',
-        pending: 'Pending',
-        suspended: 'Suspended',
-        deleted: 'Deleted',
-
-        saving: 'Saving...',
-        save: 'Save',
-        cancel: 'Cancel',
-        edit: 'Edit',
-        delete: 'Delete',
-
-        deleteConfirmation:
-            'Are you sure you want to delete this user?',
+        editUser: 'Edit user',
+        deleteConfirmation: 'Are you sure you want to delete this user?',
     },
 
     adminSkills: {
