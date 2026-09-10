@@ -7,6 +7,30 @@ type DeepPartial<T> = {
 };
 
 export const nl: DeepPartial<typeof en> = {
+    common: {
+        backToDashboard: 'Terug naar dashboard',
+        confirmDeleteTitle: 'Verwijderen bevestigen',
+        delete: 'Verwijderen',
+        cancel: 'Annuleren',
+        refresh: 'Vernieuwen',
+        actions: 'Acties',
+
+        email: 'E-mail',
+        role: 'Rol',
+        status: 'Status',
+        created: 'Aangemaakt',
+        candidate: 'Kandidaat',
+        recruiter: 'Recruiter',
+        admin: 'Admin',
+        active: 'Actief',
+        pending: 'In behandeling',
+        suspended: 'Geschorst',
+        deleted: 'Verwijderd',
+        saving: 'Opslaan...',
+        save: 'Opslaan',
+        edit: 'Bewerken',
+        close: 'Sluiten',
+    },
     navigation: {
         dashboard: 'Dashboard',
         findJobs: 'Vacatures zoeken',
@@ -28,32 +52,9 @@ export const nl: DeepPartial<typeof en> = {
         loadError: 'Gebruikers kunnen niet worden geladen.',
         updateError: 'Gebruiker kan niet worden bijgewerkt.',
         deleteError: 'Gebruiker kan niet worden verwijderd.',
-        refresh: 'Vernieuwen',
         noUsers: 'Geen gebruikers gevonden',
-
-        email: 'E-mail',
-        role: 'Rol',
-        status: 'Status',
-        created: 'Aangemaakt',
-        actions: 'Acties',
-
-        candidate: 'Kandidaat',
-        recruiter: 'Recruiter',
-        admin: 'Admin',
-
-        active: 'Actief',
-        pending: 'In behandeling',
-        suspended: 'Geschorst',
-        deleted: 'Verwijderd',
-
-        saving: 'Opslaan...',
-        save: 'Opslaan',
-        cancel: 'Annuleren',
-        edit: 'Bewerken',
-        delete: 'Verwijderen',
-
-        deleteConfirmation:
-            'Weet je zeker dat je deze gebruiker wilt verwijderen?',
+        editUser: 'Gebruiker bewerken',
+        deleteConfirmation: 'Weet je zeker dat je deze gebruiker wilt verwijderen?',
     },
 
     adminSkills: {
