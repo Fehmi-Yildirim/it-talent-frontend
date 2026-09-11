@@ -1,6 +1,6 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import './Layout.css'
 
 function Layout() {

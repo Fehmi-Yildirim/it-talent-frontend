@@ -1,4 +1,4 @@
-import { useTranslation } from '../../i18n/context'
+import { useTranslation } from '../../i18n/useTranslation'
 
 interface ErrorStateProps {
     title?: string

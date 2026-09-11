@@ -2,7 +2,7 @@ import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register } from '../features/auth/auth.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 
 function RegisterPage() {
   const navigate = useNavigate()

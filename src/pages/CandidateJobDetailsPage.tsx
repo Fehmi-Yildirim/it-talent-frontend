@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type { CandidateJob } from '../types/job'
 import './CandidateJobDetailsPage.css'
 

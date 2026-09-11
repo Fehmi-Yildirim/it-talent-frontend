@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getJobs } from '../features/jobs/jobs.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type { Job } from '../types/job'
 import './RecruiterJobsPage.css'
 

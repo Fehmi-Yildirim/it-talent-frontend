@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 
 function LoginPage() {
   const { login, isLoading } = useAuth()

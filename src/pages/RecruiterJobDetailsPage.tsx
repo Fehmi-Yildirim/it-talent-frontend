@@ -5,7 +5,7 @@ import {
     getJobById,
     publishJob,
 } from '../features/jobs/jobs.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type { Job, JobRequirement } from '../types/job'
 import './RecruiterJobDetailsPage.css'
 

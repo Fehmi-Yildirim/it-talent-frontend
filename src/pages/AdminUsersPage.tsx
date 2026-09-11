@@ -8,7 +8,7 @@ import {
     getUsers,
     updateUser,
 } from '../features/admin/admin.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type { User, UserRole, UserStatus } from '../types/user'
 import './AdminUsersPage.css'
 
