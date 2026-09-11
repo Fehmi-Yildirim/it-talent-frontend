@@ -1,4 +1,8 @@
-import { useEffect, useState } from 'react'
+import {
+    useCallback,
+    useEffect,
+    useState,
+} from 'react'
 import {
     createSkill,
     deleteSkill,
@@ -6,7 +10,7 @@ import {
     updateSkill,
 } from '../features/admin/skills.api'
 import type { Skill } from '../types/candidate'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import Drawer from '../components/Drawer/Drawer'
 import ActionMenu from '../components/ActionMenu/ActionMenu'
 import './AdminSkillsPage.css'
@@ -98,7 +102,7 @@ function formatCategory(
     }
 }
 
-function AdminSkillsPage() {
+export default function AdminSkillsPage() {
     const { t } = useTranslation()
 
     const [skills, setSkills] = useState<Skill[]>([])
@@ -113,23 +117,26 @@ function AdminSkillsPage() {
 
     const [form, setForm] = useState<SkillForm>(INITIAL_FORM)
 
-    const loadSkills = async (searchTerm = search) => {
-        setIsLoading(true)
-        setError(null)
+    const loadSkills = useCallback(
+        async (searchTerm: string) => {
+            setIsLoading(true)
+            setError(null)
 
-        try {
-            const data = await getSkills(searchTerm)
-            setSkills(data)
-        } catch {
-            setError(t('adminSkills.loadError'))
-        } finally {
-            setIsLoading(false)
-        }
-    }
+            try {
+                const data = await getSkills(searchTerm)
+                setSkills(data)
+            } catch {
+                setError(t('adminSkills.loadError'))
+            } finally {
+                setIsLoading(false)
+            }
+        },
+        [t],
+    )
 
     useEffect(() => {
         void loadSkills('')
-    }, [])
+    }, [loadSkills])
 
     const updateForm = (
         field: keyof SkillForm,
@@ -572,4 +579,3 @@ function AdminSkillsPage() {
     )
 }
 
-export default AdminSkillsPage

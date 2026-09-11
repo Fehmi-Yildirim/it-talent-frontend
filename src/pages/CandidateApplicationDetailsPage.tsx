@@ -5,7 +5,7 @@ import {
     withdrawApplication,
 } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type {
     ApplicationStatus,
     CandidateApplicationDetail,

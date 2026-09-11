@@ -8,7 +8,6 @@ import {
     useNavigate,
     useParams,
 } from 'react-router-dom'
-
 import {
     createJob,
     createJobRequirement,
@@ -18,9 +17,7 @@ import {
     updateJob,
     updateJobRequirement,
 } from '../features/jobs/jobs.api'
-
 import { getSkills } from '../features/skills/skills.api'
-
 import type {
     CreateJobRequest,
     EmploymentType,
@@ -29,9 +26,7 @@ import type {
     UpdateJobRequest,
     WorkMode,
 } from '../types/job'
-
-import { useTranslation } from '../i18n/context'
-
+import { useTranslation } from '../i18n/useTranslation'
 import './RecruiterJobFormPage.css'
 
 const employmentTypes: EmploymentType[] = [
@@ -476,7 +471,7 @@ export default function RecruiterJobFormPage() {
         return () => {
             active = false
         }
-    }, [])
+    }, [t])
 
     useEffect(() => {
         if (!jobId) {
@@ -559,7 +554,7 @@ export default function RecruiterJobFormPage() {
         return () => {
             active = false
         }
-    }, [jobId])
+    }, [jobId, t])
 
     useEffect(() => {
         if (!jobId) {
@@ -603,7 +598,7 @@ export default function RecruiterJobFormPage() {
         return () => {
             active = false
         }
-    }, [jobId])
+    }, [jobId, t])
 
     function addPendingRequirement() {
         setError(null)

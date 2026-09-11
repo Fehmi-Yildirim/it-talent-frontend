@@ -10,7 +10,7 @@ import {
   getCandidateProfile,
   updateCandidateProfile,
 } from '../features/candidate/candidate.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import { ApiError } from '../services/api/apiError'
 import type {
   CandidateProfile,

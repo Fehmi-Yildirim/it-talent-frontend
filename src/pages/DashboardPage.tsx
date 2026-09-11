@@ -6,7 +6,7 @@ import {
   getCandidateDashboard,
   getRecruiterDashboard,
 } from '../features/dashboard/dashboard.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type {
   CandidateDashboard,
   RecruiterDashboard,

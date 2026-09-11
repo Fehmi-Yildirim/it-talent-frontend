@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { ApiError } from '../services/api/apiError'
 import { getCandidateJobs } from '../features/jobs/jobs.api'
 import { getSkills } from '../features/candidate/candidate.api'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 import type {
     EmploymentType,
     JobDiscoveryQuery,

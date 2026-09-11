@@ -9,7 +9,7 @@ import type {
     ApplicationStatus,
     RecruiterApplicationDetail,
 } from '../types/application'
-import { useTranslation } from '../i18n/context'
+import { useTranslation } from '../i18n/useTranslation'
 
 function RecruiterApplicationDetailsPage() {
     const { applicationId } = useParams<{
