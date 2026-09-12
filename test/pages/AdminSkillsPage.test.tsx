@@ -296,8 +296,8 @@ describe('AdminSkillsPage', () => {
         ).toBeInTheDocument()
 
         expect(
-            screen.getByLabelText('Slug'),
-        ).toBeInTheDocument()
+            screen.queryByLabelText('Slug'),
+        ).not.toBeInTheDocument()
 
         expect(
             screen.getByLabelText('Category'),
@@ -308,7 +308,7 @@ describe('AdminSkillsPage', () => {
         ).toBeInTheDocument()
     })
 
-    it('creates a skill', async () => {
+    it('creates a skill without sending a slug', async () => {
         const newSkill = {
             id: 'skill-3',
             name: 'Vue',
@@ -343,15 +343,6 @@ describe('AdminSkillsPage', () => {
             },
         )
 
-        fireEvent.change(
-            screen.getByLabelText('Slug'),
-            {
-                target: {
-                    value: 'vue',
-                },
-            },
-        )
-
         await user.selectOptions(
             screen.getByLabelText('Category'),
             'FRONTEND',
@@ -371,10 +362,6 @@ describe('AdminSkillsPage', () => {
         ).toHaveValue('Vue')
 
         expect(
-            screen.getByLabelText('Slug'),
-        ).toHaveValue('vue')
-
-        expect(
             screen.getByLabelText('Description'),
         ).toHaveValue('Vue.js framework')
 
@@ -389,7 +376,6 @@ describe('AdminSkillsPage', () => {
                 mockedCreateSkill,
             ).toHaveBeenCalledWith({
                 name: 'Vue',
-                slug: 'vue',
                 category: 'FRONTEND',
                 description: 'Vue.js framework',
             })
@@ -402,6 +388,52 @@ describe('AdminSkillsPage', () => {
         expect(
             screen.queryByRole('dialog'),
         ).not.toBeInTheDocument()
+    })
+
+    it('creates a skill without sending a slug', async () => {
+        mockedGetSkills.mockResolvedValue([])
+
+        renderAdminSkillsPage()
+
+        await screen.findByText('No skills found')
+
+        const user = userEvent.setup()
+
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Create skill',
+            }),
+        )
+
+        fireEvent.change(
+            screen.getByLabelText('Name'),
+            {
+                target: {
+                    value: 'React Native',
+                },
+            },
+        )
+
+        await user.selectOptions(
+            screen.getByLabelText('Category'),
+            'FRONTEND',
+        )
+
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Save',
+            }),
+        )
+
+        await waitFor(() => {
+            expect(
+                mockedCreateSkill,
+            ).toHaveBeenCalledWith({
+                name: 'React Native',
+                category: 'FRONTEND',
+                description: null,
+            })
+        })
     })
 
     it('validates required fields before creating a skill', async () => {
@@ -436,27 +468,6 @@ describe('AdminSkillsPage', () => {
             {
                 target: {
                     value: 'Vue',
-                },
-            },
-        )
-
-        await user.click(
-            screen.getByRole('button', {
-                name: 'Save',
-            }),
-        )
-
-        expect(
-            screen.getByText(
-                'Slug is required.',
-            ),
-        ).toBeInTheDocument()
-
-        fireEvent.change(
-            screen.getByLabelText('Slug'),
-            {
-                target: {
-                    value: 'vue',
                 },
             },
         )
@@ -524,8 +535,8 @@ describe('AdminSkillsPage', () => {
         ).toHaveValue('React')
 
         expect(
-            screen.getByLabelText('Slug'),
-        ).toHaveValue('react')
+            screen.queryByLabelText('Slug'),
+        ).not.toBeInTheDocument()
 
         expect(
             screen.getByLabelText('Category'),
@@ -536,7 +547,7 @@ describe('AdminSkillsPage', () => {
         ).toHaveValue('React library')
     })
 
-    it('edits an existing skill', async () => {
+    it('edits an existing skill without sending a slug', async () => {
         const updatedSkill = {
             ...skills[0],
             name: 'React.js',
@@ -585,7 +596,6 @@ describe('AdminSkillsPage', () => {
                 'skill-1',
                 {
                     name: 'React.js',
-                    slug: 'react',
                     category: 'FRONTEND',
                     description: 'React library',
                 },
@@ -697,15 +707,6 @@ describe('AdminSkillsPage', () => {
             },
         )
 
-        fireEvent.change(
-            screen.getByLabelText('Slug'),
-            {
-                target: {
-                    value: 'react',
-                },
-            },
-        )
-
         await user.selectOptions(
             screen.getByLabelText('Category'),
             'FRONTEND',
@@ -780,15 +781,6 @@ describe('AdminSkillsPage', () => {
             {
                 target: {
                     value: 'Vue',
-                },
-            },
-        )
-
-        fireEvent.change(
-            screen.getByLabelText('Slug'),
-            {
-                target: {
-                    value: 'vue',
                 },
             },
         )
