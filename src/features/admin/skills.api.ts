@@ -5,7 +5,6 @@ const API_BASE_URL = '/api/v1'
 
 interface SkillInput {
     name: string
-    slug: string
     category: string
     description?: string | null
 }

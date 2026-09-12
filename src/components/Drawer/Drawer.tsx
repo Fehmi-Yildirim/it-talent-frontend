@@ -25,8 +25,13 @@ function Drawer({
     const drawerRef = useRef<HTMLDivElement>(null)
     const previousActiveElement =
         useRef<HTMLElement | null>(null)
+    const onCloseRef = useRef(onClose)
 
     const titleId = useId()
+
+    useEffect(() => {
+        onCloseRef.current = onClose
+    }, [onClose])
 
     useEffect(() => {
         if (!open) {
@@ -46,7 +51,7 @@ function Drawer({
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key === 'Escape') {
                 event.preventDefault()
-                onClose()
+                onCloseRef.current()
             }
         }
 
@@ -71,7 +76,7 @@ function Drawer({
             previousActiveElement.current?.focus()
             previousActiveElement.current = null
         }
-    }, [open, onClose])
+    }, [open])
 
     if (!open) {
         return null
@@ -80,7 +85,7 @@ function Drawer({
     return createPortal(
         <div
             className="drawer__backdrop"
-            onMouseDown={onClose}
+            onMouseDown={() => onCloseRef.current()}
         >
             <div
                 ref={drawerRef}
@@ -105,7 +110,9 @@ function Drawer({
                         type="button"
                         className="drawer__close"
                         aria-label={closeLabel}
-                        onClick={onClose}
+                        onClick={() =>
+                            onCloseRef.current()
+                        }
                     >
                         ×
                     </button>
