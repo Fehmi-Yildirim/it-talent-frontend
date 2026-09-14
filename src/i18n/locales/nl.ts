@@ -64,8 +64,8 @@ export const nl: DeepPartial<typeof en> = {
         createError: 'Skill kon niet worden aangemaakt.',
         updateError: 'Skill kon niet worden bijgewerkt.',
         deleteError: 'Skill kon niet worden verwijderd.',
-        duplicateSlug:
-            'Er bestaat al een skill met deze slug.',
+        skillInUseError: 'Deze skill kan niet worden verwijderd omdat deze nog in gebruik is.',
+        duplicateSlug: 'Er bestaat al een skill met deze slug.',
 
         refresh: 'Vernieuwen',
         noSkills: 'Geen skills gevonden',

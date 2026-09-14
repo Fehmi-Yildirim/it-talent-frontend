@@ -5,6 +5,7 @@ import {
 } from 'react'
 import { Link } from 'react-router-dom'
 import {
+    ApiRequestError,
     createSkill,
     deleteSkill,
     getSkills,
@@ -268,8 +269,15 @@ export default function AdminSkillsPage() {
                 setIsDrawerOpen(false)
                 resetForm()
             }
-        } catch {
-            setError(t('adminSkills.deleteError'))
+        } catch (requestError) {
+            if (
+                requestError instanceof ApiRequestError &&
+                requestError.status === 409
+            ) {
+                setError(t('adminSkills.skillInUseError'))
+            } else {
+                setError(t('adminSkills.deleteError'))
+            }
         }
     }
 

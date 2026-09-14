@@ -55,13 +55,12 @@ export const en = {
         createError: 'Failed to create skill.',
         updateError: 'Failed to update skill.',
         deleteError: 'Failed to delete skill.',
-        duplicateSlug:
-            'A skill with this slug already exists.',
+        skillInUseError: 'Skill cannot be deleted because it is still in use.',
+        duplicateSlug: 'A skill with this slug already exists.',
 
         refresh: 'Refresh',
         noSkills: 'No skills found',
-        noSkillsMatch:
-            'No skills match your search.',
+        noSkillsMatch: 'No skills match your search.',
 
         search: 'Search',
         searchPlaceholder: 'Search skills...',
@@ -86,8 +85,7 @@ export const en = {
         slugRequired: 'Slug is required.',
         categoryRequired: 'Category is required.',
 
-        deleteConfirmation:
-            'Are you sure you want to delete this skill?',
+        deleteConfirmation: 'Are you sure you want to delete this skill?',
 
         categories: {
             frontend: 'Frontend',

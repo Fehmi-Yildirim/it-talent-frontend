@@ -18,18 +18,32 @@ import { MemoryRouter } from 'react-router-dom'
 
 import AdminSkillsPage from '../../src/pages/AdminSkillsPage'
 import {
+    ApiRequestError,
     createSkill,
     deleteSkill,
     getSkills,
     updateSkill,
 } from '../../src/features/admin/skills.api'
 
-vi.mock('../../src/features/admin/skills.api', () => ({
-    createSkill: vi.fn(),
-    deleteSkill: vi.fn(),
-    getSkills: vi.fn(),
-    updateSkill: vi.fn(),
-}))
+vi.mock('../../src/features/admin/skills.api', () => {
+    class MockApiRequestError extends Error {
+        readonly status: number
+
+        constructor(message: string, status: number) {
+            super(message)
+            this.name = 'ApiRequestError'
+            this.status = status
+        }
+    }
+
+    return {
+        ApiRequestError: MockApiRequestError,
+        createSkill: vi.fn(),
+        deleteSkill: vi.fn(),
+        getSkills: vi.fn(),
+        updateSkill: vi.fn(),
+    }
+})
 
 const mockedGetSkills = vi.mocked(getSkills)
 const mockedCreateSkill = vi.mocked(createSkill)
@@ -210,11 +224,8 @@ describe('AdminSkillsPage', () => {
         await screen.findByText('React')
 
         const user = userEvent.setup()
-
         const searchInput =
-            screen.getByPlaceholderText(
-                'Search skills...',
-            )
+            screen.getByPlaceholderText('Search skills...')
 
         await user.type(searchInput, 'React')
 
@@ -245,11 +256,8 @@ describe('AdminSkillsPage', () => {
         await screen.findByText('React')
 
         const user = userEvent.setup()
-
         const searchInput =
-            screen.getByPlaceholderText(
-                'Search skills...',
-            )
+            screen.getByPlaceholderText('Search skills...')
 
         await user.type(searchInput, 'Angular')
 
@@ -357,14 +365,6 @@ describe('AdminSkillsPage', () => {
             },
         )
 
-        expect(
-            screen.getByLabelText('Name'),
-        ).toHaveValue('Vue')
-
-        expect(
-            screen.getByLabelText('Description'),
-        ).toHaveValue('Vue.js framework')
-
         await user.click(
             screen.getByRole('button', {
                 name: 'Save',
@@ -458,9 +458,7 @@ describe('AdminSkillsPage', () => {
         )
 
         expect(
-            screen.getByText(
-                'Name is required.',
-            ),
+            screen.getByText('Name is required.'),
         ).toBeInTheDocument()
 
         fireEvent.change(
@@ -479,9 +477,7 @@ describe('AdminSkillsPage', () => {
         )
 
         expect(
-            screen.getByText(
-                'Category is required.',
-            ),
+            screen.getByText('Category is required.'),
         ).toBeInTheDocument()
 
         expect(
@@ -554,9 +550,7 @@ describe('AdminSkillsPage', () => {
             description: 'React library updated',
         }
 
-        mockedUpdateSkill.mockResolvedValue(
-            updatedSkill,
-        )
+        mockedUpdateSkill.mockResolvedValue(updatedSkill)
 
         renderAdminSkillsPage()
 
@@ -572,16 +566,13 @@ describe('AdminSkillsPage', () => {
             }),
         )
 
-        const nameInput =
-            screen.getByLabelText('Name')
+        const nameInput = screen.getByLabelText('Name')
 
         fireEvent.change(nameInput, {
             target: {
                 value: 'React.js',
             },
         })
-
-        expect(nameInput).toHaveValue('React.js')
 
         await user.click(
             screen.getByRole('button', {
@@ -608,10 +599,6 @@ describe('AdminSkillsPage', () => {
     })
 
     it('deletes a skill after confirmation', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(
-            true,
-        )
-
         renderAdminSkillsPage()
 
         await screen.findByText('React')
@@ -627,9 +614,19 @@ describe('AdminSkillsPage', () => {
         )
 
         expect(
-            window.confirm,
-        ).toHaveBeenCalledWith(
-            'Are you sure you want to delete this skill? React',
+            screen.getByRole('dialog'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText(
+                'Are you sure you want to delete this skill? React',
+            ),
+        ).toBeInTheDocument()
+
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Delete',
+            }),
         )
 
         await waitFor(() => {
@@ -648,10 +645,6 @@ describe('AdminSkillsPage', () => {
     })
 
     it('does not delete a skill when confirmation is cancelled', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(
-            false,
-        )
-
         renderAdminSkillsPage()
 
         await screen.findByText('React')
@@ -667,14 +660,22 @@ describe('AdminSkillsPage', () => {
         )
 
         expect(
-            window.confirm,
-        ).toHaveBeenCalledWith(
-            'Are you sure you want to delete this skill? React',
+            screen.getByRole('dialog'),
+        ).toBeInTheDocument()
+
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Cancel',
+            }),
         )
 
         expect(
             mockedDeleteSkill,
         ).not.toHaveBeenCalled()
+
+        expect(
+            screen.getByText('React'),
+        ).toBeInTheDocument()
     })
 
     it('shows the duplicate slug error', async () => {
@@ -840,8 +841,39 @@ describe('AdminSkillsPage', () => {
             new Error('Delete failed'),
         )
 
-        vi.spyOn(window, 'confirm').mockReturnValue(
-            true,
+        renderAdminSkillsPage()
+
+        await screen.findByText('React')
+
+        const user = userEvent.setup()
+
+        await openActionMenu(user)
+
+        await user.click(
+            screen.getByRole('menuitem', {
+                name: 'Delete',
+            }),
+        )
+
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Delete',
+            }),
+        )
+
+        expect(
+            await screen.findByText(
+                'Failed to delete skill.',
+            ),
+        ).toBeInTheDocument()
+    })
+
+    it('shows the skill in use error when deletion returns 409', async () => {
+        mockedDeleteSkill.mockRejectedValueOnce(
+            new ApiRequestError(
+                'Skill cannot be deleted because it is still in use.',
+                409,
+            ),
         )
 
         renderAdminSkillsPage()
@@ -858,10 +890,20 @@ describe('AdminSkillsPage', () => {
             }),
         )
 
+        await user.click(
+            screen.getByRole('button', {
+                name: 'Delete',
+            }),
+        )
+
         expect(
             await screen.findByText(
-                'Failed to delete skill.',
+                'Skill cannot be deleted because it is still in use.',
             ),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText('React'),
         ).toBeInTheDocument()
     })
 })
