@@ -20,12 +20,16 @@ interface Company {
 interface CompanyInput {
     name: string
     description: string
+    website: string
+    location: string
 }
 
 function CompanyManagement() {
     const [company, setCompany] = useState<Company | null>(null)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const [website, setWebsite] = useState('')
+    const [location, setLocation] = useState('')
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
@@ -47,6 +51,8 @@ function CompanyManagement() {
                     setCompany(data)
                     setName(data.name)
                     setDescription(data.description)
+                    setWebsite(data.website ?? '')
+                    setLocation(data.location ?? '')
                 }
             } catch (caught) {
                 if (!cancelled) {
@@ -101,6 +107,8 @@ function CompanyManagement() {
         const input: CompanyInput = {
             name: name.trim(),
             description: description.trim(),
+            website: website.trim(),
+            location: location.trim(),
         }
 
         try {
@@ -121,6 +129,8 @@ function CompanyManagement() {
             setCompany(data)
             setName(data.name)
             setDescription(data.description)
+            setWebsite(data.website ?? '')
+            setLocation(data.location ?? '')
             setIsCreating(false)
 
             setSuccess(
@@ -285,6 +295,51 @@ function CompanyManagement() {
                         aria-invalid={Boolean(error)}
                     />
                 </div>
+
+                <div>
+                    <label htmlFor="company-website">
+                        Website
+                    </label>
+
+                    <input
+                        id="company-website"
+                        type="url"
+                        value={website}
+                        onChange={(event) =>
+                            setWebsite(event.target.value)
+                        }
+                        maxLength={255}
+                        aria-invalid={Boolean(error)}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="company-location">
+                        Location
+                    </label>
+
+                    <input
+                        id="company-location"
+                        type="text"
+                        value={location}
+                        onChange={(event) =>
+                            setLocation(event.target.value)
+                        }
+                        maxLength={255}
+                        aria-invalid={Boolean(error)}
+                    />
+                </div>
+
+                {company && (
+                    <div>
+                        <span>Created at</span>
+                        <p>
+                            {new Date(
+                                company.createdAt,
+                            ).toLocaleDateString()}
+                        </p>
+                    </div>
+                )}
 
                 <button
                     type="submit"
