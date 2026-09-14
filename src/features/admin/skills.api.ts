@@ -9,8 +9,18 @@ interface SkillInput {
     description?: string | null
 }
 
-interface ApiError {
+interface ApiErrorResponse {
     message?: string
+}
+
+export class ApiRequestError extends Error {
+    readonly status: number
+
+    constructor(message: string, status: number) {
+        super(message)
+        this.name = 'ApiRequestError'
+        this.status = status
+    }
 }
 
 async function apiRequest<T>(
@@ -32,7 +42,7 @@ async function apiRequest<T>(
         let message = `API request failed: ${response.status}`
 
         try {
-            const error = (await response.json()) as ApiError
+            const error = (await response.json()) as ApiErrorResponse
 
             if (error.message) {
                 message = error.message
@@ -41,7 +51,7 @@ async function apiRequest<T>(
             // Keep the default HTTP error message.
         }
 
-        throw new Error(message)
+        throw new ApiRequestError(message, response.status)
     }
 
     if (response.status === 204) {
