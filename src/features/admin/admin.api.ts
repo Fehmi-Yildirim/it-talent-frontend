@@ -3,7 +3,7 @@ import type { User, UserRole, UserStatus } from '../../types/user'
 
 const API_BASE_URL = '/api/v1'
 
-interface UpdateUserRequest {
+export interface UpdateUserRequest {
     email?: string
     role?: UserRole
     status?: UserStatus
