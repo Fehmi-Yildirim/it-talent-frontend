@@ -13,3 +13,15 @@
 .admin-users-table th {
     font-weight: 600;
 }
+
+.admin-users-select-wrapper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.admin-users-update-success {
+    color: green;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
