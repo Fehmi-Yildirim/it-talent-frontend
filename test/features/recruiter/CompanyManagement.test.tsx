@@ -26,9 +26,9 @@ const company = {
     id: 'company-1',
     name: 'Tech Company',
     slug: 'tech-company',
-    website: null,
+    website: 'https://example.com',
     description: 'An IT company',
-    location: null,
+    location: 'Amsterdam',
     createdAt: '2026-01-01',
     updatedAt: '2026-01-01',
 }
@@ -61,6 +61,18 @@ describe('CompanyManagement', () => {
 
         expect(
             screen.getByDisplayValue('An IT company'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('https://example.com'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('Amsterdam'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText('01/01/2026'),
         ).toBeInTheDocument()
 
         expect(apiClient.get).toHaveBeenCalledWith('/companies/me')
@@ -118,6 +130,14 @@ describe('CompanyManagement', () => {
         expect(
             screen.getByLabelText('Description'),
         ).toBeInTheDocument()
+
+        expect(
+            screen.getByLabelText('Website'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByLabelText('Location'),
+        ).toBeInTheDocument()
     })
 
     it('creates a company', async () => {
@@ -149,6 +169,20 @@ describe('CompanyManagement', () => {
             },
         )
 
+        fireEvent.change(
+            screen.getByLabelText('Website'),
+            {
+                target: { value: 'https://example.com' },
+            },
+        )
+
+        fireEvent.change(
+            screen.getByLabelText('Location'),
+            {
+                target: { value: 'Amsterdam' },
+            },
+        )
+
         fireEvent.click(
             screen.getByRole('button', {
                 name: 'Create company',
@@ -161,6 +195,8 @@ describe('CompanyManagement', () => {
                 {
                     name: 'Tech Company',
                     description: 'An IT company',
+                    website: 'https://example.com',
+                    location: 'Amsterdam',
                 },
             )
         })
@@ -179,6 +215,8 @@ describe('CompanyManagement', () => {
             ...company,
             name: 'Updated Company',
             description: 'New description',
+            website: 'https://updated-example.com',
+            location: 'Rotterdam',
         })
 
         render(<CompanyManagement />)
@@ -189,12 +227,26 @@ describe('CompanyManagement', () => {
         const descriptionInput =
             screen.getByDisplayValue('An IT company')
 
+        const websiteInput =
+            screen.getByDisplayValue('https://example.com')
+
+        const locationInput =
+            screen.getByDisplayValue('Amsterdam')
+
         fireEvent.change(nameInput, {
             target: { value: 'Updated Company' },
         })
 
         fireEvent.change(descriptionInput, {
             target: { value: 'New description' },
+        })
+
+        fireEvent.change(websiteInput, {
+            target: { value: 'https://updated-example.com' },
+        })
+
+        fireEvent.change(locationInput, {
+            target: { value: 'Rotterdam' },
         })
 
         fireEvent.click(
@@ -207,6 +259,8 @@ describe('CompanyManagement', () => {
                 {
                     name: 'Updated Company',
                     description: 'New description',
+                    website: 'https://updated-example.com',
+                    location: 'Rotterdam',
                 },
             )
         })
@@ -215,6 +269,50 @@ describe('CompanyManagement', () => {
             await screen.findByText(
                 'Company information saved successfully.',
             ),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('Updated Company'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('New description'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue(
+                'https://updated-example.com',
+            ),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByDisplayValue('Rotterdam'),
+        ).toBeInTheDocument()
+    })
+
+    it('handles empty website and location', async () => {
+        vi.mocked(apiClient.get).mockResolvedValue({
+            ...company,
+            website: null,
+            location: null,
+        })
+
+        render(<CompanyManagement />)
+
+        expect(
+            await screen.findByDisplayValue('Tech Company'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByLabelText('Website'),
+        ).toHaveValue('')
+
+        expect(
+            screen.getByLabelText('Location'),
+        ).toHaveValue('')
+
+        expect(
+            screen.getByText('01/01/2026'),
         ).toBeInTheDocument()
     })
 
