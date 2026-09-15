@@ -28,6 +28,7 @@ import type {
 } from '../types/job'
 import { useTranslation } from '../i18n/useTranslation'
 import './RecruiterJobFormPage.css'
+import { RichTextEditor } from '../components/RichTextEditor/RichTextEditor'
 
 const employmentTypes: EmploymentType[] = [
     'FULL_TIME',
@@ -1348,26 +1349,15 @@ export default function RecruiterJobFormPage() {
                         </div>
 
                         <div className="form-field form-field--full">
-                            <label htmlFor="description">
-                                {t(
-                                    'recruiterJobForm.description',
-                                )}
+                            <label id="description-label">
+                                {t('recruiterJobForm.description')}
                             </label>
 
-                            <textarea
+                            <RichTextEditor
                                 id="description"
                                 value={description}
-                                onChange={(event) =>
-                                    setDescription(
-                                        event.target
-                                            .value,
-                                    )
-                                }
-                                placeholder={t(
-                                    'recruiterJobForm.descriptionPlaceholder',
-                                )}
-                                rows={8}
-                                required
+                                onChange={setDescription}
+                                aria-labelledby="description-label"
                             />
                         </div>
                     </div>
