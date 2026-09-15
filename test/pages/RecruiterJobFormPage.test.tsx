@@ -727,7 +727,8 @@ describe('RecruiterJobFormPage', () => {
         })
     })
 
-    it('updates the job in edit mode', async () => {
+
+    it('updates the job with full salary amounts in edit mode', async () => {
         mockSkills()
         mockJob()
 
@@ -735,9 +736,9 @@ describe('RecruiterJobFormPage', () => {
             [],
         )
 
-        vi.mocked(updateJob).mockResolvedValue({
-            ...await getJobById(jobId),
-        })
+        vi.mocked(updateJob).mockResolvedValue(
+            await getJobById(jobId),
+        )
 
         renderPage(
             `/recruiter/jobs/${jobId}/edit`,
@@ -760,6 +761,24 @@ describe('RecruiterJobFormPage', () => {
             },
         )
 
+        fireEvent.change(
+            screen.getByLabelText('Minimum salary'),
+            {
+                target: {
+                    value: '2500',
+                },
+            },
+        )
+
+        fireEvent.change(
+            screen.getByLabelText('Maximum salary'),
+            {
+                target: {
+                    value: '4500',
+                },
+            },
+        )
+
         fireEvent.click(
             screen.getByRole('button', {
                 name: 'Save changes',
@@ -769,16 +788,21 @@ describe('RecruiterJobFormPage', () => {
         await waitFor(() => {
             expect(updateJob).toHaveBeenCalledWith(
                 jobId,
-                expect.objectContaining({
-                    title:
-                        'Senior Frontend Developer',
+                {
+                    title: 'Senior Frontend Developer',
                     description:
                         'Build frontend applications.',
-                    employmentType:
-                        'FULL_TIME',
+                    location: 'Amsterdam',
+                    employmentType: 'FULL_TIME',
                     workMode: 'HYBRID',
-                }),
+                    salaryMin: 2500,
+                    salaryMax: 4500,
+                    currency: 'EUR',
+                    expiresAt: '2099-12-31',
+                },
             )
         })
     })
+
+
 })

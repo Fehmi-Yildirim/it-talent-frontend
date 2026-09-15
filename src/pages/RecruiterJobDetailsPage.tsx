@@ -63,6 +63,26 @@ function formatStatus(
     }
 }
 
+function formatSalaryValue(
+    value: string | number,
+    currency: string,
+): string {
+    const amount =
+        typeof value === 'number'
+            ? value
+            : Number(value)
+
+    if (!Number.isFinite(amount)) {
+        return ''
+    }
+
+    return new Intl.NumberFormat('nl-NL', {
+        style: 'currency',
+        currency,
+        maximumFractionDigits: 0,
+    }).format(amount)
+}
+
 function formatSalary(
     salaryMin: string | number | null,
     salaryMax: string | number | null,
@@ -73,17 +93,29 @@ function formatSalary(
         return t('recruiterJobs.salaryNotSpecified')
     }
 
-    const symbol = currency ? `${currency} ` : ''
+    const currencyCode = currency || 'EUR'
 
     if (salaryMin !== null && salaryMax !== null) {
-        return `${symbol}${salaryMin} - ${salaryMax}`
+        return `${formatSalaryValue(
+            salaryMin,
+            currencyCode,
+        )} - ${formatSalaryValue(
+            salaryMax,
+            currencyCode,
+        )}`
     }
 
     if (salaryMin !== null) {
-        return `${symbol}${salaryMin}+`
+        return `${formatSalaryValue(
+            salaryMin,
+            currencyCode,
+        )}+`
     }
 
-    return `${t('recruiterJobs.upTo')} ${symbol}${salaryMax}`
+    return `${t('recruiterJobs.upTo')} ${formatSalaryValue(
+        salaryMax as string | number,
+        currencyCode,
+    )}`
 }
 
 function formatDate(
