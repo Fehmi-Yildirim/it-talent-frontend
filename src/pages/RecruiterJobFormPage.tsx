@@ -57,9 +57,7 @@ interface RequirementUpdate {
 
 function getInitialDate(): string {
     const date = new Date()
-
     date.setDate(date.getDate() + 30)
-
     return date.toISOString().slice(0, 10)
 }
 
@@ -71,6 +69,47 @@ function isValidUuid(value: string): boolean {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
         value,
     )
+}
+
+/**
+ * Accepts full salary amounts in either format:
+ *
+ * 2500
+ * 2.500
+ * 25000
+ * 25.000
+ * 50000
+ * 50.000
+ *
+ * The value sent to the API is always a normal integer:
+ *
+ * 2.500 -> 2500
+ * 50.000 -> 50000
+ */
+function normalizeSalary(
+    value: string,
+): number | undefined {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+        return undefined
+    }
+
+    const normalizedValue = trimmedValue
+        .replace(/\./g, '')
+        .replace(/\s/g, '')
+
+    if (!/^-?\d+$/.test(normalizedValue)) {
+        return undefined
+    }
+
+    const parsedValue = Number(normalizedValue)
+
+    if (!Number.isSafeInteger(parsedValue)) {
+        return undefined
+    }
+
+    return parsedValue
 }
 
 interface RequirementRowProps {
@@ -132,11 +171,15 @@ function RequirementRow({
                         }}
                     >
                         <option value="required">
-                            {t('recruiterJobForm.required')}
+                            {t(
+                                'recruiterJobForm.required',
+                            )}
                         </option>
 
                         <option value="preferred">
-                            {t('recruiterJobForm.preferred')}
+                            {t(
+                                'recruiterJobForm.preferred',
+                            )}
                         </option>
                     </select>
                 </label>
@@ -248,11 +291,15 @@ function PendingRequirementRow({
                         }
                     >
                         <option value="required">
-                            {t('recruiterJobForm.required')}
+                            {t(
+                                'recruiterJobForm.required',
+                            )}
                         </option>
 
                         <option value="preferred">
-                            {t('recruiterJobForm.preferred')}
+                            {t(
+                                'recruiterJobForm.preferred',
+                            )}
                         </option>
                     </select>
                 </label>
@@ -306,9 +353,7 @@ function PendingRequirementRow({
 
 export default function RecruiterJobFormPage() {
     const { t } = useTranslation()
-
     const navigate = useNavigate()
-
     const { jobId } =
         useParams<{ jobId: string }>()
 
@@ -318,10 +363,8 @@ export default function RecruiterJobFormPage() {
         useState<Skill[]>([])
 
     const [title, setTitle] = useState('')
-
     const [description, setDescription] =
         useState('')
-
     const [location, setLocation] =
         useState('')
 
@@ -395,16 +438,12 @@ export default function RecruiterJobFormPage() {
         switch (type) {
             case 'FULL_TIME':
                 return t('candidateJobs.fullTime')
-
             case 'PART_TIME':
                 return t('candidateJobs.partTime')
-
             case 'CONTRACT':
                 return t('candidateJobs.contract')
-
             case 'FREELANCE':
                 return t('candidateJobs.freelance')
-
             case 'INTERNSHIP':
                 return t('candidateJobs.internship')
         }
@@ -416,13 +455,10 @@ export default function RecruiterJobFormPage() {
         switch (mode) {
             case 'ONSITE':
                 return t('candidateJobs.onsite')
-
             case 'HYBRID':
                 return t('candidateJobs.hybrid')
-
             case 'REMOTE':
                 return t('candidateJobs.remote')
-
             case 'FLEXIBLE':
                 return t('candidateJobs.flexible')
         }
@@ -495,19 +531,15 @@ export default function RecruiterJobFormPage() {
                 }
 
                 setTitle(response.title)
-
                 setDescription(
                     response.description,
                 )
-
                 setLocation(
                     response.location ?? '',
                 )
-
                 setEmploymentType(
                     response.employmentType,
                 )
-
                 setWorkMode(response.workMode)
 
                 setSalaryMin(
@@ -903,12 +935,15 @@ export default function RecruiterJobFormPage() {
             )
         }
 
+        const normalizedSalaryMin =
+            normalizeSalary(salaryMin)
+
+        const normalizedSalaryMax =
+            normalizeSalary(salaryMax)
+
         if (
-            salaryMin !== '' &&
-            (!Number.isFinite(
-                Number(salaryMin),
-            ) ||
-                Number(salaryMin) < 0)
+            salaryMin.trim() !== '' &&
+            normalizedSalaryMin === undefined
         ) {
             return t(
                 'recruiterJobForm.minimumSalaryNegative',
@@ -916,11 +951,8 @@ export default function RecruiterJobFormPage() {
         }
 
         if (
-            salaryMax !== '' &&
-            (!Number.isFinite(
-                Number(salaryMax),
-            ) ||
-                Number(salaryMax) < 0)
+            salaryMax.trim() !== '' &&
+            normalizedSalaryMax === undefined
         ) {
             return t(
                 'recruiterJobForm.maximumSalaryNegative',
@@ -928,10 +960,28 @@ export default function RecruiterJobFormPage() {
         }
 
         if (
-            salaryMin !== '' &&
-            salaryMax !== '' &&
-            Number(salaryMin) >
-            Number(salaryMax)
+            normalizedSalaryMin !== undefined &&
+            normalizedSalaryMin < 0
+        ) {
+            return t(
+                'recruiterJobForm.minimumSalaryNegative',
+            )
+        }
+
+        if (
+            normalizedSalaryMax !== undefined &&
+            normalizedSalaryMax < 0
+        ) {
+            return t(
+                'recruiterJobForm.maximumSalaryNegative',
+            )
+        }
+
+        if (
+            normalizedSalaryMin !== undefined &&
+            normalizedSalaryMax !== undefined &&
+            normalizedSalaryMin >
+            normalizedSalaryMax
         ) {
             return t(
                 'recruiterJobForm.minimumSalaryGreater',
@@ -1018,6 +1068,12 @@ export default function RecruiterJobFormPage() {
         setSaving(true)
 
         try {
+            const normalizedSalaryMin =
+                normalizeSalary(salaryMin)
+
+            const normalizedSalaryMax =
+                normalizeSalary(salaryMax)
+
             if (jobId) {
                 const data: UpdateJobRequest = {
                     title: title.trim(),
@@ -1029,13 +1085,9 @@ export default function RecruiterJobFormPage() {
                     employmentType,
                     workMode,
                     salaryMin:
-                        salaryMin !== ''
-                            ? Number(salaryMin)
-                            : undefined,
+                        normalizedSalaryMin,
                     salaryMax:
-                        salaryMax !== ''
-                            ? Number(salaryMax)
-                            : undefined,
+                        normalizedSalaryMax,
                     currency:
                         currency || undefined,
                     expiresAt:
@@ -1058,13 +1110,9 @@ export default function RecruiterJobFormPage() {
                 employmentType,
                 workMode,
                 salaryMin:
-                    salaryMin !== ''
-                        ? Number(salaryMin)
-                        : undefined,
+                    normalizedSalaryMin,
                 salaryMax:
-                    salaryMax !== ''
-                        ? Number(salaryMax)
-                        : undefined,
+                    normalizedSalaryMax,
                 currency:
                     currency || undefined,
                 expiresAt:
@@ -1344,8 +1392,8 @@ export default function RecruiterJobFormPage() {
 
                             <input
                                 id="salaryMin"
-                                type="number"
-                                min="0"
+                                type="text"
+                                inputMode="numeric"
                                 value={salaryMin}
                                 onChange={(event) =>
                                     setSalaryMin(
@@ -1353,7 +1401,7 @@ export default function RecruiterJobFormPage() {
                                             .value,
                                     )
                                 }
-                                placeholder="40000"
+                                placeholder="2500"
                             />
                         </div>
 
@@ -1366,8 +1414,8 @@ export default function RecruiterJobFormPage() {
 
                             <input
                                 id="salaryMax"
-                                type="number"
-                                min="0"
+                                type="text"
+                                inputMode="numeric"
                                 value={salaryMax}
                                 onChange={(event) =>
                                     setSalaryMax(
@@ -1375,7 +1423,7 @@ export default function RecruiterJobFormPage() {
                                             .value,
                                     )
                                 }
-                                placeholder="60000"
+                                placeholder="4500"
                             />
                         </div>
 
