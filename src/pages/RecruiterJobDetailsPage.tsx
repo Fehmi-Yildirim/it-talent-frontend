@@ -413,9 +413,10 @@ export default function RecruiterJobDetailsPage() {
                 <section className="recruiter-job-details-card">
                     <h2>{t('recruiterJobs.jobDescription')}</h2>
 
-                    <p className="recruiter-job-details-description">
-                        {job.description}
-                    </p>
+                    <div
+                        className="recruiter-job-details-description"
+                        dangerouslySetInnerHTML={{ __html: job.description }}
+                    />
                 </section>
 
                 <section className="recruiter-job-details-card">

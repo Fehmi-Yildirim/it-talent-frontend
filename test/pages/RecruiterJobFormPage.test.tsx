@@ -1,14 +1,8 @@
-import {
-    fireEvent,
-    render,
-    screen,
-    waitFor,
-} from '../test-utils'
-
-import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RecruiterJobFormPage from '../../src/pages/RecruiterJobFormPage'
+import { I18nProvider } from '../../src/i18n/context'
 
 import {
     createJob,
@@ -39,8 +33,7 @@ vi.mock('../../src/features/skills/skills.api', () => ({
 const jobId = '11111111-1111-4111-8111-111111111111'
 const skillId = '22222222-2222-4222-8222-222222222222'
 const skillId2 = '33333333-3333-4333-8333-333333333333'
-const requirementId =
-    '44444444-4444-4444-8444-444444444444'
+const requirementId = '44444444-4444-4444-8444-444444444444'
 
 const skills = [
     {
@@ -64,24 +57,26 @@ const requirement = {
 
 function renderPage(path: string) {
     return render(
-        <MemoryRouter initialEntries={[path]}>
-            <Routes>
-                <Route
-                    path="/recruiter/jobs/new"
-                    element={<RecruiterJobFormPage />}
-                />
+        <I18nProvider>
+            <MemoryRouter initialEntries={[path]}>
+                <Routes>
+                    <Route
+                        path="/recruiter/jobs/new"
+                        element={<RecruiterJobFormPage />}
+                    />
 
-                <Route
-                    path="/recruiter/jobs/:jobId/edit"
-                    element={<RecruiterJobFormPage />}
-                />
+                    <Route
+                        path="/recruiter/jobs/:jobId/edit"
+                        element={<RecruiterJobFormPage />}
+                    />
 
-                <Route
-                    path="/recruiter/jobs"
-                    element={<div>Jobs page</div>}
-                />
-            </Routes>
-        </MemoryRouter>,
+                    <Route
+                        path="/recruiter/jobs"
+                        element={<div>Jobs page</div>}
+                    />
+                </Routes>
+            </MemoryRouter>
+        </I18nProvider>,
     )
 }
 
@@ -92,13 +87,11 @@ function mockSkills() {
 function mockJob() {
     vi.mocked(getJobById).mockResolvedValue({
         id: jobId,
-        companyId:
-            '55555555-5555-4555-8555-555555555555',
+        companyId: '55555555-5555-4555-8555-555555555555',
         createdByRecruiterId:
             '66666666-6666-4666-8666-666666666666',
         title: 'Frontend Developer',
-        description:
-            'Build frontend applications.',
+        description: 'Build frontend applications.',
         location: 'Amsterdam',
         employmentType: 'FULL_TIME',
         workMode: 'HYBRID',
@@ -134,10 +127,6 @@ describe('RecruiterJobFormPage', () => {
         ).toBeInTheDocument()
 
         expect(
-            screen.getByLabelText('Job title'),
-        ).toBeInTheDocument()
-
-        expect(
             screen.getByLabelText('Description'),
         ).toBeInTheDocument()
 
@@ -154,25 +143,16 @@ describe('RecruiterJobFormPage', () => {
             requirement,
         ])
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
-                screen.getByDisplayValue(
-                    'Frontend Developer',
-                ),
+                screen.getByDisplayValue('Frontend Developer'),
             ).toBeInTheDocument()
         })
 
-        expect(getJobById).toHaveBeenCalledWith(
-            jobId,
-        )
-
-        expect(
-            getJobRequirements,
-        ).toHaveBeenCalledWith(jobId)
+        expect(getJobById).toHaveBeenCalledWith(jobId)
+        expect(getJobRequirements).toHaveBeenCalledWith(jobId)
 
         expect(
             screen.getByText('React', {
@@ -189,13 +169,9 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue(
-            [],
-        )
+        vi.mocked(getJobRequirements).mockResolvedValue([])
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -210,17 +186,13 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue(
-            [],
-        )
+        vi.mocked(getJobRequirements).mockResolvedValue([])
 
         vi.mocked(
             createJobRequirement,
         ).mockResolvedValue(requirement)
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -238,9 +210,7 @@ describe('RecruiterJobFormPage', () => {
         )
 
         fireEvent.change(
-            screen.getByLabelText(
-                'Minimum level',
-            ),
+            screen.getByLabelText('Minimum level'),
             {
                 target: {
                     value: '3',
@@ -275,9 +245,7 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue(
-            [],
-        )
+        vi.mocked(getJobRequirements).mockResolvedValue([])
 
         vi.mocked(
             createJobRequirement,
@@ -290,9 +258,7 @@ describe('RecruiterJobFormPage', () => {
             skill: skills[1],
         })
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -310,9 +276,7 @@ describe('RecruiterJobFormPage', () => {
         )
 
         fireEvent.change(
-            screen.getByLabelText(
-                'Type',
-            ),
+            screen.getByLabelText('Type'),
             {
                 target: {
                     value: 'preferred',
@@ -321,9 +285,7 @@ describe('RecruiterJobFormPage', () => {
         )
 
         fireEvent.change(
-            screen.getByLabelText(
-                'Minimum level',
-            ),
+            screen.getByLabelText('Minimum level'),
             {
                 target: {
                     value: '2',
@@ -364,9 +326,7 @@ describe('RecruiterJobFormPage', () => {
             minimumLevel: 4,
         })
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -379,11 +339,14 @@ describe('RecruiterJobFormPage', () => {
         const typeSelects =
             screen.getAllByDisplayValue('Required')
 
-        fireEvent.change(typeSelects[typeSelects.length - 1], {
-            target: {
-                value: 'preferred',
+        fireEvent.change(
+            typeSelects[typeSelects.length - 1],
+            {
+                target: {
+                    value: 'preferred',
+                },
             },
-        })
+        )
 
         await waitFor(() => {
             expect(
@@ -412,9 +375,7 @@ describe('RecruiterJobFormPage', () => {
             message: 'Requirement removed',
         })
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -495,14 +456,27 @@ describe('RecruiterJobFormPage', () => {
             },
         )
 
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'HTML',
+            }),
+        )
+
         fireEvent.change(
-            screen.getByLabelText('Description'),
+            screen.getByRole('textbox', {
+                name: 'HTML source',
+            }),
             {
                 target: {
-                    value:
-                        'Build React applications.',
+                    value: '<p>Build React applications.</p>',
                 },
             },
+        )
+
+        fireEvent.click(
+            screen.getByRole('button', {
+                name: 'Visual editor',
+            }),
         )
 
         fireEvent.change(
@@ -515,9 +489,7 @@ describe('RecruiterJobFormPage', () => {
         )
 
         fireEvent.change(
-            screen.getByLabelText(
-                'Minimum level',
-            ),
+            screen.getByLabelText('Minimum level'),
             {
                 target: {
                     value: '3',
@@ -547,7 +519,7 @@ describe('RecruiterJobFormPage', () => {
             expect(createJob).toHaveBeenCalledWith({
                 title: 'React Developer',
                 description:
-                    'Build React applications.',
+                    '<p>Build React applications.</p>',
                 location: undefined,
                 employmentType: 'FULL_TIME',
                 workMode: 'ONSITE',
@@ -601,6 +573,14 @@ describe('RecruiterJobFormPage', () => {
 
         renderPage('/recruiter/jobs/new')
 
+        await waitFor(() => {
+            expect(
+                screen.getByRole('button', {
+                    name: 'Create job',
+                }),
+            ).toBeInTheDocument()
+        })
+
         fireEvent.change(
             screen.getByLabelText('Job title'),
             {
@@ -611,32 +591,19 @@ describe('RecruiterJobFormPage', () => {
         )
 
         fireEvent.change(
-            screen.getByLabelText('Description'),
+            screen.getByLabelText('Minimum salary'),
             {
                 target: {
-                    value: 'Developer role.',
+                    value: '5000',
                 },
             },
         )
 
         fireEvent.change(
-            screen.getByLabelText(
-                'Minimum salary',
-            ),
+            screen.getByLabelText('Maximum salary'),
             {
                 target: {
-                    value: '70000',
-                },
-            },
-        )
-
-        fireEvent.change(
-            screen.getByLabelText(
-                'Maximum salary',
-            ),
-            {
-                target: {
-                    value: '50000',
+                    value: '3000',
                 },
             },
         )
@@ -660,9 +627,7 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue(
-            [],
-        )
+        vi.mocked(getJobRequirements).mockResolvedValue([])
 
         vi.mocked(
             createJobRequirement,
@@ -670,9 +635,7 @@ describe('RecruiterJobFormPage', () => {
             new Error('API error'),
         )
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -714,9 +677,7 @@ describe('RecruiterJobFormPage', () => {
             new Error('API error'),
         )
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -727,22 +688,17 @@ describe('RecruiterJobFormPage', () => {
         })
     })
 
-
     it('updates the job with full salary amounts in edit mode', async () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue(
-            [],
-        )
+        vi.mocked(getJobRequirements).mockResolvedValue([])
 
         vi.mocked(updateJob).mockResolvedValue(
             await getJobById(jobId),
         )
 
-        renderPage(
-            `/recruiter/jobs/${jobId}/edit`,
-        )
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
             expect(
@@ -791,7 +747,7 @@ describe('RecruiterJobFormPage', () => {
                 {
                     title: 'Senior Frontend Developer',
                     description:
-                        'Build frontend applications.',
+                        '<p>Build frontend applications.</p>',
                     location: 'Amsterdam',
                     employmentType: 'FULL_TIME',
                     workMode: 'HYBRID',
@@ -803,6 +759,4 @@ describe('RecruiterJobFormPage', () => {
             )
         })
     })
-
-
 })

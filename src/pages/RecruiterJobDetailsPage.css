@@ -330,3 +330,62 @@
         width: 100%;
     }
 }
+
+.recruiter-job-details-description {
+    color: #374151;
+    line-height: 1.7;
+}
+
+.recruiter-job-details-description> :first-child {
+    margin-top: 0;
+}
+
+.recruiter-job-details-description> :last-child {
+    margin-bottom: 0;
+}
+
+.recruiter-job-details-description p {
+    margin: 0 0 1rem;
+}
+
+.recruiter-job-details-description h2,
+.recruiter-job-details-description h3 {
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.25;
+}
+
+.recruiter-job-details-description h2 {
+    font-size: 1.5rem;
+}
+
+.recruiter-job-details-description h3 {
+    font-size: 1.25rem;
+}
+
+.recruiter-job-details-description ul,
+.recruiter-job-details-description ol {
+    margin: 0 0 1rem;
+    padding-left: 1.5rem;
+}
+
+.recruiter-job-details-description li {
+    margin-bottom: 0.25rem;
+}
+
+.recruiter-job-details-description strong {
+    font-weight: 700;
+}
+
+.recruiter-job-details-description em {
+    font-style: italic;
+}
+
+.recruiter-job-details-description u {
+    text-decoration: underline;
+}
+
+.recruiter-job-details-description a {
+    color: #2563eb;
+    text-decoration: underline;
+}
