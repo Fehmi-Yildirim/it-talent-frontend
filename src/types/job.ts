@@ -14,6 +14,7 @@ export type WorkMode =
 export type JobStatus =
   | 'DRAFT'
   | 'PUBLISHED'
+  | 'PAUSED'
   | 'CLOSED'
 
 export interface Skill {

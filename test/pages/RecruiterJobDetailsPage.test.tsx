@@ -4,23 +4,30 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RecruiterJobDetailsPage from '../../src/pages/RecruiterJobDetailsPage'
 import type { Job } from '../../src/types/job'
 
-
 const {
     getJobByIdMock,
     publishJobMock,
+    pauseJobMock,
+    resumeJobMock,
     closeJobMock,
+    reopenJobMock,
 } = vi.hoisted(() => ({
     getJobByIdMock: vi.fn(),
     publishJobMock: vi.fn(),
+    pauseJobMock: vi.fn(),
+    resumeJobMock: vi.fn(),
     closeJobMock: vi.fn(),
+    reopenJobMock: vi.fn(),
 }))
 
 vi.mock('../../src/features/jobs/jobs.api', () => ({
     getJobById: getJobByIdMock,
     publishJob: publishJobMock,
+    pauseJob: pauseJobMock,
+    resumeJob: resumeJobMock,
     closeJob: closeJobMock,
+    reopenJob: reopenJobMock,
 }))
-
 
 const baseJob: Job = {
     id: 'job-1',
@@ -124,14 +131,16 @@ describe('RecruiterJobDetailsPage', () => {
         )
     })
 
-    it('publishes a draft job', async () => {
-        getJobByIdMock.mockResolvedValue(baseJob)
-
+    it('publishes a draft job and refreshes the job', async () => {
         const publishedJob: Job = {
             ...baseJob,
             status: 'PUBLISHED',
             publishedAt: '2026-09-01T10:00:00.000Z',
         }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(baseJob)
+            .mockResolvedValueOnce(publishedJob)
 
         publishJobMock.mockResolvedValue(publishedJob)
 
@@ -147,6 +156,10 @@ describe('RecruiterJobDetailsPage', () => {
             expect(publishJobMock).toHaveBeenCalledWith('job-1')
         })
 
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
         expect(
             await screen.findByText('Job published successfully.'),
         ).toBeInTheDocument()
@@ -157,24 +170,134 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             screen.getByRole('button', {
+                name: 'Pause job',
+            }),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
                 name: 'Close job',
             }),
         ).toBeInTheDocument()
     })
 
-    it('closes a published job', async () => {
+    it('pauses a published job and refreshes the job', async () => {
         const publishedJob: Job = {
             ...baseJob,
             status: 'PUBLISHED',
             publishedAt: '2026-09-01T10:00:00.000Z',
         }
 
-        getJobByIdMock.mockResolvedValue(publishedJob)
+        const pausedJob: Job = {
+            ...publishedJob,
+            status: 'PAUSED',
+        }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(publishedJob)
+            .mockResolvedValueOnce(pausedJob)
+
+        pauseJobMock.mockResolvedValue(pausedJob)
+
+        renderPage()
+
+        const pauseButton = await screen.findByRole('button', {
+            name: 'Pause job',
+        })
+
+        fireEvent.click(pauseButton)
+
+        await waitFor(() => {
+            expect(pauseJobMock).toHaveBeenCalledWith('job-1')
+        })
+
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
+        expect(
+            await screen.findByText('Job paused successfully.'),
+        ).toBeInTheDocument()
+
+        expect(screen.getByText('Paused')).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Resume job',
+            }),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Close job',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('resumes a paused job and refreshes the job', async () => {
+        const pausedJob: Job = {
+            ...baseJob,
+            status: 'PAUSED',
+            publishedAt: '2026-09-01T10:00:00.000Z',
+        }
+
+        const resumedJob: Job = {
+            ...pausedJob,
+            status: 'PUBLISHED',
+        }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(pausedJob)
+            .mockResolvedValueOnce(resumedJob)
+
+        resumeJobMock.mockResolvedValue(resumedJob)
+
+        renderPage()
+
+        const resumeButton = await screen.findByRole('button', {
+            name: 'Resume job',
+        })
+
+        fireEvent.click(resumeButton)
+
+        await waitFor(() => {
+            expect(resumeJobMock).toHaveBeenCalledWith('job-1')
+        })
+
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
+        expect(
+            await screen.findByText('Job resumed successfully.'),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getAllByText('Published').length,
+        ).toBeGreaterThan(0)
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Pause job',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('closes a published job and refreshes the job', async () => {
+        const publishedJob: Job = {
+            ...baseJob,
+            status: 'PUBLISHED',
+            publishedAt: '2026-09-01T10:00:00.000Z',
+        }
 
         const closedJob: Job = {
             ...publishedJob,
             status: 'CLOSED',
         }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(publishedJob)
+            .mockResolvedValueOnce(closedJob)
 
         closeJobMock.mockResolvedValue(closedJob)
 
@@ -190,12 +313,128 @@ describe('RecruiterJobDetailsPage', () => {
             expect(closeJobMock).toHaveBeenCalledWith('job-1')
         })
 
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
         expect(
             await screen.findByText('Job closed successfully.'),
         ).toBeInTheDocument()
 
+        expect(screen.getByText('Closed')).toBeInTheDocument()
+
         expect(
-            screen.getByText('Closed'),
+            screen.getByRole('button', {
+                name: 'Reopen job',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('closes a paused job and refreshes the job', async () => {
+        const pausedJob: Job = {
+            ...baseJob,
+            status: 'PAUSED',
+            publishedAt: '2026-09-01T10:00:00.000Z',
+        }
+
+        const closedJob: Job = {
+            ...pausedJob,
+            status: 'CLOSED',
+        }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(pausedJob)
+            .mockResolvedValueOnce(closedJob)
+
+        closeJobMock.mockResolvedValue(closedJob)
+
+        renderPage()
+
+        const closeButton = await screen.findByRole('button', {
+            name: 'Close job',
+        })
+
+        fireEvent.click(closeButton)
+
+        await waitFor(() => {
+            expect(closeJobMock).toHaveBeenCalledWith('job-1')
+        })
+
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
+        expect(
+            await screen.findByText('Job closed successfully.'),
+        ).toBeInTheDocument()
+
+        expect(screen.getByText('Closed')).toBeInTheDocument()
+    })
+
+    it('reopens a closed job and refreshes the job', async () => {
+        const closedJob: Job = {
+            ...baseJob,
+            status: 'CLOSED',
+        }
+
+        const reopenedJob: Job = {
+            ...closedJob,
+            status: 'DRAFT',
+        }
+
+        getJobByIdMock
+            .mockResolvedValueOnce(closedJob)
+            .mockResolvedValueOnce(reopenedJob)
+
+        reopenJobMock.mockResolvedValue(reopenedJob)
+
+        renderPage()
+
+        const reopenButton = await screen.findByRole('button', {
+            name: 'Reopen job',
+        })
+
+        fireEvent.click(reopenButton)
+
+        await waitFor(() => {
+            expect(reopenJobMock).toHaveBeenCalledWith('job-1')
+        })
+
+        await waitFor(() => {
+            expect(getJobByIdMock).toHaveBeenCalledTimes(2)
+        })
+
+        expect(
+            await screen.findByText('Job reopened successfully.'),
+        ).toBeInTheDocument()
+
+        expect(screen.getByText('Draft')).toBeInTheDocument()
+
+        expect(
+            screen.getByRole('button', {
+                name: 'Publish job',
+            }),
+        ).toBeInTheDocument()
+    })
+
+    it('handles a job without requirements', async () => {
+        const jobWithoutRequirements: Job = {
+            ...baseJob,
+            requirements: undefined as unknown as Job['requirements'],
+        }
+
+        getJobByIdMock.mockResolvedValue(jobWithoutRequirements)
+
+        renderPage()
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Senior React Developer',
+            }),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText('No requirements configured.'),
         ).toBeInTheDocument()
     })
 
@@ -230,6 +469,62 @@ describe('RecruiterJobDetailsPage', () => {
                 'Unable to publish this job. Please try again.',
             ),
         ).toBeInTheDocument()
+
+        expect(getJobByIdMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows an API error when pausing fails', async () => {
+        const publishedJob: Job = {
+            ...baseJob,
+            status: 'PUBLISHED',
+            publishedAt: '2026-09-01T10:00:00.000Z',
+        }
+
+        getJobByIdMock.mockResolvedValue(publishedJob)
+        pauseJobMock.mockRejectedValue(new Error('API error'))
+
+        renderPage()
+
+        const pauseButton = await screen.findByRole('button', {
+            name: 'Pause job',
+        })
+
+        fireEvent.click(pauseButton)
+
+        expect(
+            await screen.findByText(
+                'Unable to pause this job. Please try again.',
+            ),
+        ).toBeInTheDocument()
+
+        expect(getJobByIdMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows an API error when resuming fails', async () => {
+        const pausedJob: Job = {
+            ...baseJob,
+            status: 'PAUSED',
+            publishedAt: '2026-09-01T10:00:00.000Z',
+        }
+
+        getJobByIdMock.mockResolvedValue(pausedJob)
+        resumeJobMock.mockRejectedValue(new Error('API error'))
+
+        renderPage()
+
+        const resumeButton = await screen.findByRole('button', {
+            name: 'Resume job',
+        })
+
+        fireEvent.click(resumeButton)
+
+        expect(
+            await screen.findByText(
+                'Unable to resume this job. Please try again.',
+            ),
+        ).toBeInTheDocument()
+
+        expect(getJobByIdMock).toHaveBeenCalledTimes(1)
     })
 
     it('shows an API error when closing fails', async () => {
@@ -255,5 +550,33 @@ describe('RecruiterJobDetailsPage', () => {
                 'Unable to close this job. Please try again.',
             ),
         ).toBeInTheDocument()
+
+        expect(getJobByIdMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('shows an API error when reopening fails', async () => {
+        const closedJob: Job = {
+            ...baseJob,
+            status: 'CLOSED',
+        }
+
+        getJobByIdMock.mockResolvedValue(closedJob)
+        reopenJobMock.mockRejectedValue(new Error('API error'))
+
+        renderPage()
+
+        const reopenButton = await screen.findByRole('button', {
+            name: 'Reopen job',
+        })
+
+        fireEvent.click(reopenButton)
+
+        expect(
+            await screen.findByText(
+                'Unable to reopen this job. Please try again.',
+            ),
+        ).toBeInTheDocument()
+
+        expect(getJobByIdMock).toHaveBeenCalledTimes(1)
     })
 })

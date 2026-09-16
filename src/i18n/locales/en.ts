@@ -570,6 +570,7 @@ export const en = {
 
         draft: 'Draft',
         published: 'Published',
+        paused: 'Paused',
         closed: 'Closed',
 
         view: 'View',
@@ -583,17 +584,40 @@ export const en = {
 
         publish: 'Publish job',
         publishing: 'Publishing...',
+
+        pause: 'Pause job',
+        pausing: 'Pausing...',
+
+        resume: 'Resume job',
+        resuming: 'Resuming...',
+
         close: 'Close job',
         closing: 'Closing...',
 
+        reopen: 'Reopen job',
+        reopening: 'Reopening...',
+
         publishedSuccessfully:
             'Job published successfully.',
+        pausedSuccessfully:
+            'Job paused successfully.',
+        resumedSuccessfully:
+            'Job resumed successfully.',
         closedSuccessfully:
             'Job closed successfully.',
+        reopenedSuccessfully:
+            'Job reopened successfully.',
+
         publishError:
             'Unable to publish this job. Please try again.',
+        pauseError:
+            'Unable to pause this job. Please try again.',
+        resumeError:
+            'Unable to resume this job. Please try again.',
         closeError:
             'Unable to close this job. Please try again.',
+        reopenError:
+            'Unable to reopen this job. Please try again.',
 
         jobDescription: 'Job description',
         jobInformation: 'Job information',

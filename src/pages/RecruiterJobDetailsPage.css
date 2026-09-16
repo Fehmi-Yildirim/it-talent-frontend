@@ -67,6 +67,16 @@
     color: #c92a2a;
 }
 
+.recruiter-job-details-status-paused {
+    background: #fff3bf;
+    color: #e67700;
+}
+
+.recruiter-job-details-status-closed {
+    background: #ffe3e3;
+    color: #c92a2a;
+}
+
 .recruiter-job-details-actions {
     display: flex;
     flex-wrap: wrap;

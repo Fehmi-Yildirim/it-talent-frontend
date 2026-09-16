@@ -125,6 +125,30 @@ export function closeJob(
   )
 }
 
+export function pauseJob(
+  jobId: string,
+): Promise<Job> {
+  return apiClient.post<Job>(
+    `/jobs/${jobId}/pause`,
+  )
+}
+
+export function resumeJob(
+  jobId: string,
+): Promise<Job> {
+  return apiClient.post<Job>(
+    `/jobs/${jobId}/resume`,
+  )
+}
+
+export function reopenJob(
+  jobId: string,
+): Promise<Job> {
+  return apiClient.post<Job>(
+    `/jobs/${jobId}/reopen`,
+  )
+}
+
 export function getJobRequirements(
   jobId: string,
 ): Promise<JobRequirement[]> {

@@ -3,7 +3,10 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import {
     closeJob,
     getJobById,
+    pauseJob,
     publishJob,
+    reopenJob,
+    resumeJob,
 } from '../features/jobs/jobs.api'
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job, JobRequirement } from '../types/job'
@@ -56,6 +59,8 @@ function formatStatus(
             return t('recruiterJobs.draft')
         case 'PUBLISHED':
             return t('recruiterJobs.published')
+        case 'PAUSED':
+            return t('recruiterJobs.paused')
         case 'CLOSED':
             return t('recruiterJobs.closed')
         default:
@@ -210,8 +215,17 @@ export default function RecruiterJobDetailsPage() {
         }
     }, [jobId, t])
 
+    async function refreshJob() {
+        if (!jobId) {
+            return
+        }
+
+        const response = await getJobById(jobId)
+        setJob(response)
+    }
+
     async function handlePublish() {
-        if (!jobId || !job) {
+        if (!jobId || !job || actionLoading) {
             return
         }
 
@@ -220,8 +234,8 @@ export default function RecruiterJobDetailsPage() {
         setSuccess('')
 
         try {
-            const response = await publishJob(jobId)
-            setJob(response)
+            await publishJob(jobId)
+            await refreshJob()
             setSuccess(t('recruiterJobs.publishedSuccessfully'))
         } catch {
             setError(t('recruiterJobs.publishError'))
@@ -230,8 +244,8 @@ export default function RecruiterJobDetailsPage() {
         }
     }
 
-    async function handleClose() {
-        if (!jobId || !job) {
+    async function handlePause() {
+        if (!jobId || !job || actionLoading) {
             return
         }
 
@@ -240,11 +254,71 @@ export default function RecruiterJobDetailsPage() {
         setSuccess('')
 
         try {
-            const response = await closeJob(jobId)
-            setJob(response)
+            await pauseJob(jobId)
+            await refreshJob()
+            setSuccess(t('recruiterJobs.pausedSuccessfully'))
+        } catch {
+            setError(t('recruiterJobs.pauseError'))
+        } finally {
+            setActionLoading(false)
+        }
+    }
+
+    async function handleResume() {
+        if (!jobId || !job || actionLoading) {
+            return
+        }
+
+        setActionLoading(true)
+        setError('')
+        setSuccess('')
+
+        try {
+            await resumeJob(jobId)
+            await refreshJob()
+            setSuccess(t('recruiterJobs.resumedSuccessfully'))
+        } catch {
+            setError(t('recruiterJobs.resumeError'))
+        } finally {
+            setActionLoading(false)
+        }
+    }
+
+    async function handleClose() {
+        if (!jobId || !job || actionLoading) {
+            return
+        }
+
+        setActionLoading(true)
+        setError('')
+        setSuccess('')
+
+        try {
+            await closeJob(jobId)
+            await refreshJob()
             setSuccess(t('recruiterJobs.closedSuccessfully'))
         } catch {
             setError(t('recruiterJobs.closeError'))
+        } finally {
+            setActionLoading(false)
+        }
+    }
+
+    async function handleReopen() {
+        if (!jobId || !job || actionLoading) {
+            return
+        }
+
+        setActionLoading(true)
+        setError('')
+        setSuccess('')
+
+        try {
+            await reopenJob(jobId)
+            await refreshJob()
+            setSuccess(t('recruiterJobs.reopenedSuccessfully'))
+        } catch {
+            setError(t('recruiterJobs.reopenError'))
         } finally {
             setActionLoading(false)
         }
@@ -290,11 +364,13 @@ export default function RecruiterJobDetailsPage() {
         )
     }
 
-    const requiredRequirements = job.requirements.filter(
+    const requirements = job.requirements ?? []
+
+    const requiredRequirements = requirements.filter(
         (requirement) => requirement.required,
     )
 
-    const preferredRequirements = job.requirements.filter(
+    const preferredRequirements = requirements.filter(
         (requirement) => !requirement.required,
     )
 
@@ -368,6 +444,50 @@ export default function RecruiterJobDetailsPage() {
                             </Link>
 
                             <button
+                                className="recruiter-job-details-secondary-button"
+                                type="button"
+                                onClick={() => void handlePause()}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading
+                                    ? t('recruiterJobs.pausing')
+                                    : t('recruiterJobs.pause')}
+                            </button>
+
+                            <button
+                                className="recruiter-job-details-danger-button"
+                                type="button"
+                                onClick={() => void handleClose()}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading
+                                    ? t('recruiterJobs.closing')
+                                    : t('recruiterJobs.close')}
+                            </button>
+                        </>
+                    )}
+
+                    {job.status === 'PAUSED' && (
+                        <>
+                            <Link
+                                className="recruiter-job-details-secondary-button"
+                                to={`/recruiter/jobs/${job.id}/edit`}
+                            >
+                                {t('recruiterJobs.edit')}
+                            </Link>
+
+                            <button
+                                className="recruiter-job-details-primary-button"
+                                type="button"
+                                onClick={() => void handleResume()}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading
+                                    ? t('recruiterJobs.resuming')
+                                    : t('recruiterJobs.resume')}
+                            </button>
+
+                            <button
                                 className="recruiter-job-details-danger-button"
                                 type="button"
                                 onClick={() => void handleClose()}
@@ -381,12 +501,25 @@ export default function RecruiterJobDetailsPage() {
                     )}
 
                     {job.status === 'CLOSED' && (
-                        <Link
-                            className="recruiter-job-details-secondary-button"
-                            to={`/recruiter/jobs/${job.id}/edit`}
-                        >
-                            {t('recruiterJobs.edit')}
-                        </Link>
+                        <>
+                            <Link
+                                className="recruiter-job-details-secondary-button"
+                                to={`/recruiter/jobs/${job.id}/edit`}
+                            >
+                                {t('recruiterJobs.edit')}
+                            </Link>
+
+                            <button
+                                className="recruiter-job-details-primary-button"
+                                type="button"
+                                onClick={() => void handleReopen()}
+                                disabled={actionLoading}
+                            >
+                                {actionLoading
+                                    ? t('recruiterJobs.reopening')
+                                    : t('recruiterJobs.reopen')}
+                            </button>
+                        </>
                     )}
                 </div>
             </header>
@@ -504,7 +637,7 @@ export default function RecruiterJobDetailsPage() {
                         </Link>
                     </div>
 
-                    {job.requirements.length === 0 ? (
+                    {requirements.length === 0 ? (
                         <p className="recruiter-job-details-muted">
                             {t('recruiterJobs.noRequirements')}
                         </p>
