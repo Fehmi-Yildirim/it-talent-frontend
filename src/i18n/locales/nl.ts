@@ -626,6 +626,7 @@ export const nl: DeepPartial<typeof en> = {
 
         draft: 'Concept',
         published: 'Gepubliceerd',
+        paused: 'Gepauzeerd',
         closed: 'Gesloten',
 
         view: 'Bekijken',
@@ -639,17 +640,40 @@ export const nl: DeepPartial<typeof en> = {
 
         publish: 'Vacature publiceren',
         publishing: 'Publiceren...',
+
+        pause: 'Vacature pauzeren',
+        pausing: 'Pauzeren...',
+
+        resume: 'Vacature hervatten',
+        resuming: 'Hervatten...',
+
         close: 'Vacature sluiten',
         closing: 'Sluiten...',
 
+        reopen: 'Vacature heropenen',
+        reopening: 'Heropenen...',
+
         publishedSuccessfully:
             'Vacature succesvol gepubliceerd.',
+        pausedSuccessfully:
+            'Vacature succesvol gepauzeerd.',
+        resumedSuccessfully:
+            'Vacature succesvol hervat.',
         closedSuccessfully:
             'Vacature succesvol gesloten.',
+        reopenedSuccessfully:
+            'Vacature succesvol heropend.',
+
         publishError:
             'De vacature kon niet worden gepubliceerd. Probeer het opnieuw.',
+        pauseError:
+            'De vacature kon niet worden gepauzeerd. Probeer het opnieuw.',
+        resumeError:
+            'De vacature kon niet worden hervat. Probeer het opnieuw.',
         closeError:
             'De vacature kon niet worden gesloten. Probeer het opnieuw.',
+        reopenError:
+            'De vacature kon niet worden heropend. Probeer het opnieuw.',
 
         jobDescription:
             'Vacatureomschrijving',
