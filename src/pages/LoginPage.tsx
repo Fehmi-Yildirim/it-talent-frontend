@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
+import './LoginPage.css'
 
 function LoginPage() {
   const { login, isLoading } = useAuth()
@@ -56,7 +57,7 @@ function LoginPage() {
   }
 
   return (
-    <section>
+    <section className="login-page">
       <h1>{t('auth.login')}</h1>
 
       <form onSubmit={handleSubmit}>

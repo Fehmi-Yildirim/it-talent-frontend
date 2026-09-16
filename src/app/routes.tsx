@@ -3,26 +3,29 @@ import App from './App'
 import AdminRoute from './AdminRoute'
 import CandidateRoute from './CandidateRoute'
 import ProtectedRoute from './ProtectedRoute'
-import DashboardPage from '../pages/DashboardPage'
+import RecruiterRoute from './RecruiterRoute'
+import LazyPage from './LazyPage'
+import {
+  AdminSkillsPage,
+  AdminUsersPage,
+  CandidateApplicationDetailsPage,
+  CandidateApplicationsPage,
+  CandidateJobDetailsPage,
+  CandidateJobsPage,
+  CompanyManagement,
+  DashboardPage,
+  ProfilePage,
+  RecruiterApplicationDetailsPage,
+  RecruiterApplicationsPage,
+  RecruiterJobDetailsPage,
+  RecruiterJobFormPage,
+  RecruiterJobsPage,
+  RecruiterProfile,
+  RegisterPage,
+} from './lazyPages'
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import NotFoundPage from '../pages/NotFoundPage'
-import ProfilePage from '../pages/ProfilePage'
-import RegisterPage from '../pages/RegisterPage'
-import AdminUsersPage from '../pages/AdminUsersPage'
-import AdminSkillsPage from '../pages/AdminSkillsPage'
-import RecruiterJobsPage from '../pages/RecruiterJobsPage'
-import RecruiterJobFormPage from '../pages/RecruiterJobFormPage'
-import RecruiterProfile from '../features/recruiter/RecruiterProfile'
-import CompanyManagement from '../features/recruiter/CompanyManagement'
-import RecruiterJobDetailsPage from '../pages/RecruiterJobDetailsPage'
-import CandidateJobsPage from '../pages/CandidateJobsPage'
-import CandidateJobDetailsPage from '../pages/CandidateJobDetailsPage'
-import CandidateApplicationsPage from '../pages/CandidateApplicationsPage'
-import CandidateApplicationDetailsPage from '../pages/CandidateApplicationDetailsPage'
-import RecruiterApplicationsPage from '../pages/RecruiterApplicationsPage'
-import RecruiterApplicationDetailsPage from '../pages/RecruiterApplicationDetailsPage'
-import RecruiterRoute from './RecruiterRoute'
 
 export const router = createBrowserRouter([
   {
@@ -39,7 +42,11 @@ export const router = createBrowserRouter([
       },
       {
         path: 'register',
-        element: <RegisterPage />,
+        element: (
+          <LazyPage>
+            <RegisterPage />
+          </LazyPage>
+        ),
       },
       {
         element: <ProtectedRoute />,
@@ -49,64 +56,120 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: 'jobs',
-                element: <CandidateJobsPage />,
+                element: (
+                  <LazyPage>
+                    <CandidateJobsPage />
+                  </LazyPage>
+                ),
               },
               {
                 path: 'jobs/:jobId',
-                element: <CandidateJobDetailsPage />,
+                element: (
+                  <LazyPage>
+                    <CandidateJobDetailsPage />
+                  </LazyPage>
+                ),
               },
               {
                 path: 'applications',
-                element: <CandidateApplicationsPage />,
+                element: (
+                  <LazyPage>
+                    <CandidateApplicationsPage />
+                  </LazyPage>
+                ),
               },
               {
                 path: 'applications/:applicationId',
-                element: <CandidateApplicationDetailsPage />,
+                element: (
+                  <LazyPage>
+                    <CandidateApplicationDetailsPage />
+                  </LazyPage>
+                ),
               },
             ],
           },
           {
             path: 'dashboard',
-            element: <DashboardPage />,
+            element: (
+              <LazyPage>
+                <DashboardPage />
+              </LazyPage>
+            ),
           },
           {
             path: 'profile',
-            element: <ProfilePage />,
+            element: (
+              <LazyPage>
+                <ProfilePage />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/profile',
-            element: <RecruiterProfile />,
+            element: (
+              <LazyPage>
+                <RecruiterProfile />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/company',
-            element: <CompanyManagement />,
+            element: (
+              <LazyPage>
+                <CompanyManagement />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/jobs',
-            element: <RecruiterJobsPage />,
+            element: (
+              <LazyPage>
+                <RecruiterJobsPage />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/jobs/new',
-            element: <RecruiterJobFormPage />,
+            element: (
+              <LazyPage>
+                <RecruiterJobFormPage />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/jobs/:jobId/edit',
-            element: <RecruiterJobFormPage />,
+            element: (
+              <LazyPage>
+                <RecruiterJobFormPage />
+              </LazyPage>
+            ),
           },
           {
             path: 'recruiter/jobs/:jobId',
-            element: <RecruiterJobDetailsPage />,
+            element: (
+              <LazyPage>
+                <RecruiterJobDetailsPage />
+              </LazyPage>
+            ),
           },
           {
             element: <RecruiterRoute />,
             children: [
               {
                 path: 'recruiter/applications',
-                element: <RecruiterApplicationsPage />,
+                element: (
+                  <LazyPage>
+                    <RecruiterApplicationsPage />
+                  </LazyPage>
+                ),
               },
               {
                 path: 'recruiter/applications/:applicationId',
-                element: <RecruiterApplicationDetailsPage />,
+                element: (
+                  <LazyPage>
+                    <RecruiterApplicationDetailsPage />
+                  </LazyPage>
+                ),
               },
             ],
           },
@@ -115,11 +178,19 @@ export const router = createBrowserRouter([
             children: [
               {
                 path: 'admin/users',
-                element: <AdminUsersPage />,
+                element: (
+                  <LazyPage>
+                    <AdminUsersPage />
+                  </LazyPage>
+                ),
               },
               {
                 path: 'admin/skills',
-                element: <AdminSkillsPage />,
+                element: (
+                  <LazyPage>
+                    <AdminSkillsPage />
+                  </LazyPage>
+                ),
               },
             ],
           },
