@@ -37,6 +37,71 @@
     gap: 24px;
 }
 
+.job-form-tabs {
+    position: sticky;
+    top: 16px;
+    z-index: 20;
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    margin-bottom: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+    background: #f7f7f7;
+    overflow-x: auto;
+    box-shadow: 0 2px 8px rgb(0 0 0 / 8%);
+}
+
+.job-form-tab {
+    flex: 1 1 0;
+    min-width: 150px;
+    padding: 10px 16px;
+    border: 1px solid transparent;
+    border-radius: 7px;
+    background: transparent;
+    color: #555;
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.job-form-tab:hover {
+    background: #fff;
+    color: #222;
+}
+
+.job-form-tab:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 1px;
+}
+
+.job-form-tab--active {
+    border-color: #d0d0d0;
+    background: #fff;
+    color: #111;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 6%);
+}
+
+@media (max-width: 700px) {
+    .job-form-tabs {
+        top: 8px;
+        margin-right: -16px;
+        margin-left: -16px;
+        padding-right: 16px;
+        padding-left: 16px;
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+    }
+
+    .job-form-tab {
+        flex: 0 0 auto;
+        min-width: 130px;
+    }
+}
+
 .form-card {
     padding: 24px;
     border: 1px solid #e0e0e0;
@@ -101,6 +166,86 @@
 .form-field select:focus {
     outline: 2px solid #222;
     outline-offset: 1px;
+}
+
+.skill-search-field {
+    position: relative;
+}
+
+.skill-search-field input {
+    padding-right: 40px;
+}
+
+.skill-search-clear {
+    position: absolute;
+    top: 29px;
+    right: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: #666;
+    font: inherit;
+    font-size: 1.2rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.skill-search-clear:hover {
+    background: #f1f1f1;
+    color: #222;
+}
+
+.skill-search-clear:focus-visible {
+    outline: 2px solid #222;
+    outline-offset: 1px;
+}
+
+.skill-search-results {
+    position: absolute;
+    z-index: 10;
+    top: calc(100% + 4px);
+    right: 0;
+    left: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 4px;
+    border: 1px solid #d0d0d0;
+    border-radius: 7px;
+    background: #fff;
+    box-shadow: 0 8px 24px rgb(0 0 0 / 10%);
+    list-style: none;
+}
+
+.skill-search-result {
+    width: 100%;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #222;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.skill-search-result:hover,
+.skill-search-result:focus-visible {
+    background: #f5f5f5;
+    outline: none;
+}
+
+.skill-search-empty {
+    margin: 0;
+    padding: 10px;
+    color: #666;
+    font-size: 0.9rem;
 }
 
 .alert {
@@ -288,6 +433,21 @@
         padding: 24px 16px 40px;
     }
 
+    .form-tabs {
+        margin-right: -16px;
+        margin-left: -16px;
+        padding-right: 16px;
+        padding-left: 16px;
+        border-right: 0;
+        border-left: 0;
+        border-radius: 0;
+    }
+
+    .form-tab {
+        flex: 0 0 auto;
+        min-width: 130px;
+    }
+
     .form-grid {
         grid-template-columns: 1fr;
     }
@@ -316,4 +476,24 @@
     .form-actions .button {
         width: 100%;
     }
+}
+
+.form-card--active {
+    border-color: #111;
+}
+
+.form-card--active .form-card__header {
+    margin: -24px -24px 20px;
+    padding: 14px 24px;
+    border-radius: 9px 9px 0 0;
+    background: #111;
+    color: #fff;
+}
+
+.form-card--active .form-card__header h2 {
+    color: #fff;
+}
+
+.form-card--active .form-card__header p {
+    color: #e5e5e5;
 }

@@ -1,5 +1,6 @@
 import {
     useEffect,
+    useRef,
     useState,
     type FormEvent,
 } from 'react'
@@ -56,6 +57,11 @@ interface RequirementUpdate {
     minimumLevel?: number
 }
 
+type FormSection =
+    | 'job-details'
+    | 'salary-expiration'
+    | 'job-requirements'
+
 function getInitialDate(): string {
     const date = new Date()
     date.setDate(date.getDate() + 30)
@@ -72,21 +78,6 @@ function isValidUuid(value: string): boolean {
     )
 }
 
-/**
- * Accepts full salary amounts in either format:
- *
- * 2500
- * 2.500
- * 25000
- * 25.000
- * 50000
- * 50.000
- *
- * The value sent to the API is always a normal integer:
- *
- * 2.500 -> 2500
- * 50.000 -> 50000
- */
 function normalizeSalary(
     value: string,
 ): number | undefined {
@@ -228,13 +219,19 @@ function RequirementRow({
                     type="button"
                     className="button button--danger"
                     disabled={saving}
+                    aria-label={t(
+                        'recruiterJobs.delete',
+                    )}
+                    title={t(
+                        'recruiterJobs.delete',
+                    )}
                     onClick={() =>
                         void onDelete(
                             requirement.skillId,
                         )
                     }
                 >
-                    {t('recruiterJobs.delete')}
+                    −
                 </button>
             </div>
         </div>
@@ -343,9 +340,15 @@ function PendingRequirementRow({
                 <button
                     type="button"
                     className="button button--danger"
+                    aria-label={t(
+                        'recruiterJobs.delete',
+                    )}
+                    title={t(
+                        'recruiterJobs.delete',
+                    )}
                     onClick={onDelete}
                 >
-                    {t('recruiterJobs.delete')}
+                    −
                 </button>
             </div>
         </div>
@@ -398,6 +401,9 @@ export default function RecruiterJobFormPage() {
     const [selectedSkillId, setSelectedSkillId] =
         useState('')
 
+    const [skillSearch, setSkillSearch] =
+        useState('')
+
     const [selectedRequired, setSelectedRequired] =
         useState(true)
 
@@ -432,6 +438,18 @@ export default function RecruiterJobFormPage() {
         validationError,
         setValidationError,
     ] = useState<string | null>(null)
+
+    const [activeSection, setActiveSection] =
+        useState<FormSection | null>(null)
+
+    const jobDetailsRef =
+        useRef<HTMLElement | null>(null)
+
+    const salaryExpirationRef =
+        useRef<HTMLElement | null>(null)
+
+    const jobRequirementsRef =
+        useRef<HTMLElement | null>(null)
 
     function getEmploymentTypeLabel(
         type: EmploymentType,
@@ -633,6 +651,67 @@ export default function RecruiterJobFormPage() {
         }
     }, [jobId, t])
 
+    const usedSkillIds = new Set([
+        ...requirements.map(
+            (requirement) =>
+                requirement.skillId,
+        ),
+        ...pendingRequirements.map(
+            (requirement) =>
+                requirement.skillId,
+        ),
+    ])
+
+    const normalizedSkillSearch =
+        skillSearch.trim().toLowerCase()
+
+    const filteredSkills = skills.filter(
+        (skill) =>
+            !usedSkillIds.has(skill.id) &&
+            skill.name
+                .toLowerCase()
+                .includes(normalizedSkillSearch),
+    )
+
+    function selectSkill(skill: Skill) {
+        setSelectedSkillId(skill.id)
+        setSkillSearch(skill.name)
+        setError(null)
+        setValidationError(null)
+    }
+
+    function clearSkillSelection() {
+        setSelectedSkillId('')
+        setSkillSearch('')
+    }
+
+    function handleSkillSearchChange(
+        value: string,
+    ) {
+        const skillById = skills.find(
+            (skill) => skill.id === value,
+        )
+
+        if (skillById) {
+            if (usedSkillIds.has(skillById.id)) {
+                setError(
+                    t(
+                        'recruiterJobForm.duplicateSkillError',
+                    ),
+                )
+                return
+            }
+
+            selectSkill(skillById)
+            return
+        }
+
+        setSkillSearch(value)
+        setSelectedSkillId('')
+        setError(null)
+        setValidationError(null)
+    }
+
     function addPendingRequirement() {
         setError(null)
         setValidationError(null)
@@ -671,11 +750,7 @@ export default function RecruiterJobFormPage() {
         }
 
         const alreadyExists =
-            pendingRequirements.some(
-                (requirement) =>
-                    requirement.skillId ===
-                    selectedSkillId,
-            )
+            usedSkillIds.has(selectedSkillId)
 
         if (alreadyExists) {
             setError(
@@ -696,7 +771,7 @@ export default function RecruiterJobFormPage() {
             },
         ])
 
-        setSelectedSkillId('')
+        clearSkillSelection()
         setSelectedRequired(true)
         setSelectedMinimumLevel(1)
     }
@@ -768,13 +843,7 @@ export default function RecruiterJobFormPage() {
             return
         }
 
-        if (
-            requirements.some(
-                (requirement) =>
-                    requirement.skillId ===
-                    selectedSkillId,
-            )
-        ) {
+        if (usedSkillIds.has(selectedSkillId)) {
             setError(
                 t(
                     'recruiterJobForm.duplicateSkillError',
@@ -805,7 +874,7 @@ export default function RecruiterJobFormPage() {
                 response,
             ])
 
-            setSelectedSkillId('')
+            clearSkillSelection()
             setSelectedRequired(true)
             setSelectedMinimumLevel(1)
         } catch {
@@ -1156,6 +1225,25 @@ export default function RecruiterJobFormPage() {
         }
     }
 
+    function scrollToSection(
+        section: FormSection,
+    ) {
+        setActiveSection(section)
+
+        const refs = {
+            'job-details': jobDetailsRef,
+            'salary-expiration':
+                salaryExpirationRef,
+            'job-requirements':
+                jobRequirementsRef,
+        }
+
+        refs[section].current?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start',
+        })
+    }
+
     if (loading) {
         return (
             <main className="recruiter-job-form-page">
@@ -1220,12 +1308,99 @@ export default function RecruiterJobFormPage() {
                 </div>
             )}
 
+            <nav
+                className="job-form-tabs"
+                aria-label={t(
+                    'recruiterJobForm.jobDetails',
+                )}
+            >
+                <button
+                    type="button"
+                    className={`job-form-tab ${activeSection ===
+                            'job-details'
+                            ? 'job-form-tab--active'
+                            : ''
+                        }`}
+                    aria-current={
+                        activeSection ===
+                            'job-details'
+                            ? 'true'
+                            : undefined
+                    }
+                    onClick={() =>
+                        scrollToSection(
+                            'job-details',
+                        )
+                    }
+                >
+                    {t(
+                        'recruiterJobForm.jobDetails',
+                    )}
+                </button>
+
+                <button
+                    type="button"
+                    className={`job-form-tab ${activeSection ===
+                            'salary-expiration'
+                            ? 'job-form-tab--active'
+                            : ''
+                        }`}
+                    aria-current={
+                        activeSection ===
+                            'salary-expiration'
+                            ? 'true'
+                            : undefined
+                    }
+                    onClick={() =>
+                        scrollToSection(
+                            'salary-expiration',
+                        )
+                    }
+                >
+                    {t(
+                        'recruiterJobForm.salaryAndExpiration',
+                    )}
+                </button>
+
+                <button
+                    type="button"
+                    className={`job-form-tab ${activeSection ===
+                            'job-requirements'
+                            ? 'job-form-tab--active'
+                            : ''
+                        }`}
+                    aria-current={
+                        activeSection ===
+                            'job-requirements'
+                            ? 'true'
+                            : undefined
+                    }
+                    onClick={() =>
+                        scrollToSection(
+                            'job-requirements',
+                        )
+                    }
+                >
+                    {t(
+                        'recruiterJobForm.jobRequirements',
+                    )}
+                </button>
+            </nav>
+
             <form
                 className="job-form"
                 noValidate
                 onSubmit={handleSubmit}
             >
-                <section className="form-card">
+                <section
+                    ref={jobDetailsRef}
+                    id="job-details"
+                    className={`form-card ${activeSection ===
+                            'job-details'
+                            ? 'form-card--active'
+                            : ''
+                        }`}
+                >
                     <div className="form-card__header">
                         <h2>
                             {t(
@@ -1350,7 +1525,9 @@ export default function RecruiterJobFormPage() {
 
                         <div className="form-field form-field--full">
                             <label id="description-label">
-                                {t('recruiterJobForm.description')}
+                                {t(
+                                    'recruiterJobForm.description',
+                                )}
                             </label>
 
                             <RichTextEditor
@@ -1363,7 +1540,15 @@ export default function RecruiterJobFormPage() {
                     </div>
                 </section>
 
-                <section className="form-card">
+                <section
+                    ref={salaryExpirationRef}
+                    id="salary-and-expiration"
+                    className={`form-card ${activeSection ===
+                            'salary-expiration'
+                            ? 'form-card--active'
+                            : ''
+                        }`}
+                >
                     <div className="form-card__header">
                         <h2>
                             {t(
@@ -1470,7 +1655,15 @@ export default function RecruiterJobFormPage() {
                     </div>
                 </section>
 
-                <section className="form-card">
+                <section
+                    ref={jobRequirementsRef}
+                    id="job-requirements"
+                    className={`form-card ${activeSection ===
+                            'job-requirements'
+                            ? 'form-card--active'
+                            : ''
+                        }`}
+                >
                     <div className="form-card__header">
                         <div>
                             <h2>
@@ -1488,44 +1681,120 @@ export default function RecruiterJobFormPage() {
                     </div>
 
                     <div className="requirement-create">
-                        <div className="form-field">
-                            <label htmlFor="skill">
+                        <div className="form-field skill-search-field">
+                            <label htmlFor="skill-search">
                                 {t(
                                     'recruiterJobForm.skill',
                                 )}
                             </label>
 
-                            <select
-                                id="skill"
-                                value={
-                                    selectedSkillId
-                                }
-                                disabled={
-                                    skillsLoading ||
-                                    requirementSaving
-                                }
-                                onChange={(event) =>
-                                    setSelectedSkillId(
-                                        event.target
-                                            .value,
-                                    )
-                                }
-                            >
-                                <option value="">
-                                    {t(
+                            <div className="skill-search">
+                                <input
+                                    id="skill-search"
+                                    type="text"
+                                    role="combobox"
+                                    aria-autocomplete="list"
+                                    aria-expanded={
+                                        !selectedSkillId &&
+                                        skillSearch.trim()
+                                            .length > 0 &&
+                                        filteredSkills.length >
+                                        0
+                                    }
+                                    aria-controls="skill-results"
+                                    autoComplete="off"
+                                    value={
+                                        skillSearch
+                                    }
+                                    disabled={
+                                        skillsLoading ||
+                                        requirementSaving
+                                    }
+                                    placeholder={t(
                                         'recruiterJobForm.selectSkill',
                                     )}
-                                </option>
+                                    onChange={(event) =>
+                                        handleSkillSearchChange(
+                                            event.target
+                                                .value,
+                                        )
+                                    }
+                                />
 
-                                {skills.map((skill) => (
-                                    <option
-                                        key={skill.id}
-                                        value={skill.id}
+                                {selectedSkillId && (
+                                    <button
+                                        type="button"
+                                        className="skill-search__clear"
+                                        aria-label={t(
+                                            'recruiterJobForm.selectSkill',
+                                        )}
+                                        title={t(
+                                            'recruiterJobForm.selectSkill',
+                                        )}
+                                        disabled={
+                                            requirementSaving
+                                        }
+                                        onClick={
+                                            clearSkillSelection
+                                        }
                                     >
-                                        {skill.name}
-                                    </option>
-                                ))}
-                            </select>
+                                        ×
+                                    </button>
+                                )}
+
+                                {!selectedSkillId &&
+                                    skillSearch.trim() &&
+                                    filteredSkills.length >
+                                    0 && (
+                                        <div
+                                            id="skill-results"
+                                            className="skill-search__results"
+                                            role="listbox"
+                                        >
+                                            {filteredSkills.map(
+                                                (
+                                                    skill,
+                                                ) => (
+                                                    <button
+                                                        key={
+                                                            skill.id
+                                                        }
+                                                        type="button"
+                                                        role="option"
+                                                        aria-selected={
+                                                            false
+                                                        }
+                                                        className="skill-search__option"
+                                                        onClick={() =>
+                                                            selectSkill(
+                                                                skill,
+                                                            )
+                                                        }
+                                                    >
+                                                        {
+                                                            skill.name
+                                                        }
+                                                    </button>
+                                                ),
+                                            )}
+                                        </div>
+                                    )}
+
+                                {!selectedSkillId &&
+                                    skillSearch.trim() &&
+                                    !skillsLoading &&
+                                    filteredSkills.length ===
+                                    0 && (
+                                        <div
+                                            className="skill-search__empty"
+                                            role="status"
+                                        >
+                                            {t(
+                                                'recruiterJobForm.noSkillsFound',
+                                            )}
+                                        </div>
+                                    )}
+                            </div>
                         </div>
 
                         <div className="form-field">
@@ -1604,13 +1873,17 @@ export default function RecruiterJobFormPage() {
                                 skillsLoading ||
                                 !selectedSkillId
                             }
+                            aria-label={t(
+                                'recruiterJobForm.addRequirement',
+                            )}
+                            title={t(
+                                'recruiterJobForm.addRequirement',
+                            )}
                             onClick={() =>
                                 void handleAddRequirement()
                             }
                         >
-                            {t(
-                                'recruiterJobForm.addRequirement',
-                            )}
+                            +
                         </button>
                     </div>
 

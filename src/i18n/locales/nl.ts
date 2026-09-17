@@ -582,30 +582,24 @@ export const nl: DeepPartial<typeof en> = {
 
     recruiterJobs: {
         title: 'Vacatures',
-        description:
-            'Beheer de vacatures van je bedrijf.',
+        description: 'Beheer de vacatures van je bedrijf.',
 
         newJob: 'Nieuwe vacature',
 
         loading: 'Vacatures laden...',
-        loadError:
-            'Je vacatures kunnen niet worden geladen. Probeer het opnieuw.',
+        loadError: 'Je vacatures kunnen niet worden geladen. Probeer het opnieuw.',
         tryAgain: 'Opnieuw proberen',
 
         noJobs: 'Nog geen vacatures',
-        noJobsDescription:
-            'Maak je eerste vacature aan om te beginnen met werven.',
-        createFirstJob:
-            'Maak je eerste vacature',
+        noJobsDescription: 'Maak je eerste vacature aan om te beginnen met werven.',
+        createFirstJob: 'Maak je eerste vacature',
 
         yourJobs: 'Je vacatures',
 
-        locationNotSpecified:
-            'Locatie niet opgegeven',
+        locationNotSpecified: 'Locatie niet opgegeven',
         location: 'Locatie',
 
-        salaryNotSpecified:
-            'Salaris niet opgegeven',
+        salaryNotSpecified: 'Salaris niet opgegeven',
         salary: 'Salaris',
         upTo: 'Tot',
 
@@ -634,8 +628,7 @@ export const nl: DeepPartial<typeof en> = {
 
         jobNotFound: 'Vacature niet gevonden.',
         jobIdMissing: 'Vacature-ID ontbreekt.',
-        unableToLoadDetails:
-            'Deze vacature kan niet worden geladen.',
+        unableToLoadDetails: 'Deze vacature kan niet worden geladen.',
         backToJobs: 'Terug naar vacatures',
 
         publish: 'Vacature publiceren',
@@ -653,48 +646,29 @@ export const nl: DeepPartial<typeof en> = {
         reopen: 'Vacature heropenen',
         reopening: 'Heropenen...',
 
-        publishedSuccessfully:
-            'Vacature succesvol gepubliceerd.',
-        pausedSuccessfully:
-            'Vacature succesvol gepauzeerd.',
-        resumedSuccessfully:
-            'Vacature succesvol hervat.',
-        closedSuccessfully:
-            'Vacature succesvol gesloten.',
-        reopenedSuccessfully:
-            'Vacature succesvol heropend.',
+        publishedSuccessfully: 'Vacature succesvol gepubliceerd.',
+        pausedSuccessfully: 'Vacature succesvol gepauzeerd.',
+        resumedSuccessfully: 'Vacature succesvol hervat.',
+        closedSuccessfully: 'Vacature succesvol gesloten.',
+        reopenedSuccessfully: 'Vacature succesvol heropend.',
 
-        publishError:
-            'De vacature kon niet worden gepubliceerd. Probeer het opnieuw.',
-        pauseError:
-            'De vacature kon niet worden gepauzeerd. Probeer het opnieuw.',
-        resumeError:
-            'De vacature kon niet worden hervat. Probeer het opnieuw.',
-        closeError:
-            'De vacature kon niet worden gesloten. Probeer het opnieuw.',
-        reopenError:
-            'De vacature kon niet worden heropend. Probeer het opnieuw.',
+        publishError: 'De vacature kon niet worden gepubliceerd. Probeer het opnieuw.',
+        pauseError: 'De vacature kon niet worden gepauzeerd. Probeer het opnieuw.',
+        resumeError: 'De vacature kon niet worden hervat. Probeer het opnieuw.',
+        closeError: 'De vacature kon niet worden gesloten. Probeer het opnieuw.',
+        reopenError: 'De vacature kon niet worden heropend. Probeer het opnieuw.',
 
-        jobDescription:
-            'Vacatureomschrijving',
-        jobInformation:
-            'Vacaturegegevens',
-        expirationDate:
-            'Vervaldatum',
+        jobDescription: 'Vacatureomschrijving',
+        jobInformation: 'Vacaturegegevens',
+        expirationDate: 'Vervaldatum',
 
         requirements: 'Vereisten',
-        requirementsDescription:
-            'Vaardigheden die vereist of gewenst zijn voor deze functie.',
-        manageRequirements:
-            'Vereisten beheren',
-        noRequirements:
-            'Geen vereisten geconfigureerd.',
-        requiredSkills:
-            'Vereiste vaardigheden',
-        preferredSkills:
-            'Gewenste vaardigheden',
-        minimumLevel:
-            'Minimaal niveau',
+        requirementsDescription: 'Vaardigheden die vereist of gewenst zijn voor deze functie.',
+        manageRequirements: 'Vereisten beheren',
+        noRequirements: 'Geen vereisten geconfigureerd.',
+        requiredSkills: 'Vereiste vaardigheden',
+        preferredSkills: 'Gewenste vaardigheden',
+        minimumLevel: 'Minimaal niveau',
         required: 'Vereist',
         preferred: 'Gewenst',
 
@@ -702,8 +676,7 @@ export const nl: DeepPartial<typeof en> = {
         jobTitle: 'Functietitel',
         titleRequired: 'Functietitel is verplicht.',
         descriptionRequired: 'Beschrijving is verplicht.',
-        descriptionPlaceholder:
-            'Beschrijf de functie, verantwoordelijkheden en verwachtingen...',
+        descriptionPlaceholder: 'Beschrijf de functie, verantwoordelijkheden en verwachtingen...',
         jobTitlePlaceholder: 'bijv. Senior Frontend Developer',
         locationPlaceholder: 'bijv. Amsterdam, Nederland',
 
@@ -819,7 +792,6 @@ export const nl: DeepPartial<typeof en> = {
         currency: 'Valuta',
         expirationDate: 'Vervaldatum',
 
-        jobRequirements: 'Functie-eisen',
         requirementsDescription:
             'Voeg de vaardigheden toe waar kandidaten over moeten beschikken.',
 
@@ -839,6 +811,7 @@ export const nl: DeepPartial<typeof en> = {
             'Er zijn nog geen functie-eisen toegevoegd.',
         requirementsWillBeCreated:
             'Deze functie-eisen worden via de Requirements API aangemaakt wanneer je de vacature opslaat.',
+        noSkillsFound: 'Geen skills gevonden',
 
         cancel: 'Annuleren',
         saving: 'Opslaan...',
