@@ -772,6 +772,7 @@ export const en = {
             'No requirements have been added yet.',
         requirementsWillBeCreated:
             'These requirements will be created through the Requirements API when you save the job.',
+        noSkillsFound: 'No skills found',
 
         cancel: 'Cancel',
         saving: 'Saving...',

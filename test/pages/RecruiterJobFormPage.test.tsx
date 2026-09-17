@@ -64,12 +64,10 @@ function renderPage(path: string) {
                         path="/recruiter/jobs/new"
                         element={<RecruiterJobFormPage />}
                     />
-
                     <Route
                         path="/recruiter/jobs/:jobId/edit"
                         element={<RecruiterJobFormPage />}
                     />
-
                     <Route
                         path="/recruiter/jobs"
                         element={<div>Jobs page</div>}
@@ -105,6 +103,30 @@ function mockJob() {
         updatedAt: '2026-01-01T00:00:00Z',
         requirements: [],
     })
+}
+
+async function selectSkill(skillName: string) {
+    const input = screen.getByLabelText('Skill')
+
+    fireEvent.change(input, {
+        target: {
+            value: skillName,
+        },
+    })
+
+    await waitFor(() => {
+        expect(
+            screen.getByRole('option', {
+                name: skillName,
+            }),
+        ).toBeInTheDocument()
+    })
+
+    fireEvent.click(
+        screen.getByRole('option', {
+            name: skillName,
+        }),
+    )
 }
 
 describe('RecruiterJobFormPage', () => {
@@ -169,8 +191,6 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue([])
-
         renderPage(`/recruiter/jobs/${jobId}/edit`)
 
         await waitFor(() => {
@@ -186,11 +206,9 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue([])
-
-        vi.mocked(
-            createJobRequirement,
-        ).mockResolvedValue(requirement)
+        vi.mocked(createJobRequirement).mockResolvedValue(
+            requirement,
+        )
 
         renderPage(`/recruiter/jobs/${jobId}/edit`)
 
@@ -200,14 +218,7 @@ describe('RecruiterJobFormPage', () => {
             ).toBeInTheDocument()
         })
 
-        fireEvent.change(
-            screen.getByLabelText('Skill'),
-            {
-                target: {
-                    value: skillId,
-                },
-            },
-        )
+        await selectSkill('React')
 
         fireEvent.change(
             screen.getByLabelText('Minimum level'),
@@ -245,11 +256,7 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue([])
-
-        vi.mocked(
-            createJobRequirement,
-        ).mockResolvedValue({
+        vi.mocked(createJobRequirement).mockResolvedValue({
             ...requirement,
             id: requirementId,
             skillId: skillId2,
@@ -266,14 +273,7 @@ describe('RecruiterJobFormPage', () => {
             ).toBeInTheDocument()
         })
 
-        fireEvent.change(
-            screen.getByLabelText('Skill'),
-            {
-                target: {
-                    value: skillId2,
-                },
-            },
-        )
+        await selectSkill('TypeScript')
 
         fireEvent.change(
             screen.getByLabelText('Type'),
@@ -318,9 +318,7 @@ describe('RecruiterJobFormPage', () => {
             requirement,
         ])
 
-        vi.mocked(
-            updateJobRequirement,
-        ).mockResolvedValue({
+        vi.mocked(updateJobRequirement).mockResolvedValue({
             ...requirement,
             required: false,
             minimumLevel: 4,
@@ -369,9 +367,7 @@ describe('RecruiterJobFormPage', () => {
             requirement,
         ])
 
-        vi.mocked(
-            removeJobRequirement,
-        ).mockResolvedValue({
+        vi.mocked(removeJobRequirement).mockResolvedValue({
             message: 'Requirement removed',
         })
 
@@ -385,11 +381,20 @@ describe('RecruiterJobFormPage', () => {
             ).toBeInTheDocument()
         })
 
-        fireEvent.click(
-            screen.getByRole('button', {
+        const deleteButton =
+            screen.queryByRole('button', {
                 name: 'Delete',
-            }),
-        )
+            }) ??
+            screen.queryByRole('button', {
+                name: 'Remove',
+            }) ??
+            screen.queryByRole('button', {
+                name: '−',
+            })
+
+        expect(deleteButton).toBeInTheDocument()
+
+        fireEvent.click(deleteButton!)
 
         await waitFor(() => {
             expect(
@@ -435,9 +440,9 @@ describe('RecruiterJobFormPage', () => {
             requirements: [],
         })
 
-        vi.mocked(
-            createJobRequirement,
-        ).mockResolvedValue(requirement)
+        vi.mocked(createJobRequirement).mockResolvedValue(
+            requirement,
+        )
 
         renderPage('/recruiter/jobs/new')
 
@@ -479,14 +484,7 @@ describe('RecruiterJobFormPage', () => {
             }),
         )
 
-        fireEvent.change(
-            screen.getByLabelText('Skill'),
-            {
-                target: {
-                    value: skillId,
-                },
-            },
-        )
+        await selectSkill('React')
 
         fireEvent.change(
             screen.getByLabelText('Minimum level'),
@@ -503,11 +501,13 @@ describe('RecruiterJobFormPage', () => {
             }),
         )
 
-        expect(
-            screen.getByText('React', {
-                selector: 'strong',
-            }),
-        ).toBeInTheDocument()
+        await waitFor(() => {
+            expect(
+                screen.getByText('React', {
+                    selector: 'strong',
+                }),
+            ).toBeInTheDocument()
+        })
 
         fireEvent.click(
             screen.getByRole('button', {
@@ -526,17 +526,18 @@ describe('RecruiterJobFormPage', () => {
                 salaryMin: undefined,
                 salaryMax: undefined,
                 currency: 'EUR',
-                expiresAt:
-                    expect.any(String),
+                expiresAt: expect.any(String),
             })
         })
 
-        expect(
-            createJobRequirement,
-        ).toHaveBeenCalledWith(jobId, {
-            skillId,
-            required: true,
-            minimumLevel: 3,
+        await waitFor(() => {
+            expect(
+                createJobRequirement,
+            ).toHaveBeenCalledWith(jobId, {
+                skillId,
+                required: true,
+                minimumLevel: 3,
+            })
         })
     })
 
@@ -627,11 +628,7 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(getJobRequirements).mockResolvedValue([])
-
-        vi.mocked(
-            createJobRequirement,
-        ).mockRejectedValue(
+        vi.mocked(createJobRequirement).mockRejectedValue(
             new Error('API error'),
         )
 
@@ -643,20 +640,24 @@ describe('RecruiterJobFormPage', () => {
             ).toBeInTheDocument()
         })
 
-        fireEvent.change(
-            screen.getByLabelText('Skill'),
-            {
-                target: {
-                    value: skillId,
-                },
-            },
-        )
+        await selectSkill('React')
 
         fireEvent.click(
             screen.getByRole('button', {
                 name: 'Add requirement',
             }),
         )
+
+        await waitFor(() => {
+            expect(createJobRequirement).toHaveBeenCalledWith(
+                jobId,
+                {
+                    skillId,
+                    required: true,
+                    minimumLevel: 1,
+                },
+            )
+        })
 
         await waitFor(() => {
             expect(
@@ -671,9 +672,7 @@ describe('RecruiterJobFormPage', () => {
         mockSkills()
         mockJob()
 
-        vi.mocked(
-            getJobRequirements,
-        ).mockRejectedValue(
+        vi.mocked(getJobRequirements).mockRejectedValue(
             new Error('API error'),
         )
 
