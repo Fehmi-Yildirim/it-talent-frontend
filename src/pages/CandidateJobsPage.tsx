@@ -83,7 +83,18 @@ function CandidateJobsPage() {
 
     const [search, setSearch] = useState('')
     const [location, setLocation] = useState('')
-    const [workMode, setWorkMode] = useState<WorkMode | ''>('')
+
+    // Work Mode filter that is currently applied.
+    const [selectedWorkModes, setSelectedWorkModes] =
+        useState<WorkMode[]>([])
+
+    // Work Mode selections inside the open dropdown.
+    const [pendingWorkModes, setPendingWorkModes] =
+        useState<WorkMode[]>([])
+
+    const [workModeDropdownOpen, setWorkModeDropdownOpen] =
+        useState(false)
+
     const [employmentType, setEmploymentType] =
         useState<EmploymentType | ''>('')
     const [salaryMin, setSalaryMin] = useState('')
@@ -141,7 +152,10 @@ function CandidateJobsPage() {
             const query: JobDiscoveryQuery = {
                 q: search || undefined,
                 location: location || undefined,
-                workMode: workMode || undefined,
+                workModes:
+                    selectedWorkModes.length > 0
+                        ? selectedWorkModes
+                        : undefined,
                 employmentType: employmentType || undefined,
                 salaryMin: salaryMin ? Number(salaryMin) : undefined,
                 salaryMax: salaryMax ? Number(salaryMax) : undefined,
@@ -190,7 +204,7 @@ function CandidateJobsPage() {
     }, [
         search,
         location,
-        workMode,
+        selectedWorkModes,
         employmentType,
         salaryMin,
         salaryMax,
@@ -217,10 +231,43 @@ function CandidateJobsPage() {
         setPage(1)
     }
 
+    function toggleWorkMode(workMode: WorkMode) {
+        setPendingWorkModes((current) =>
+            current.includes(workMode)
+                ? current.filter((mode) => mode !== workMode)
+                : [...current, workMode],
+        )
+    }
+
+    function openWorkModeDropdown() {
+        setPendingWorkModes(selectedWorkModes)
+        setWorkModeDropdownOpen(true)
+    }
+
+    function closeWorkModeDropdown() {
+        setPendingWorkModes(selectedWorkModes)
+        setWorkModeDropdownOpen(false)
+    }
+
+    function applyWorkModes() {
+        setSelectedWorkModes(pendingWorkModes)
+        setPage(1)
+        setWorkModeDropdownOpen(false)
+    }
+
+    function clearWorkModes() {
+        setPendingWorkModes([])
+        setSelectedWorkModes([])
+        setPage(1)
+        setWorkModeDropdownOpen(false)
+    }
+
     function clearFilters() {
         setSearch('')
         setLocation('')
-        setWorkMode('')
+        setSelectedWorkModes([])
+        setPendingWorkModes([])
+        setWorkModeDropdownOpen(false)
         setEmploymentType('')
         setSalaryMin('')
         setSalaryMax('')
@@ -232,6 +279,17 @@ function CandidateJobsPage() {
     const items = response?.items ?? []
     const totalPages = response?.totalPages ?? 0
     const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+
+    const workModeLabel =
+        selectedWorkModes.length === 0
+            ? t('candidateJobs.allWorkModes')
+            : selectedWorkModes.length === 1
+                ? workModes.find(
+                    (option) =>
+                        option.value === selectedWorkModes[0],
+                )?.label ?? t('candidateJobs.allWorkModes')
+                : t('candidateJobs.workMode');
+
 
     return (
         <section className="candidate-jobs-page">
@@ -288,36 +346,90 @@ function CandidateJobsPage() {
                             />
                         </label>
 
-                        <label>
-                            {t('candidateJobs.workMode')}
+                        <div className="candidate-jobs-work-mode-filter">
+                            <span className="candidate-jobs-filter-label">
+                                {t('candidateJobs.workMode')}
+                            </span>
 
-                            <select
-                                value={workMode}
-                                onChange={(event) => {
-                                    setWorkMode(
-                                        event.target.value as
-                                        | WorkMode
-                                        | '',
-                                    )
-                                    setPage(1)
-                                }}
-                            >
-                                <option value="">
-                                    {t(
-                                        'candidateJobs.allWorkModes',
-                                    )}
-                                </option>
+                            <div className="candidate-jobs-work-mode-dropdown">
+                                <button
+                                    type="button"
+                                    className="candidate-jobs-work-mode-trigger"
+                                    aria-haspopup="true"
+                                    aria-expanded={workModeDropdownOpen}
+                                    onClick={() => {
+                                        if (workModeDropdownOpen) {
+                                            closeWorkModeDropdown()
+                                        } else {
+                                            openWorkModeDropdown()
+                                        }
+                                    }}
+                                >
 
-                                {workModes.map((option) => (
-                                    <option
-                                        key={option.value}
-                                        value={option.value}
+                                    <div className="work-mode-label">
+                                        {selectedWorkModes.length > 0 && (
+                                            <span className="work-mode-count">
+                                                {selectedWorkModes.length}
+                                            </span>
+                                        )}
+                                        <span>{workModeLabel}</span>
+                                    </div>
+
+                                    <span
+                                        aria-hidden="true"
+                                        className="candidate-jobs-work-mode-arrow"
                                     >
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
+                                        {workModeDropdownOpen ? '▲' : '▼'}
+                                    </span>
+                                </button>
+
+                                {workModeDropdownOpen && (
+                                    <div className="candidate-jobs-work-mode-options">
+                                        <fieldset>
+                                            <legend className="sr-only">
+                                                {t('candidateJobs.workMode')}
+                                            </legend>
+
+                                            {workModes.map((option) => (
+                                                <label
+                                                    key={option.value}
+                                                    className="candidate-jobs-work-mode-option"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={pendingWorkModes.includes(
+                                                            option.value,
+                                                        )}
+                                                        onChange={() =>
+                                                            toggleWorkMode(option.value)
+                                                        }
+                                                    />
+
+                                                    <span>{option.label}</span>
+                                                </label>
+                                            ))}
+                                        </fieldset>
+
+                                        <div className="candidate-jobs-work-mode-actions">
+                                            <button
+                                                type="button"
+                                                className="candidate-jobs-secondary-button"
+                                                onClick={clearWorkModes}
+                                            >
+                                                {t('candidateJobs.clearFilters')}
+                                            </button>
+
+                                            <button
+                                                type="button"
+                                                onClick={applyWorkModes}
+                                            >
+                                                {t('candidateJobs.search')}
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
 
                         <label>
                             {t('candidateJobs.employmentType')}

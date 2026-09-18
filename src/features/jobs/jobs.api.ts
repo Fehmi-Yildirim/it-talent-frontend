@@ -14,7 +14,9 @@ import type {
   UpdateJobRequirementRequest,
 } from '../../types/job'
 
-function buildJobDiscoveryQuery(query: JobDiscoveryQuery): string {
+function buildJobDiscoveryQuery(
+  query: JobDiscoveryQuery,
+): string {
   const params = new URLSearchParams()
 
   if (query.q?.trim()) {
@@ -25,24 +27,45 @@ function buildJobDiscoveryQuery(query: JobDiscoveryQuery): string {
     params.set('location', query.location.trim())
   }
 
-  if (query.workMode) {
-    params.set('workMode', query.workMode)
+  if (
+    query.workModes &&
+    query.workModes.length > 0
+  ) {
+    params.set(
+      'workModes',
+      query.workModes.join(','),
+    )
   }
 
   if (query.employmentType) {
-    params.set('employmentType', query.employmentType)
+    params.set(
+      'employmentType',
+      query.employmentType,
+    )
   }
 
   if (query.salaryMin !== undefined) {
-    params.set('salaryMin', String(query.salaryMin))
+    params.set(
+      'salaryMin',
+      String(query.salaryMin),
+    )
   }
 
   if (query.salaryMax !== undefined) {
-    params.set('salaryMax', String(query.salaryMax))
+    params.set(
+      'salaryMax',
+      String(query.salaryMax),
+    )
   }
 
-  if (query.skillIds && query.skillIds.length > 0) {
-    params.set('skillIds', query.skillIds.join(','))
+  if (
+    query.skillIds &&
+    query.skillIds.length > 0
+  ) {
+    params.set(
+      'skillIds',
+      query.skillIds.join(','),
+    )
   }
 
   if (query.sort) {
@@ -50,16 +73,24 @@ function buildJobDiscoveryQuery(query: JobDiscoveryQuery): string {
   }
 
   if (query.page !== undefined) {
-    params.set('page', String(query.page))
+    params.set(
+      'page',
+      String(query.page),
+    )
   }
 
   if (query.limit !== undefined) {
-    params.set('limit', String(query.limit))
+    params.set(
+      'limit',
+      String(query.limit),
+    )
   }
 
   const serialized = params.toString()
 
-  return serialized ? `?${serialized}` : ''
+  return serialized
+    ? `?${serialized}`
+    : ''
 }
 
 export function getJobs(): Promise<Job[]> {
