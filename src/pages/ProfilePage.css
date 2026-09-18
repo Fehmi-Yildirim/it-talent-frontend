@@ -39,6 +39,10 @@
   gap: 16px;
 }
 
+.profile-section-header button {
+  flex-shrink: 0;
+}
+
 .profile-details {
   display: grid;
   gap: 16px;

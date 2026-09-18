@@ -31,43 +31,52 @@ function Layout() {
           </Link>
 
           {isAuthenticated ? (
-            <div className="main-nav__links">
-              <NavLink to="/dashboard">
-                {t('navigation.dashboard')}
-              </NavLink>
-
-              {isCandidate && (
-                <NavLink to="/jobs">
-                  {t('navigation.findJobs')}
+            <>
+              <div className="main-nav__links">
+                <NavLink to="/dashboard">
+                  {t('navigation.dashboard')}
                 </NavLink>
-              )}
 
-              <NavLink to="/profile">
-                {t('navigation.profile')}
-              </NavLink>
+                {isCandidate && (
+                  <NavLink to="/jobs">
+                    {t('navigation.findJobs')}
+                  </NavLink>
+                )}
 
-              <div className="language-switcher">
-                <select
-                  id="language-select"
-                  value={language}
-                  onChange={(event) =>
-                    setLanguage(event.target.value as typeof language)
-                  }
-                  aria-label="Language"
-                >
-                  <option value="en">EN</option>
-                  <option value="nl">NL</option>
-                </select>
+                <NavLink to="/profile">
+                  {t('navigation.profile')}
+                </NavLink>
+
+                <div className="language-switcher">
+                  <select
+                    id="language-select"
+                    value={language}
+                    onChange={(event) =>
+                      setLanguage(event.target.value as typeof language)
+                    }
+                    aria-label="Language"
+                  >
+                    <option value="en">EN</option>
+                    <option value="nl">NL</option>
+                  </select>
+                </div>
               </div>
 
-              <button
-                className="main-nav__logout"
-                type="button"
-                onClick={handleLogout}
-              >
-                {t('navigation.logout')}
-              </button>
-            </div>
+              <div className="main-nav__user-actions">
+                <span className="main-nav__user">
+                  <span aria-hidden="true">👤</span>
+                  {user?.firstName} {user?.lastName}
+                </span>
+
+                <button
+                  className="main-nav__logout"
+                  type="button"
+                  onClick={handleLogout}
+                >
+                  {t('navigation.logout')}
+                </button>
+              </div>
+            </>
           ) : (
             <div className="main-nav__links">
               <NavLink to="/login">

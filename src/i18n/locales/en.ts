@@ -468,9 +468,13 @@ export const en = {
 
         account: 'Account',
         accountInformation: 'Account information',
+        firstName: 'First name',
+        lastName: 'Last name',
         email: 'Email',
         role: 'Role',
         status: 'Status',
+        editAccount: 'Edit account',
+        saveAccount: 'Save account',
 
         candidate: 'Candidate',
         candidateProfile: 'Candidate profile',
@@ -502,6 +506,7 @@ export const en = {
 
         profileUpdated: 'Profile updated successfully.',
         profileCreated: 'Profile created successfully.',
+        accountUpdated: 'Account information updated successfully.',
 
         unauthorizedAccess:
             'You are not authorized to access your candidate profile.',
@@ -516,6 +521,8 @@ export const en = {
             'You are not authorized to modify your candidate profile.',
         invalidInformation:
             'Please check your profile information and try again.',
+        invalidAccountInformation:
+            'Please check your first and last name and try again.',
         profileAlreadyExists:
             'A candidate profile already exists.',
         processingError:
@@ -526,6 +533,8 @@ export const en = {
             'Unable to update your candidate profile.',
         createError:
             'Unable to create your candidate profile.',
+        accountUpdateError:
+            'Unable to update your account information.',
     },
 
     recruiterJobs: {

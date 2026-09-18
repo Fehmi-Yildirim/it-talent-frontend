@@ -284,8 +284,89 @@ function ProfileForm({
   )
 }
 
+interface AccountFormProps {
+  value: {
+    firstName: string
+    lastName: string
+  }
+  submitting: boolean
+  onChange: (value: {
+    firstName: string
+    lastName: string
+  }) => void
+  onSubmit: () => void
+  onCancel: () => void
+}
+
+function AccountForm({
+  value,
+  submitting,
+  onChange,
+  onSubmit,
+  onCancel,
+}: AccountFormProps) {
+  const { t } = useTranslation()
+
+  return (
+    <form
+      className="profile-form"
+      onSubmit={(event) => {
+        event.preventDefault()
+        onSubmit()
+      }}
+    >
+      <label>
+        {t('profile.firstName')}
+        <input
+          value={value.firstName}
+          onChange={(event) =>
+            onChange({
+              ...value,
+              firstName: event.target.value,
+            })
+          }
+          required
+        />
+      </label>
+
+      <label>
+        {t('profile.lastName')}
+        <input
+          value={value.lastName}
+          onChange={(event) =>
+            onChange({
+              ...value,
+              lastName: event.target.value,
+            })
+          }
+          required
+        />
+      </label>
+
+      <div className="profile-actions">
+        <button
+          type="submit"
+          disabled={submitting}
+        >
+          {submitting
+            ? t('profile.saving')
+            : t('profile.saveAccount')}
+        </button>
+
+        <button
+          type="button"
+          onClick={onCancel}
+          disabled={submitting}
+        >
+          {t('profile.cancel')}
+        </button>
+      </div>
+    </form>
+  )
+}
+
 function ProfilePage() {
-  const { user } = useAuth()
+  const { user, updateUser } = useAuth()
   const { language, t } = useTranslation()
 
   const [candidateProfile, setCandidateProfile] =
@@ -299,6 +380,21 @@ function ProfilePage() {
   const [formValue, setFormValue] =
     useState<CandidateProfileInput>({})
   const [retryCount, setRetryCount] = useState(0)
+
+  const [editingAccount, setEditingAccount] = useState(false)
+  const [accountSubmitting, setAccountSubmitting] =
+    useState(false)
+  const [accountForm, setAccountForm] = useState({
+    firstName: user?.firstName ?? '',
+    lastName: user?.lastName ?? '',
+  })
+
+  useEffect(() => {
+    setAccountForm({
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+    })
+  }, [user])
 
   useEffect(() => {
     if (!user || user.role !== 'CANDIDATE') {
@@ -424,6 +520,38 @@ function ProfilePage() {
     }
   }
 
+  async function handleAccountSubmit() {
+    setAccountSubmitting(true)
+    setError(null)
+    setSuccess(null)
+
+    try {
+      await updateUser(
+        accountForm.firstName,
+        accountForm.lastName,
+      )
+
+      setEditingAccount(false)
+      setSuccess(t('profile.accountUpdated'))
+    } catch (caught) {
+      if (
+        caught instanceof ApiError &&
+        (caught.status === 401 || caught.status === 403)
+      ) {
+        setError(t('profile.unauthorizedModify'))
+      } else if (
+        caught instanceof ApiError &&
+        caught.status === 400
+      ) {
+        setError(t('profile.invalidAccountInformation'))
+      } else {
+        setError(t('profile.accountUpdateError'))
+      }
+    } finally {
+      setAccountSubmitting(false)
+    }
+  }
+
   function startEditing() {
     setFormValue(toInput(candidateProfile))
     setError(null)
@@ -436,6 +564,26 @@ function ProfilePage() {
     setError(null)
     setSuccess(null)
     setEditing(false)
+  }
+
+  function startAccountEditing() {
+    setAccountForm({
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+    })
+    setError(null)
+    setSuccess(null)
+    setEditingAccount(true)
+  }
+
+  function cancelAccountEditing() {
+    setAccountForm({
+      firstName: user?.firstName ?? '',
+      lastName: user?.lastName ?? '',
+    })
+    setError(null)
+    setSuccess(null)
+    setEditingAccount(false)
   }
 
   return (
@@ -456,30 +604,63 @@ function ProfilePage() {
         className="profile-section"
         aria-labelledby="account-heading"
       >
-        <p className="profile-eyebrow">
-          {t('profile.account')}
-        </p>
-
-        <h2 id="account-heading">
-          {t('profile.accountInformation')}
-        </h2>
-
-        <dl className="profile-details">
+        <div className="profile-section-header">
           <div>
-            <dt>{t('profile.email')}</dt>
-            <dd>{user?.email}</dd>
+            <p className="profile-eyebrow">
+              {t('profile.account')}
+            </p>
+
+            <h2 id="account-heading">
+              {t('profile.accountInformation')}
+            </h2>
           </div>
 
-          <div>
-            <dt>{t('profile.role')}</dt>
-            <dd>{user?.role}</dd>
-          </div>
+          {!editingAccount && (
+            <button
+              type="button"
+              onClick={startAccountEditing}
+            >
+              {t('profile.editAccount')}
+            </button>
+          )}
+        </div>
 
-          <div>
-            <dt>{t('profile.status')}</dt>
-            <dd>{user?.status}</dd>
-          </div>
-        </dl>
+        {editingAccount ? (
+          <AccountForm
+            value={accountForm}
+            submitting={accountSubmitting}
+            onChange={setAccountForm}
+            onSubmit={() => void handleAccountSubmit()}
+            onCancel={cancelAccountEditing}
+          />
+        ) : (
+          <dl className="profile-details">
+            <div>
+              <dt>{t('profile.firstName')}</dt>
+              <dd>{user?.firstName}</dd>
+            </div>
+
+            <div>
+              <dt>{t('profile.lastName')}</dt>
+              <dd>{user?.lastName}</dd>
+            </div>
+
+            <div>
+              <dt>{t('profile.email')}</dt>
+              <dd>{user?.email}</dd>
+            </div>
+
+            <div>
+              <dt>{t('profile.role')}</dt>
+              <dd>{user?.role}</dd>
+            </div>
+
+            <div>
+              <dt>{t('profile.status')}</dt>
+              <dd>{user?.status}</dd>
+            </div>
+          </dl>
+        )}
       </section>
 
       {user?.role === 'CANDIDATE' && (
