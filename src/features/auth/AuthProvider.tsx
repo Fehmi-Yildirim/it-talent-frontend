@@ -1,5 +1,9 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { getCurrentUser, login } from './auth.api'
+import {
+  getCurrentUser,
+  login,
+  updateCurrentUser,
+} from './auth.api'
 import {
   getAccessToken,
   setAccessToken,
@@ -67,6 +71,20 @@ export function AuthProvider({ children }: AuthProviderProps) {
     }
   }
 
+  const handleUpdateUser = async (
+    firstName: string,
+    lastName: string,
+  ): Promise<CurrentUser> => {
+    const updatedUser = await updateCurrentUser({
+      firstName,
+      lastName,
+    })
+
+    setUser(updatedUser)
+
+    return updatedUser
+  }
+
   const logout = () => {
     clearAccessToken()
     setToken(null)
@@ -80,6 +98,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     isLoading,
     login: handleLogin,
     logout,
+    updateUser: handleUpdateUser,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -508,76 +508,44 @@ export const nl: DeepPartial<typeof en> = {
     profile: {
         title: 'Profiel',
         backToDashboard: 'Terug naar dashboard',
-
         account: 'Account',
-        accountInformation:
-            'Accountgegevens',
+        accountInformation: 'Accountgegevens',
+        firstName: 'Voornaam',
+        lastName: 'Achternaam',
         email: 'E-mail',
         role: 'Rol',
         status: 'Status',
 
+        editAccount: 'Account bewerken',
+        saveAccount: 'Account opslaan',
+
         candidate: 'Kandidaat',
-        candidateProfile:
-            'Kandidaatprofiel',
-        createCandidateProfile:
-            'Kandidaatprofiel aanmaken',
+        candidateProfile: 'Kandidaatprofiel',
+        createCandidateProfile: 'Kandidaatprofiel aanmaken',
         editProfile: 'Profiel bewerken',
 
-        loading:
-            'Kandidaatprofiel laden...',
-        profileUnavailable:
-            'Profiel niet beschikbaar',
-
-        headline: 'Koptekst',
-        summary: 'Samenvatting',
-        location: 'Locatie',
-        minimumSalary: 'Minimumsalaris',
-        maximumSalary: 'Maximumsalaris',
-        salary: 'Salaris',
-        currency: 'Valuta',
-        availabilityDate:
-            'Beschikbaarheidsdatum',
-        availability: 'Beschikbaarheid',
-        remotePreference:
-            'Voorkeur voor werken op afstand',
-
-        notSpecified: 'Niet opgegeven',
-        upTo: 'Tot',
-        from: 'Vanaf',
-
-        saveProfile: 'Profiel opslaan',
-        createProfile: 'Profiel aanmaken',
-        saving: 'Opslaan...',
-        cancel: 'Annuleren',
+        // ...
 
         profileUpdated:
             'Profiel succesvol bijgewerkt.',
         profileCreated:
             'Profiel succesvol aangemaakt.',
+        accountUpdated:
+            'Accountgegevens zijn succesvol bijgewerkt.',
 
-        unauthorizedAccess:
-            'Je hebt geen toegang tot je kandidaatprofiel.',
-        serverLoadError:
-            'De server heeft een fout gemeld bij het laden van je kandidaatprofiel.',
-        connectionError:
-            'Kan geen verbinding maken met de server. Controleer je verbinding en probeer het opnieuw.',
-        loadError:
-            'Je kandidaatprofiel kan niet worden geladen.',
+        // ...
 
-        unauthorizedModify:
-            'Je hebt geen toestemming om je kandidaatprofiel te wijzigen.',
         invalidInformation:
             'Controleer je profielgegevens en probeer het opnieuw.',
-        profileAlreadyExists:
-            'Er bestaat al een kandidaatprofiel.',
-        processingError:
-            'De profielgegevens konden niet worden verwerkt. Controleer je invoer.',
-        serverError:
-            'De server heeft een fout gemeld. Probeer het later opnieuw.',
-        updateError:
-            'Je kandidaatprofiel kan niet worden bijgewerkt.',
+        invalidAccountInformation:
+            'Controleer je voornaam en achternaam en probeer het opnieuw.',
+
+        // ...
+
         createError:
             'Je kandidaatprofiel kan niet worden aangemaakt.',
+        accountUpdateError:
+            'Het bijwerken van je accountgegevens is mislukt.',
     },
 
     recruiterJobs: {

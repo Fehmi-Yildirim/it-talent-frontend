@@ -17,3 +17,14 @@ export function login(data: LoginRequest): Promise<AuthResponse> {
 export function getCurrentUser(): Promise<CurrentUser> {
   return apiClient.get<CurrentUser>('/users/me')
 }
+
+export interface UpdateUserRequest {
+  firstName: string
+  lastName: string
+}
+
+export function updateCurrentUser(
+  data: UpdateUserRequest,
+): Promise<CurrentUser> {
+  return apiClient.patch<CurrentUser>('/users/me', data)
+}

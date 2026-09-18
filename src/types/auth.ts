@@ -3,6 +3,8 @@ import type { UserRole, UserStatus } from './user'
 export interface AuthUser {
   id: string
   email: string
+  firstName: string
+  lastName: string
   role: UserRole
   status: UserStatus
 }

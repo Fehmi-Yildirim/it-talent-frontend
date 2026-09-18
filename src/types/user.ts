@@ -1,10 +1,11 @@
 export type UserRole = 'CANDIDATE' | 'RECRUITER' | 'ADMIN'
-
 export type UserStatus = 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'DELETED'
 
 export interface User {
   id: string
   email: string
+  firstName: string
+  lastName: string
   role: UserRole
   status: UserStatus
   createdAt: string
