@@ -67,7 +67,7 @@ export interface CandidateJob extends Job {
 export interface JobDiscoveryQuery {
   q?: string
   location?: string
-  workMode?: WorkMode
+  workModes?: WorkMode[]
   employmentType?: EmploymentType
   salaryMin?: number
   salaryMax?: number

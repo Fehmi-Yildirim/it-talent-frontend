@@ -59,7 +59,7 @@
     border: 0;
     border-radius: 6px;
 
-    background: #2563eb;
+    background: #000000;
     color: #ffffff;
 
     font: inherit;
@@ -68,7 +68,7 @@
 }
 
 .login-page button[type='submit']:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: #474849;
 }
 
 .login-page button[type='submit']:disabled {
