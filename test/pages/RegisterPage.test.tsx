@@ -33,7 +33,9 @@ describe('RegisterPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Register' })).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: 'Register' }),
+    ).toBeInTheDocument()
   })
 
   it('uses browser validation for an invalid email', async () => {
@@ -45,7 +47,10 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(screen.getByLabelText('Email'), 'invalid-email')
+    await user.type(
+      screen.getByLabelText('Email'),
+      'invalid-email',
+    )
 
     expect(screen.getByLabelText('Email')).toBeInvalid()
     expect(mockedRegister).not.toHaveBeenCalled()
@@ -58,6 +63,8 @@ describe('RegisterPage', () => {
       user: {
         id: 'user-1',
         email: 'recruiter@example.com',
+        firstName: 'Test',
+        lastName: 'Recruiter',
         role: 'RECRUITER',
         status: 'PENDING',
       },
@@ -74,9 +81,17 @@ describe('RegisterPage', () => {
       screen.getByLabelText('Email'),
       'recruiter@example.com',
     )
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.selectOptions(screen.getByLabelText('Account type'), 'RECRUITER')
-    await user.click(screen.getByRole('button', { name: 'Register' }))
+    await user.type(
+      screen.getByLabelText('Password'),
+      'password123',
+    )
+    await user.selectOptions(
+      screen.getByLabelText('Account type'),
+      'RECRUITER',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
 
     await waitFor(() => {
       expect(mockedRegister).toHaveBeenCalledWith({
@@ -96,9 +111,17 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
-    await user.type(screen.getByLabelText('Password'), 'short')
-    await user.click(screen.getByRole('button', { name: 'Register' }))
+    await user.type(
+      screen.getByLabelText('Email'),
+      'test@example.com',
+    )
+    await user.type(
+      screen.getByLabelText('Password'),
+      'short',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Password must be at least 8 characters.',
@@ -113,6 +136,8 @@ describe('RegisterPage', () => {
       user: {
         id: 'user-1',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'CANDIDATE',
         status: 'PENDING',
       },
@@ -125,9 +150,17 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(screen.getByLabelText('Email'), '  test@example.com  ')
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Register' }))
+    await user.type(
+      screen.getByLabelText('Email'),
+      '  test@example.com  ',
+    )
+    await user.type(
+      screen.getByLabelText('Password'),
+      'password123',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
 
     await waitFor(() => {
       expect(mockedRegister).toHaveBeenCalledWith({
@@ -147,6 +180,8 @@ describe('RegisterPage', () => {
       user: {
         id: 'user-1',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'CANDIDATE',
         status: 'PENDING',
       },
@@ -159,9 +194,17 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Register' }))
+    await user.type(
+      screen.getByLabelText('Email'),
+      'test@example.com',
+    )
+    await user.type(
+      screen.getByLabelText('Password'),
+      'password123',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
 
     await waitFor(() => {
       expect(mockedRegister).toHaveBeenCalledWith({
@@ -175,7 +218,9 @@ describe('RegisterPage', () => {
   it('shows an API error when registration fails', async () => {
     const user = userEvent.setup()
 
-    mockedRegister.mockRejectedValue(new Error('Unable to create account'))
+    mockedRegister.mockRejectedValue(
+      new Error('Unable to create account'),
+    )
 
     render(
       <MemoryRouter>
@@ -183,11 +228,21 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(screen.getByLabelText('Email'), 'test@example.com')
-    await user.type(screen.getByLabelText('Password'), 'password123')
-    await user.click(screen.getByRole('button', { name: 'Register' }))
+    await user.type(
+      screen.getByLabelText('Email'),
+      'test@example.com',
+    )
+    await user.type(
+      screen.getByLabelText('Password'),
+      'password123',
+    )
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
+    expect(
+      await screen.findByRole('alert'),
+    ).toHaveTextContent(
       'Unable to create account',
     )
   })

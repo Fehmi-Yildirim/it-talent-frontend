@@ -164,6 +164,8 @@ describe('DashboardPage', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'user-1',
       email: 'test@example.com',
+      firstName: 'Test',
+      lastName: 'User',
       role: 'CANDIDATE',
       status: 'ACTIVE',
       candidate: null,
@@ -279,6 +281,8 @@ describe('DashboardPage', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'recruiter-1',
       email: 'recruiter@example.com',
+      firstName: 'Recruiter',
+      lastName: 'User',
       role: 'RECRUITER',
       status: 'ACTIVE',
       candidate: null,
@@ -303,6 +307,8 @@ describe('DashboardPage', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'recruiter-1',
       email: 'recruiter@example.com',
+      firstName: 'Recruiter',
+      lastName: 'User',
       role: 'RECRUITER',
       status: 'ACTIVE',
       candidate: null,
@@ -323,6 +329,8 @@ describe('DashboardPage', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'recruiter-1',
       email: 'recruiter@example.com',
+      firstName: 'Recruiter',
+      lastName: 'User',
       role: 'RECRUITER',
       status: 'ACTIVE',
       candidate: null,

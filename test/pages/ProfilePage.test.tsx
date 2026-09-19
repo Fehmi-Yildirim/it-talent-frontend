@@ -28,6 +28,8 @@ vi.mock('../../src/features/candidate/CandidateSkills', () => ({
 const candidateUser = {
   id: 'user-1',
   email: 'candidate@example.com',
+  firstName: 'Test',
+  lastName: 'User',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
   candidate: null,
@@ -79,6 +81,7 @@ describe('ProfilePage', () => {
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      updateUser: vi.fn(),
     })
 
     mockedGetCandidateProfile.mockResolvedValue(candidateProfile)
@@ -362,12 +365,15 @@ describe('ProfilePage', () => {
       user: {
         ...candidateUser,
         role: 'RECRUITER',
+        firstName: 'Recruiter',
+        lastName: 'User',
       },
       accessToken: 'test-access-token',
       isAuthenticated: true,
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      updateUser: vi.fn(),
     })
 
     renderProfilePage()
