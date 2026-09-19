@@ -78,6 +78,8 @@ function renderAuthProvider() {
 const currentUser = {
   id: 'user-1',
   email: 'test@example.com',
+  firstName: 'Test',
+  lastName: 'User',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
   createdAt: '2026-01-01T00:00:00.000Z',
@@ -162,6 +164,8 @@ describe('AuthProvider', () => {
       user: {
         id: 'user-1',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'CANDIDATE',
         status: 'ACTIVE',
       },

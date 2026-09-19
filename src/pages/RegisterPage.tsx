@@ -3,6 +3,7 @@ import type { FormEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { register } from '../features/auth/auth.api'
 import { useTranslation } from '../i18n/useTranslation'
+import './RegisterPage.css'
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -66,7 +67,7 @@ function RegisterPage() {
   }
 
   return (
-    <main>
+    <main className="register-page">
       <h1>{t('auth.register')}</h1>
 
       <form onSubmit={handleSubmit}>
@@ -103,11 +104,19 @@ function RegisterPage() {
             name="role"
             value={role}
             onChange={(event) =>
-              setRole(event.target.value as 'CANDIDATE' | 'RECRUITER')
+              setRole(
+                event.target.value as
+                | 'CANDIDATE'
+                | 'RECRUITER',
+              )
             }
           >
-            <option value="CANDIDATE">{t('auth.candidate')}</option>
-            <option value="RECRUITER">{t('auth.recruiter')}</option>
+            <option value="CANDIDATE">
+              {t('auth.candidate')}
+            </option>
+            <option value="RECRUITER">
+              {t('auth.recruiter')}
+            </option>
           </select>
         </div>
 
@@ -117,7 +126,11 @@ function RegisterPage() {
           </p>
         )}
 
-        <button type="submit" disabled={isSubmitting} aria-busy={isSubmitting}>
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          aria-busy={isSubmitting}
+        >
           {isSubmitting
             ? t('auth.creatingAccount')
             : t('auth.register')}

@@ -1,5 +1,4 @@
 import { apiClient } from '../../services/api/apiClient'
-
 import type {
   CandidateJob,
   CreateJobRequest,
@@ -37,10 +36,13 @@ function buildJobDiscoveryQuery(
     )
   }
 
-  if (query.employmentType) {
+  if (
+    query.employmentTypes &&
+    query.employmentTypes.length > 0
+  ) {
     params.set(
-      'employmentType',
-      query.employmentType,
+      'employmentTypes',
+      query.employmentTypes.join(','),
     )
   }
 

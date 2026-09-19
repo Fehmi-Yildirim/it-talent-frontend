@@ -19,6 +19,8 @@ const mockedUseAuth = vi.mocked(useAuth)
 const candidateUser = {
   id: 'user-1',
   email: 'test@example.com',
+  firstName: 'Test',
+  lastName: 'User',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
   candidate: null,
@@ -53,6 +55,7 @@ describe('Layout', () => {
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      updateUser: vi.fn(),
     })
 
     renderLayout()
@@ -79,6 +82,7 @@ describe('Layout', () => {
       isLoading: false,
       login: vi.fn(),
       logout: vi.fn(),
+      updateUser: vi.fn(),
     })
 
     renderLayout()
@@ -111,6 +115,7 @@ describe('Layout', () => {
       isLoading: false,
       login: vi.fn(),
       logout,
+      updateUser: vi.fn(),
     })
 
     renderLayout()

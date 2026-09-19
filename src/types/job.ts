@@ -68,7 +68,7 @@ export interface JobDiscoveryQuery {
   q?: string
   location?: string
   workModes?: WorkMode[]
-  employmentType?: EmploymentType
+  employmentTypes?: EmploymentType[]
   salaryMin?: number
   salaryMax?: number
   skillIds?: string[]

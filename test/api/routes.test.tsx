@@ -139,6 +139,8 @@ describe('application routes', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'user-1',
       email: 'test@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
       role: 'CANDIDATE',
       status: 'ACTIVE',
       candidate: null,
@@ -214,6 +216,8 @@ describe('application routes', () => {
     mockedGetCurrentUser.mockResolvedValue({
       id: 'user-1',
       email: 'test@example.com',
+      firstName: 'John',
+      lastName: 'Doe',
       role: 'CANDIDATE',
       status: 'ACTIVE',
       candidate: null,

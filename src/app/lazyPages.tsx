@@ -3,7 +3,9 @@ import { lazy } from 'react'
 export const RegisterPage = lazy(() => import('../pages/RegisterPage'))
 
 export const CandidateJobsPage = lazy(
-    () => import('../pages/CandidateJobsPage'),
+    () => import('../pages/CandidateJobsPage').then((module) => ({
+        default: module.CandidateJobsPage,
+    })),
 )
 
 export const CandidateJobDetailsPage = lazy(

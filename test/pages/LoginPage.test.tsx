@@ -72,6 +72,8 @@ describe('LoginPage', () => {
       user: {
         id: 'user-1',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'CANDIDATE',
         status: 'ACTIVE',
       },
@@ -117,6 +119,8 @@ describe('LoginPage', () => {
       user: {
         id: 'user-1',
         email: 'test@example.com',
+        firstName: 'Test',
+        lastName: 'User',
         role: 'CANDIDATE',
         status: 'PENDING',
       },

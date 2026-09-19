@@ -17,6 +17,8 @@ const mockedGetCurrentUser = vi.mocked(getCurrentUser)
 const currentUser = {
   id: 'user-1',
   email: 'test@example.com',
+  firstName: 'John',
+  lastName: 'Doe',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
   createdAt: '2026-01-01T00:00:00.000Z',
