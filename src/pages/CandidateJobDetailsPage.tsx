@@ -1,33 +1,51 @@
 import { useEffect, useState } from 'react'
+import DOMPurify from 'dompurify'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
 import { useTranslation } from '../i18n/useTranslation'
-import type { CandidateJob } from '../types/job'
+import type {
+    CandidateJob,
+    EmploymentType,
+    WorkMode,
+} from '../types/job'
 import './CandidateJobDetailsPage.css'
 
 function formatSalary(
     salaryMin: string | number | null,
     salaryMax: string | number | null,
     currency: string | null,
+    locale: string,
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (salaryMin === null && salaryMax === null) {
         return t('candidateJobDetails.notSpecified')
     }
 
-    const currencyLabel = currency ? ` ${currency} ` : ''
+    const formatAmount = (value: string | number): string => {
+        const amount = Number(value)
+
+        if (Number.isNaN(amount)) {
+            return String(value)
+        }
+
+        return new Intl.NumberFormat(locale, {
+            maximumFractionDigits: 0,
+        }).format(amount)
+    }
+
+    const currencyLabel = currency ? ` ${currency}` : ''
 
     if (salaryMin !== null && salaryMax !== null) {
-        return `${salaryMin} - ${salaryMax}${currencyLabel}`
+        return `${formatAmount(salaryMin)} - ${formatAmount(salaryMax)}${currencyLabel}`
     }
 
     if (salaryMin !== null) {
-        return `${t('candidateJobDetails.from')} ${salaryMin}${currencyLabel}`
+        return `${t('candidateJobDetails.from')} ${formatAmount(salaryMin)}${currencyLabel}`
     }
 
-    return `${t('candidateJobDetails.upTo')} ${salaryMax}${currencyLabel}`
+    return `${t('candidateJobDetails.upTo')} ${formatAmount(salaryMax!)}${currencyLabel}`
 }
 
 function formatDate(
@@ -65,6 +83,21 @@ function CandidateJobDetailsPage() {
     )
 
     const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+
+    const employmentTypeLabels: Record<EmploymentType, string> = {
+        FULL_TIME: t('candidateJobs.fullTime'),
+        PART_TIME: t('candidateJobs.partTime'),
+        CONTRACT: t('candidateJobs.contract'),
+        FREELANCE: t('candidateJobs.freelance'),
+        INTERNSHIP: t('candidateJobs.internship'),
+    }
+
+    const workModeLabels: Record<WorkMode, string> = {
+        REMOTE: t('candidateJobs.remote'),
+        HYBRID: t('candidateJobs.hybrid'),
+        ONSITE: t('candidateJobs.onsite'),
+        FLEXIBLE: t('candidateJobs.flexible'),
+    }
 
     useEffect(() => {
         let cancelled = false
@@ -204,6 +237,8 @@ function CandidateJobDetailsPage() {
         (requirement) => !requirement.required,
     )
 
+    const sanitizedDescription = DOMPurify.sanitize(job.description)
+
     return (
         <section className="candidate-job-details-page">
             <Link
@@ -238,12 +273,17 @@ function CandidateJobDetailsPage() {
 
                     <div>
                         <dt>{t('candidateJobDetails.workMode')}</dt>
-                        <dd>{job.workMode}</dd>
+                        <dd>
+                            {workModeLabels[job.workMode] ?? job.workMode}
+                        </dd>
                     </div>
 
                     <div>
                         <dt>{t('candidateJobDetails.employmentType')}</dt>
-                        <dd>{job.employmentType}</dd>
+                        <dd>
+                            {employmentTypeLabels[job.employmentType] ??
+                                job.employmentType}
+                        </dd>
                     </div>
 
                     <div>
@@ -253,6 +293,7 @@ function CandidateJobDetailsPage() {
                                 job.salaryMin,
                                 job.salaryMax,
                                 job.currency,
+                                locale,
                                 t,
                             )}
                         </dd>
@@ -262,15 +303,12 @@ function CandidateJobDetailsPage() {
                 <section className="candidate-job-details-section">
                     <h2>{t('candidateJobDetails.aboutTheJob')}</h2>
 
-                    <div className="candidate-job-description">
-                        {job.description
-                            .split('\n')
-                            .map((paragraph, index) => (
-                                <p key={`${index}-${paragraph}`}>
-                                    {paragraph}
-                                </p>
-                            ))}
-                    </div>
+                    <div
+                        className="candidate-job-description"
+                        dangerouslySetInnerHTML={{
+                            __html: sanitizedDescription,
+                        }}
+                    />
                 </section>
 
                 <section className="candidate-job-details-section candidate-job-application-section">
