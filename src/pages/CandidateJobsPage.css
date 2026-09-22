@@ -353,6 +353,8 @@
     margin: 0;
     padding: 0;
     border: 0;
+    max-height: 220px;
+    overflow-y: auto;
 }
 
 .candidate-jobs-work-mode-option {

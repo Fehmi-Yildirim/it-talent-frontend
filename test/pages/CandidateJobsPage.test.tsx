@@ -11,12 +11,18 @@ import '@testing-library/jest-dom/vitest'
 
 import { CandidateJobsPage } from '../../src/pages/CandidateJobsPage'
 import { getCandidateJobs } from '../../src/features/jobs/jobs.api'
+import { getSkills } from '../../src/features/candidate/candidate.api'
+
 
 vi.mock('../../src/features/jobs/jobs.api', () => ({
     getCandidateJobs: vi.fn(),
 }))
+vi.mock('../../src/features/candidate/candidate.api', () => ({
+    getSkills: vi.fn(),
+}))
 
 const mockedGetCandidateJobs = vi.mocked(getCandidateJobs)
+const mockedGetSkills = vi.mocked(getSkills)
 
 const job = {
     id: 'job-1',
@@ -69,6 +75,27 @@ const job = {
     ],
 }
 
+const testSkills = [
+    {
+        id: 'skill-react',
+        name: 'React',
+        slug: 'react',
+        category: 'Frontend',
+        description: 'React development',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-01-01T00:00:00.000Z',
+    },
+    {
+        id: 'skill-typescript',
+        name: 'TypeScript',
+        slug: 'typescript',
+        category: 'Frontend',
+        description: 'TypeScript development',
+        createdAt: '2025-01-01T00:00:00.000Z',
+        updatedAt: '2025-01-01T00:00:00.000Z',
+    },
+]
+
 const baseResponse = {
     items: [job],
     total: 1,
@@ -102,9 +129,10 @@ describe('CandidateJobsPage', () => {
         vi.clearAllMocks()
 
         mockedGetCandidateJobs.mockResolvedValue(baseResponse)
+        mockedGetSkills.mockResolvedValue(testSkills)
     })
 
-    it('shows a loading state while jobs are loading', async () => {
+    it('1.shows a loading state while jobs are loading', async () => {
         let resolveJobs:
             | ((value: typeof baseResponse) => void)
             | undefined
@@ -132,7 +160,8 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('renders jobs with company, metadata, salary, skills and publication date', async () => {
+
+    it('2.renders jobs with company, metadata, salary, skills and publication date', async () => {
         renderPage()
 
         expect(
@@ -150,11 +179,11 @@ describe('CandidateJobsPage', () => {
         ).toBeInTheDocument()
 
         expect(
-            screen.getByText('HYBRID'),
+            screen.getByText('Hybrid'),
         ).toBeInTheDocument()
 
         expect(
-            screen.getByText('FULL_TIME'),
+            screen.getByText('Full-time'),
         ).toBeInTheDocument()
 
         expect(
@@ -182,7 +211,7 @@ describe('CandidateJobsPage', () => {
         ).toHaveLength(1)
     })
 
-    it('shows the results count when no jobs are found', async () => {
+    it('3.shows the results count when no jobs are found', async () => {
         mockedGetCandidateJobs.mockResolvedValue({
             items: [],
             total: 0,
@@ -206,7 +235,7 @@ describe('CandidateJobsPage', () => {
         ).not.toBeInTheDocument()
     })
 
-    it('sends the search query to the backend', async () => {
+    it('4.sends the search query to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -235,7 +264,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends the selected work mode to the backend', async () => {
+    it('5.sends the selected work mode to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -274,7 +303,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends multiple selected work modes to the backend', async () => {
+    it('6.sends multiple selected work modes to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -331,7 +360,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends a single selected employment type to the backend', async () => {
+    it('7.sends a single selected employment type to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -371,7 +400,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends multiple selected employment types to the backend', async () => {
+    it('8.sends multiple selected employment types to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -432,7 +461,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('keeps selected employment types checked while the dropdown is open', async () => {
+    it('9.keeps selected employment types checked while the dropdown is open', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -473,7 +502,7 @@ describe('CandidateJobsPage', () => {
         ).toBeChecked()
     })
 
-    it('removes an employment type when its checkbox is clicked again', async () => {
+    it('10.removes an employment type when its checkbox is clicked again', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -503,7 +532,7 @@ describe('CandidateJobsPage', () => {
         expect(fullTimeCheckbox).not.toBeChecked()
     })
 
-    it('can clear pending employment type selections before applying them', async () => {
+    it('11.can clear pending employment type selections before applying them', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -549,7 +578,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends location, work mode and employment type filters to the backend', async () => {
+    it('12.sends location, work mode and employment type filters to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -622,7 +651,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends salary filters to the backend', async () => {
+    it('13.sends salary filters to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -664,22 +693,41 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('sends selected skills to the backend', async () => {
+    it('14.sends selected skills to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
             name: 'Senior React Developer',
         })
 
+        const skillsDropdown = getFilterDropdown('Skills')
+
         fireEvent.click(
-            screen.getByRole('checkbox', {
-                name: 'React',
+            skillsDropdown.getByRole('button', {
+                name: 'Skills',
             }),
         )
 
-        fireEvent.click(
-            screen.getByRole('checkbox', {
+        const reactCheckbox = await skillsDropdown.findByRole(
+            'checkbox',
+            {
+                name: 'React',
+            },
+        )
+
+        const typescriptCheckbox = await skillsDropdown.findByRole(
+            'checkbox',
+            {
                 name: 'TypeScript',
+            },
+        )
+
+        fireEvent.click(reactCheckbox)
+        fireEvent.click(typescriptCheckbox)
+
+        fireEvent.click(
+            skillsDropdown.getByRole('button', {
+                name: 'Search',
             }),
         )
 
@@ -688,14 +736,14 @@ describe('CandidateJobsPage', () => {
                 mockedGetCandidateJobs,
             ).toHaveBeenLastCalledWith(
                 expect.objectContaining({
-                    skillIds: ['React', 'TypeScript'],
+                    skillIds: ['skill-react', 'skill-typescript'],
                     page: 1,
                 }),
             )
         })
     })
 
-    it('sends the selected sort option to the backend', async () => {
+    it('15.sends the selected sort option to the backend', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -725,7 +773,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('does not render pagination controls', async () => {
+    it('16.does not render pagination controls', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -749,7 +797,7 @@ describe('CandidateJobsPage', () => {
         ).not.toBeInTheDocument()
     })
 
-    it('resets filters when Clear filters is clicked', async () => {
+    it('17.resets filters when Clear filters is clicked', async () => {
         renderPage()
 
         await screen.findByRole('heading', {
@@ -857,7 +905,7 @@ describe('CandidateJobsPage', () => {
         })
     })
 
-    it('shows a generic API error for a 400 response', async () => {
+    it('18.shows a generic API error for a 400 response', async () => {
         mockedGetCandidateJobs.mockRejectedValue(
             new Error(
                 'The search request is invalid. Please check your filters.',
@@ -868,14 +916,16 @@ describe('CandidateJobsPage', () => {
 
         expect(
             await screen.findByRole('alert'),
-        ).toHaveTextContent('Failed to load jobs.')
+        ).toHaveTextContent(
+            'Unable to load jobs. Please try again.',
+        )
 
         expect(
             mockedGetCandidateJobs,
         ).toHaveBeenCalledTimes(1)
     })
 
-    it('shows a generic API error', async () => {
+    it('19.shows a generic API error', async () => {
         mockedGetCandidateJobs.mockRejectedValue(
             new Error('Network error'),
         )
@@ -884,7 +934,9 @@ describe('CandidateJobsPage', () => {
 
         expect(
             await screen.findByRole('alert'),
-        ).toHaveTextContent('Failed to load jobs.')
+        ).toHaveTextContent(
+            'Unable to load jobs. Please try again.',
+        )
 
         expect(
             mockedGetCandidateJobs,

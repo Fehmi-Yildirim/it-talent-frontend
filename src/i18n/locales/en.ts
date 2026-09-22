@@ -21,6 +21,15 @@ export const en = {
         save: 'Save',
         edit: 'Edit',
         close: 'Close',
+        location: 'Location',
+
+        search: 'Search',
+        clearFilters: 'Clear filters',
+        tryAgain: 'Try again',
+        previous: 'Previous',
+        next: 'Next',
+        page: 'Page',
+        of: 'of',
     },
     navigation: {
         dashboard: 'Dashboard',
@@ -195,6 +204,12 @@ export const en = {
         from: 'From',
         upTo: 'Up to',
         notSpecified: 'Not specified',
+        allSkills: 'All skills',
+        searchSkillsPlaceholder: 'Search skills...',
+        noSkillsFound: 'No skills found.',
+        skill: 'Skill',
+        workModesSelected: 'work modes',
+        employmentTypesSelected: 'employment types',
     },
 
     candidateApplications: {
