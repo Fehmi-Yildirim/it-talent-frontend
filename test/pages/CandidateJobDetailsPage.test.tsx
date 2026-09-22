@@ -30,7 +30,7 @@ const candidateJob = {
     createdByRecruiterId: 'recruiter-1',
     title: 'Senior React Developer',
     description:
-        'Build modern frontend applications.\nWork closely with designers and backend engineers.',
+        '<p>Build modern frontend applications.</p><p>Work closely with designers and backend engineers.</p>',
     location: 'Amsterdam',
     employmentType: 'FULL_TIME' as const,
     workMode: 'HYBRID' as const,
@@ -156,15 +156,27 @@ describe('CandidateJobDetailsPage', () => {
             }),
         ).toBeInTheDocument()
 
-        expect(
-            screen.getByText('Build modern frontend applications.'),
-        ).toBeInTheDocument()
+        const description = document.querySelector(
+            '.candidate-job-description',
+        )
+
+        expect(description).toBeInTheDocument()
 
         expect(
-            screen.getByText(
-                'Work closely with designers and backend engineers.',
-            ),
-        ).toBeInTheDocument()
+            description?.querySelector('p'),
+        ).toHaveTextContent(
+            'Build modern frontend applications.',
+        )
+
+        expect(
+            description?.querySelectorAll('p'),
+        ).toHaveLength(2)
+
+        expect(
+            description?.querySelectorAll('p')[1],
+        ).toHaveTextContent(
+            'Work closely with designers and backend engineers.',
+        )
 
         expect(
             screen.getByText('Amsterdam', {
@@ -172,9 +184,9 @@ describe('CandidateJobDetailsPage', () => {
             }),
         ).toBeInTheDocument()
 
-        expect(screen.getByText('HYBRID')).toBeInTheDocument()
-        expect(screen.getByText('FULL_TIME')).toBeInTheDocument()
-        expect(screen.getByText('60000 - 80000 EUR')).toBeInTheDocument()
+        expect(screen.getByText('Hybrid')).toBeInTheDocument()
+        expect(screen.getByText('Full-time')).toBeInTheDocument()
+        expect(screen.getByText('60,000 - 80,000 EUR')).toBeInTheDocument()
     })
 
     it('renders required and preferred skills separately', async () => {
