@@ -170,8 +170,8 @@ describe('CandidateJobsPage', () => {
 
         expect(screen.getByText('Acme Technologies')).toBeInTheDocument()
         expect(screen.getByText('Amsterdam')).toBeInTheDocument()
-        expect(screen.getByText('HYBRID')).toBeInTheDocument()
-        expect(screen.getByText('FULL_TIME')).toBeInTheDocument()
+        expect(screen.getByText('Hybrid')).toBeInTheDocument()
+        expect(screen.getByText('Full-time')).toBeInTheDocument()
         expect(screen.getByText('60000 - 80000 EUR')).toBeInTheDocument()
 
         const jobCard = screen
@@ -658,22 +658,41 @@ describe('CandidateJobsPage', () => {
             name: 'Senior React Developer',
         })
 
+        const skillsDropdown = getFilterDropdown('Skills')
+
         fireEvent.click(
-            screen.getByRole('checkbox', {
-                name: 'React',
+            skillsDropdown.getByRole('button', {
+                name: 'Skills',
             }),
         )
 
-        fireEvent.click(
-            screen.getByRole('checkbox', {
+        const reactCheckbox = await skillsDropdown.findByRole(
+            'checkbox',
+            {
+                name: 'React',
+            },
+        )
+
+        const typescriptCheckbox = await skillsDropdown.findByRole(
+            'checkbox',
+            {
                 name: 'TypeScript',
+            },
+        )
+
+        fireEvent.click(reactCheckbox)
+        fireEvent.click(typescriptCheckbox)
+
+        fireEvent.click(
+            skillsDropdown.getByRole('button', {
+                name: 'Search',
             }),
         )
 
         await waitFor(() => {
             expect(mockedGetCandidateJobs).toHaveBeenLastCalledWith(
                 expect.objectContaining({
-                    skillIds: ['React', 'TypeScript'],
+                    skillIds: ['skill-react', 'skill-typescript'],
                     page: 1,
                 }),
             )
@@ -846,18 +865,15 @@ describe('CandidateJobsPage', () => {
             enumerable: true,
         })
 
-        Object.defineProperty(error, 'message', {
-            value: 'The search request is invalid. Please check your filters.',
-            enumerable: true,
-        })
-
         mockedGetCandidateJobs.mockRejectedValue(error)
 
         renderPage()
 
         expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent('Failed to load jobs.')
+            await screen.findByText(
+                'Unable to load jobs. Please try again.',
+            ),
+        ).toBeInTheDocument()
     })
 
     it('shows a generic API error', async () => {
@@ -868,8 +884,10 @@ describe('CandidateJobsPage', () => {
         renderPage()
 
         expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent('Failed to load jobs.')
+            await screen.findByText(
+                'Unable to load jobs. Please try again.',
+            ),
+        ).toBeInTheDocument()
 
         expect(mockedGetCandidateJobs).toHaveBeenCalledTimes(1)
     })
@@ -877,16 +895,30 @@ describe('CandidateJobsPage', () => {
     it('loads available skills independently from the jobs list', async () => {
         renderPage()
 
+        const skillsDropdown = getFilterDropdown('Skills')
+
+        fireEvent.click(
+            skillsDropdown.getByRole('button', {
+                name: 'Skills',
+            }),
+        )
+
         expect(
-            await screen.findByRole('checkbox', {
+            await skillsDropdown.findByRole('checkbox', {
                 name: 'React',
             }),
         ).toBeInTheDocument()
 
-        expect(
-            screen.getByRole('checkbox', {
+        fireEvent.click(
+            skillsDropdown.getByRole('checkbox', {
+                name: 'React',
+            }),
+        )
+
+        fireEvent.click(
+            skillsDropdown.getByRole('checkbox', {
                 name: 'TypeScript',
             }),
-        ).toBeInTheDocument()
+        )
     })
 })
