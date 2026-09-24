@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getMyApplications } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import { APPLICATION_STATUSES } from '../types/application'
 import type {
     ApplicationStatus,
     CandidateApplication,
@@ -14,16 +16,11 @@ function formatStatus(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     switch (status) {
-        case 'PENDING':
-            return t('candidateApplications.pending')
-        case 'REVIEWING':
-            return t('candidateApplications.reviewing')
-        case 'ACCEPTED':
-            return t('candidateApplications.accepted')
-        case 'REJECTED':
-            return t('candidateApplications.rejected')
-        case 'WITHDRAWN':
-            return t('candidateApplications.withdrawn')
+        case APPLICATION_STATUSES.PENDING: return t('candidateApplications.pending')
+        case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
+        case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
+        case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
+        case APPLICATION_STATUSES.WITHDRAWN: return t('candidateApplications.withdrawn')
     }
 }
 
@@ -43,7 +40,7 @@ function CandidateApplicationsPage() {
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
 
-    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
 
     useEffect(() => {
         let cancelled = false

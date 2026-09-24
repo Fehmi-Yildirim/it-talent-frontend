@@ -4,9 +4,10 @@ import { getRecruiterApplications } from '../features/applications/applications.
 import { ApiError } from '../services/api/apiError'
 import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
-import type {
-    ApplicationStatus,
-    RecruiterApplication,
+import {
+    APPLICATION_STATUSES,
+    type ApplicationStatus,
+    type RecruiterApplication,
 } from '../types/application'
 
 function formatStatus(
@@ -14,18 +15,12 @@ function formatStatus(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     switch (status) {
-        case 'PENDING':
-            return t('recruiterApplications.pending')
-        case 'REVIEWING':
-            return t('recruiterApplications.reviewing')
-        case 'ACCEPTED':
-            return t('recruiterApplications.accepted')
-        case 'REJECTED':
-            return t('recruiterApplications.rejected')
-        case 'WITHDRAWN':
-            return t('recruiterApplications.withdrawn')
-        default:
-            return status
+        case APPLICATION_STATUSES.PENDING: return t('recruiterApplications.pending')
+        case APPLICATION_STATUSES.REVIEWING: return t('recruiterApplications.reviewing')
+        case APPLICATION_STATUSES.ACCEPTED: return t('recruiterApplications.accepted')
+        case APPLICATION_STATUSES.REJECTED: return t('recruiterApplications.rejected')
+        case APPLICATION_STATUSES.WITHDRAWN: return t('recruiterApplications.withdrawn')
+        default: return status
     }
 }
 
@@ -219,39 +214,26 @@ function RecruiterApplicationsPage() {
                         }
                     >
                         <option value="">
-                            {t(
-                                'recruiterApplications.allStatuses',
-                            )}
+                            {t('recruiterApplications.allStatuses')}
+                        </option>
+                        <option value={APPLICATION_STATUSES.PENDING}>
+                            {t('recruiterApplications.pending')}
                         </option>
 
-                        <option value="PENDING">
-                            {t(
-                                'recruiterApplications.pending',
-                            )}
+                        <option value={APPLICATION_STATUSES.REVIEWING}>
+                            {t('recruiterApplications.reviewing')}
                         </option>
 
-                        <option value="REVIEWING">
-                            {t(
-                                'recruiterApplications.reviewing',
-                            )}
+                        <option value={APPLICATION_STATUSES.ACCEPTED}>
+                            {t('recruiterApplications.accepted')}
                         </option>
 
-                        <option value="ACCEPTED">
-                            {t(
-                                'recruiterApplications.accepted',
-                            )}
+                        <option value={APPLICATION_STATUSES.REJECTED}>
+                            {t('recruiterApplications.rejected')}
                         </option>
 
-                        <option value="REJECTED">
-                            {t(
-                                'recruiterApplications.rejected',
-                            )}
-                        </option>
-
-                        <option value="WITHDRAWN">
-                            {t(
-                                'recruiterApplications.withdrawn',
-                            )}
+                        <option value={APPLICATION_STATUSES.WITHDRAWN}>
+                            {t('recruiterApplications.withdrawn')}
                         </option>
                     </select>
                 </label>

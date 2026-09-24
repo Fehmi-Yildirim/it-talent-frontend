@@ -5,7 +5,9 @@ import {
     withdrawApplication,
 } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import { APPLICATION_STATUSES } from '../types/application'
 import type {
     ApplicationStatus,
     CandidateApplicationDetail,
@@ -17,16 +19,11 @@ function formatStatus(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     switch (status) {
-        case 'PENDING':
-            return t('candidateApplications.pending')
-        case 'REVIEWING':
-            return t('candidateApplications.reviewing')
-        case 'ACCEPTED':
-            return t('candidateApplications.accepted')
-        case 'REJECTED':
-            return t('candidateApplications.rejected')
-        case 'WITHDRAWN':
-            return t('candidateApplications.withdrawn')
+        case APPLICATION_STATUSES.PENDING: return t('candidateApplications.pending')
+        case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
+        case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
+        case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
+        case APPLICATION_STATUSES.WITHDRAWN: return t('candidateApplications.withdrawn')
     }
 }
 
@@ -55,8 +52,7 @@ function CandidateApplicationDetailsPage() {
     const [withdrawError, setWithdrawError] =
         useState<string | null>(null)
 
-    const locale =
-        language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
 
     useEffect(() => {
         let cancelled = false
@@ -232,8 +228,8 @@ function CandidateApplicationDetailsPage() {
     }
 
     const canWithdraw =
-        application.status === 'PENDING' ||
-        application.status === 'REVIEWING'
+        application.status === APPLICATION_STATUSES.PENDING ||
+        application.status === APPLICATION_STATUSES.REVIEWING
 
     return (
         <section className="candidate-application-details-page">

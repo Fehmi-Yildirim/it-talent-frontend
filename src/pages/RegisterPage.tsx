@@ -4,6 +4,14 @@ import { useNavigate } from 'react-router-dom'
 import { register } from '../features/auth/auth.api'
 import { useTranslation } from '../i18n/useTranslation'
 import './RegisterPage.css'
+import {
+  USER_ROLES,
+  USER_STATUSES,
+} from '../types/user'
+
+type RegistrationRole =
+  | typeof USER_ROLES.CANDIDATE
+  | typeof USER_ROLES.RECRUITER
 
 function RegisterPage() {
   const navigate = useNavigate()
@@ -11,7 +19,9 @@ function RegisterPage() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<'CANDIDATE' | 'RECRUITER'>('CANDIDATE')
+  const [role, setRole] = useState<RegistrationRole>(
+    USER_ROLES.CANDIDATE,
+  )
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -45,7 +55,7 @@ function RegisterPage() {
         role,
       })
 
-      if (response.user.status === 'PENDING') {
+      if (response.user.status === USER_STATUSES.PENDING) {
         navigate('/login', {
           state: {
             registrationPending: true,
@@ -104,17 +114,14 @@ function RegisterPage() {
             name="role"
             value={role}
             onChange={(event) =>
-              setRole(
-                event.target.value as
-                | 'CANDIDATE'
-                | 'RECRUITER',
-              )
+              setRole(event.target.value as RegistrationRole)
             }
           >
-            <option value="CANDIDATE">
+            <option value={USER_ROLES.CANDIDATE}>
               {t('auth.candidate')}
             </option>
-            <option value="RECRUITER">
+
+            <option value={USER_ROLES.RECRUITER}>
               {t('auth.recruiter')}
             </option>
           </select>

@@ -7,8 +7,15 @@ import {
     getUsers,
     updateUser,
 } from '../features/admin/admin.api'
+import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
-import type { User, UserRole, UserStatus } from '../types/user'
+import {
+    USER_ROLES,
+    USER_STATUSES,
+    type User,
+    type UserRole,
+    type UserStatus,
+} from '../types/user'
 import './AdminUsersPage.css'
 
 function AdminUsersPage() {
@@ -150,7 +157,7 @@ function AdminUsersPage() {
         }
     }
 
-    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
 
     if (isLoading) {
         return <div>{t('adminUsers.loading')}</div>
@@ -211,13 +218,13 @@ function AdminUsersPage() {
                                                     )
                                                 }
                                             >
-                                                <option value="CANDIDATE">
+                                                <option value={USER_ROLES.CANDIDATE}>
                                                     {t('common.candidate')}
                                                 </option>
-                                                <option value="RECRUITER">
+                                                <option value={USER_ROLES.RECRUITER}>
                                                     {t('common.recruiter')}
                                                 </option>
-                                                <option value="ADMIN">
+                                                <option value={USER_ROLES.ADMIN}>
                                                     {t('common.admin')}
                                                 </option>
                                             </select>
@@ -252,16 +259,16 @@ function AdminUsersPage() {
                                                     )
                                                 }
                                             >
-                                                <option value="ACTIVE">
+                                                <option value={USER_STATUSES.ACTIVE}>
                                                     {t('common.active')}
                                                 </option>
-                                                <option value="PENDING">
+                                                <option value={USER_STATUSES.PENDING}>
                                                     {t('common.pending')}
                                                 </option>
-                                                <option value="SUSPENDED">
+                                                <option value={USER_STATUSES.SUSPENDED}>
                                                     {t('common.suspended')}
                                                 </option>
-                                                <option value="DELETED">
+                                                <option value={USER_STATUSES.DELETED}>
                                                     {t('common.deleted')}
                                                 </option>
                                             </select>

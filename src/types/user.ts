@@ -1,5 +1,18 @@
-export type UserRole = 'CANDIDATE' | 'RECRUITER' | 'ADMIN'
-export type UserStatus = 'ACTIVE' | 'PENDING' | 'SUSPENDED' | 'DELETED'
+export const USER_ROLES = {
+  CANDIDATE: 'CANDIDATE',
+  RECRUITER: 'RECRUITER',
+  ADMIN: 'ADMIN',
+} as const
+
+export const USER_STATUSES = {
+  ACTIVE: 'ACTIVE',
+  PENDING: 'PENDING',
+  SUSPENDED: 'SUSPENDED',
+  DELETED: 'DELETED',
+} as const
+
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES]
+export type UserStatus = (typeof USER_STATUSES)[keyof typeof USER_STATUSES]
 
 export interface User {
   id: string
