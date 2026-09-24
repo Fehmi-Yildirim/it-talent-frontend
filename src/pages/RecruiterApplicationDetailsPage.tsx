@@ -11,6 +11,7 @@ import type {
 } from '../types/application'
 import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import { APPLICATION_STATUSES } from '../types/application'
 
 function RecruiterApplicationDetailsPage() {
     const { applicationId } = useParams<{
@@ -28,16 +29,11 @@ function RecruiterApplicationDetailsPage() {
 
     function formatStatus(status: ApplicationStatus): string {
         switch (status) {
-            case 'PENDING':
-                return t('recruiterApplications.pending')
-            case 'REVIEWING':
-                return t('recruiterApplications.reviewing')
-            case 'ACCEPTED':
-                return t('recruiterApplications.accepted')
-            case 'REJECTED':
-                return t('recruiterApplications.rejected')
-            case 'WITHDRAWN':
-                return t('recruiterApplications.withdrawn')
+            case APPLICATION_STATUSES.PENDING: return t('candidateApplications.pending')
+            case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
+            case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
+            case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
+            case APPLICATION_STATUSES.WITHDRAWN: return t('candidateApplications.withdrawn')
         }
     }
 
@@ -300,7 +296,7 @@ function RecruiterApplicationDetailsPage() {
                 </section>
             )}
 
-            {application.status !== 'WITHDRAWN' && (
+            {application.status !== APPLICATION_STATUSES.WITHDRAWN && (
                 <section>
                     <h2>
                         {t(
@@ -316,7 +312,7 @@ function RecruiterApplicationDetailsPage() {
                         type="button"
                         disabled={updating}
                         onClick={() =>
-                            void handleStatusChange('PENDING')
+                            void handleStatusChange(APPLICATION_STATUSES.PENDING)
                         }
                     >
                         {t(
@@ -328,7 +324,7 @@ function RecruiterApplicationDetailsPage() {
                         type="button"
                         disabled={updating}
                         onClick={() =>
-                            void handleStatusChange('REVIEWING')
+                            void handleStatusChange(APPLICATION_STATUSES.REVIEWING)
                         }
                     >
                         {t(
@@ -340,7 +336,7 @@ function RecruiterApplicationDetailsPage() {
                         type="button"
                         disabled={updating}
                         onClick={() =>
-                            void handleStatusChange('ACCEPTED')
+                            void handleStatusChange(APPLICATION_STATUSES.ACCEPTED)
                         }
                     >
                         {t(
@@ -352,7 +348,7 @@ function RecruiterApplicationDetailsPage() {
                         type="button"
                         disabled={updating}
                         onClick={() =>
-                            void handleStatusChange('REJECTED')
+                            void handleStatusChange(APPLICATION_STATUSES.REJECTED)
                         }
                     >
                         {t(

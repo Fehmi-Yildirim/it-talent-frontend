@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
+import { USER_ROLES } from '../types/user'
 import { useAuth } from '../features/auth/useAuth'
 import {
   getCandidateDashboard,
@@ -24,9 +24,9 @@ function DashboardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const isCandidate = user?.role === 'CANDIDATE'
-  const isRecruiter = user?.role === 'RECRUITER'
-  const isAdmin = user?.role === 'ADMIN'
+  const isCandidate = user?.role === USER_ROLES.CANDIDATE
+  const isRecruiter = user?.role === USER_ROLES.RECRUITER
+  const isAdmin = user?.role === USER_ROLES.ADMIN
 
   const loadDashboard = useCallback(async () => {
     if (!user || isAdmin) {

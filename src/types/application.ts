@@ -1,9 +1,13 @@
+export const APPLICATION_STATUSES = {
+    PENDING: 'PENDING',
+    REVIEWING: 'REVIEWING',
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED',
+    WITHDRAWN: 'WITHDRAWN',
+} as const
+
 export type ApplicationStatus =
-    | 'PENDING'
-    | 'REVIEWING'
-    | 'ACCEPTED'
-    | 'REJECTED'
-    | 'WITHDRAWN'
+    (typeof APPLICATION_STATUSES)[keyof typeof APPLICATION_STATUSES]
 
 export interface ApplicationJob {
     id: string
