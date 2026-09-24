@@ -4,11 +4,16 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
+import {
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    LOCALES,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
-import type {
-    CandidateJob,
-    EmploymentType,
-    WorkMode,
+import {
+    type CandidateJob,
+    type EmploymentType,
+    type WorkMode,
 } from '../types/job'
 import './CandidateJobDetailsPage.css'
 
@@ -82,22 +87,13 @@ function CandidateJobDetailsPage() {
         null,
     )
 
-    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
 
-    const employmentTypeLabels: Record<EmploymentType, string> = {
-        FULL_TIME: t('candidateJobs.fullTime'),
-        PART_TIME: t('candidateJobs.partTime'),
-        CONTRACT: t('candidateJobs.contract'),
-        FREELANCE: t('candidateJobs.freelance'),
-        INTERNSHIP: t('candidateJobs.internship'),
-    }
+    const employmentTypeLabel = (value: EmploymentType) =>
+        t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
 
-    const workModeLabels: Record<WorkMode, string> = {
-        REMOTE: t('candidateJobs.remote'),
-        HYBRID: t('candidateJobs.hybrid'),
-        ONSITE: t('candidateJobs.onsite'),
-        FLEXIBLE: t('candidateJobs.flexible'),
-    }
+    const workModeLabel = (value: WorkMode) =>
+        t(WORK_MODE_TRANSLATION_KEYS[value])
 
     useEffect(() => {
         let cancelled = false
@@ -273,17 +269,12 @@ function CandidateJobDetailsPage() {
 
                     <div>
                         <dt>{t('candidateJobDetails.workMode')}</dt>
-                        <dd>
-                            {workModeLabels[job.workMode] ?? job.workMode}
-                        </dd>
+                        <dd>{workModeLabel(job.workMode)}</dd>
                     </div>
 
                     <div>
                         <dt>{t('candidateJobDetails.employmentType')}</dt>
-                        <dd>
-                            {employmentTypeLabels[job.employmentType] ??
-                                job.employmentType}
-                        </dd>
+                        <dd>{employmentTypeLabel(job.employmentType)}</dd>
                     </div>
 
                     <div>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getRecruiterApplications } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
+import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 import type {
     ApplicationStatus,
@@ -49,9 +50,7 @@ function RecruiterApplicationsPage() {
         useState<ApplicationStatus | ''>('')
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
-
-    const locale =
-        language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
 
     useEffect(() => {
         let cancelled = false

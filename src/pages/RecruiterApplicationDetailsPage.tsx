@@ -9,6 +9,7 @@ import type {
     ApplicationStatus,
     RecruiterApplicationDetail,
 } from '../types/application'
+import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 
 function RecruiterApplicationDetailsPage() {
@@ -42,7 +43,7 @@ function RecruiterApplicationDetailsPage() {
 
     function formatDate(value: string): string {
         return new Intl.DateTimeFormat(
-            language === 'nl' ? 'nl-NL' : 'en-US',
+            LOCALES[language],
             {
                 dateStyle: 'medium',
                 timeStyle: 'short',

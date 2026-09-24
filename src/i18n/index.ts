@@ -1,9 +1,19 @@
 import { en } from './locales/en';
 import { nl } from './locales/nl';
+import type {
+    EmploymentType,
+    WorkMode,
+} from '../types/job';
+
 
 export const translations = {
     en,
     nl,
+} as const;
+
+export const LOCALES = {
+    en: 'en-US',
+    nl: 'nl-NL',
 } as const;
 
 export type Language = keyof typeof translations;
@@ -27,6 +37,22 @@ type TranslationKeys<
     : never;
 
 export type TranslationKey = TranslationKeys<typeof en>;
+
+export const EMPLOYMENT_TYPE_TRANSLATION_KEYS = {
+    FULL_TIME: 'candidateJobs.fullTime',
+    PART_TIME: 'candidateJobs.partTime',
+    CONTRACT: 'candidateJobs.contract',
+    FREELANCE: 'candidateJobs.freelance',
+    INTERNSHIP: 'candidateJobs.internship',
+} as const satisfies Record<EmploymentType, TranslationKey>;
+
+export const WORK_MODE_TRANSLATION_KEYS = {
+    REMOTE: 'candidateJobs.remote',
+    HYBRID: 'candidateJobs.hybrid',
+    ONSITE: 'candidateJobs.onsite',
+    FLEXIBLE: 'candidateJobs.flexible',
+} as const satisfies Record<WorkMode, TranslationKey>;
+
 
 export function t(
     language: Language,
