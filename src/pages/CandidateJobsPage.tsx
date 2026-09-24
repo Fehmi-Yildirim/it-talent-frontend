@@ -2,51 +2,33 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { getCandidateJobs } from '../features/jobs/jobs.api'
 import { getSkills } from '../features/candidate/candidate.api'
-import type {
-    CandidateJob,
-    EmploymentType,
-    JobDiscoveryQuery,
-    WorkMode,
+import {
+    EMPLOYMENT_TYPES,
+    WORK_MODES,
+    type CandidateJob,
+    type EmploymentType,
+    type JobDiscoveryQuery,
+    type WorkMode,
 } from '../types/job'
 import './CandidateJobsPage.css'
+import {
+    LOCALES,
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 
 const PAGE_SIZE = 20
 
-const employmentTypes: EmploymentType[] = [
-    'FULL_TIME',
-    'PART_TIME',
-    'CONTRACT',
-    'FREELANCE',
-    'INTERNSHIP',
-]
-
-const workModes: WorkMode[] = [
-    'REMOTE',
-    'HYBRID',
-    'ONSITE',
-    'FLEXIBLE',
-]
-
 export function CandidateJobsPage() {
     const { language, t } = useTranslation()
+    const locale = LOCALES[language]
 
-    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+    const employmentTypeLabel = (value: EmploymentType) =>
+        t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
 
-    const employmentTypeLabels: Record<EmploymentType, string> = {
-        FULL_TIME: t('candidateJobs.fullTime'),
-        PART_TIME: t('candidateJobs.partTime'),
-        CONTRACT: t('candidateJobs.contract'),
-        FREELANCE: t('candidateJobs.freelance'),
-        INTERNSHIP: t('candidateJobs.internship'),
-    }
-
-    const workModeLabels: Record<WorkMode, string> = {
-        REMOTE: t('candidateJobs.remote'),
-        HYBRID: t('candidateJobs.hybrid'),
-        ONSITE: t('candidateJobs.onsite'),
-        FLEXIBLE: t('candidateJobs.flexible'),
-    }
+    const workModeLabel = (value: WorkMode) =>
+        t(WORK_MODE_TRANSLATION_KEYS[value])
 
     function formatSalary(
         salaryMin: string | number | null,
@@ -360,20 +342,18 @@ export function CandidateJobsPage() {
     const total = response?.total ?? 0
     const totalPages = response?.totalPages ?? 0
 
-    const workModeLabel =
+    const selectedWorkModeLabel =
         selectedWorkModes.length === 0
             ? t('candidateJobs.allWorkModes')
             : selectedWorkModes.length === 1
-                ? workModeLabels[selectedWorkModes[0]]
+                ? workModeLabel(selectedWorkModes[0])
                 : `${selectedWorkModes.length} ${t('candidateJobs.workModesSelected')}`
 
-    const employmentTypeLabel =
+    const selectedEmploymentTypeLabel =
         selectedEmploymentTypes.length === 0
             ? t('candidateJobs.allEmploymentTypes')
             : selectedEmploymentTypes.length === 1
-                ? employmentTypeLabels[
-                selectedEmploymentTypes[0]
-                ]
+                ? employmentTypeLabel(selectedEmploymentTypes[0])
                 : `${selectedEmploymentTypes.length} ${t(
                     'candidateJobs.employmentTypesSelected',
                 )}`
@@ -469,7 +449,9 @@ export function CandidateJobsPage() {
                                                 </span>
                                             )}
 
-                                        <span>{workModeLabel}</span>
+                                        <span>
+                                            {selectedWorkModeLabel}
+                                        </span>
                                     </div>
 
                                     <span
@@ -491,7 +473,7 @@ export function CandidateJobsPage() {
                                                 )}
                                             </legend>
 
-                                            {workModes.map(
+                                            {WORK_MODES.map(
                                                 (option) => (
                                                     <label
                                                         key={option}
@@ -510,11 +492,9 @@ export function CandidateJobsPage() {
                                                         />
 
                                                         <span>
-                                                            {
-                                                                workModeLabels[
-                                                                option
-                                                                ]
-                                                            }
+                                                            {workModeLabel(
+                                                                option,
+                                                            )}
                                                         </span>
                                                     </label>
                                                 ),
@@ -585,7 +565,7 @@ export function CandidateJobsPage() {
                                             )}
 
                                         <span>
-                                            {employmentTypeLabel}
+                                            {selectedEmploymentTypeLabel}
                                         </span>
                                     </div>
 
@@ -608,7 +588,7 @@ export function CandidateJobsPage() {
                                                 )}
                                             </legend>
 
-                                            {employmentTypes.map(
+                                            {EMPLOYMENT_TYPES.map(
                                                 (option) => (
                                                     <label
                                                         key={option}
@@ -627,11 +607,9 @@ export function CandidateJobsPage() {
                                                         />
 
                                                         <span>
-                                                            {
-                                                                employmentTypeLabels[
-                                                                option
-                                                                ]
-                                                            }
+                                                            {employmentTypeLabel(
+                                                                option,
+                                                            )}
                                                         </span>
                                                     </label>
                                                 ),
@@ -987,16 +965,15 @@ export function CandidateJobsPage() {
                                             )}
 
                                             <span>
-                                                {workModeLabels[
-                                                    job.workMode
-                                                ] ?? job.workMode}
+                                                {workModeLabel(
+                                                    job.workMode,
+                                                )}
                                             </span>
 
                                             <span>
-                                                {employmentTypeLabels[
-                                                    job.employmentType
-                                                ] ??
-                                                    job.employmentType}
+                                                {employmentTypeLabel(
+                                                    job.employmentType,
+                                                )}
                                             </span>
 
                                             {salary && (

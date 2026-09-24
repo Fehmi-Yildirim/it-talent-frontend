@@ -19,32 +19,24 @@ import {
     updateJobRequirement,
 } from '../features/jobs/jobs.api'
 import { getSkills } from '../features/skills/skills.api'
-import type {
-    CreateJobRequest,
-    EmploymentType,
-    JobRequirement,
-    Skill,
-    UpdateJobRequest,
-    WorkMode,
-} from '../types/job'
+import {
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import {
+    EMPLOYMENT_TYPES,
+    WORK_MODES,
+    type CreateJobRequest,
+    type EmploymentType,
+    type JobRequirement,
+    type Skill,
+    type UpdateJobRequest,
+    type WorkMode,
+} from '../types/job'
+import { DEFAULT_CURRENCY } from '../config/app'
 import './RecruiterJobFormPage.css'
 import { RichTextEditor } from '../components/RichTextEditor/RichTextEditor'
-
-const employmentTypes: EmploymentType[] = [
-    'FULL_TIME',
-    'PART_TIME',
-    'CONTRACT',
-    'FREELANCE',
-    'INTERNSHIP',
-]
-
-const workModes: WorkMode[] = [
-    'ONSITE',
-    'HYBRID',
-    'REMOTE',
-    'FLEXIBLE',
-]
 
 interface PendingRequirement {
     skillId: string
@@ -197,9 +189,7 @@ function RequirementRow({
                             )
 
                             if (
-                                Number.isInteger(
-                                    value,
-                                ) &&
+                                Number.isInteger(value) &&
                                 value >= 1 &&
                                 value <= 5
                             ) {
@@ -322,9 +312,7 @@ function PendingRequirementRow({
                             )
 
                             if (
-                                Number.isInteger(
-                                    value,
-                                ) &&
+                                Number.isInteger(value) &&
                                 value >= 1 &&
                                 value <= 5
                             ) {
@@ -358,35 +346,27 @@ function PendingRequirementRow({
 export default function RecruiterJobFormPage() {
     const { t } = useTranslation()
     const navigate = useNavigate()
-    const { jobId } =
-        useParams<{ jobId: string }>()
-
+    const { jobId } = useParams<{ jobId: string }>()
     const isEditMode = Boolean(jobId)
 
-    const [skills, setSkills] =
-        useState<Skill[]>([])
+    const employmentTypeLabel = (
+        type: EmploymentType,
+    ) => t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[type])
 
+    const workModeLabel = (mode: WorkMode) =>
+        t(WORK_MODE_TRANSLATION_KEYS[mode])
+
+    const [skills, setSkills] = useState<Skill[]>([])
     const [title, setTitle] = useState('')
-    const [description, setDescription] =
-        useState('')
-    const [location, setLocation] =
-        useState('')
-
+    const [description, setDescription] = useState('')
+    const [location, setLocation] = useState('')
     const [employmentType, setEmploymentType] =
         useState<EmploymentType>('FULL_TIME')
-
     const [workMode, setWorkMode] =
         useState<WorkMode>('ONSITE')
-
-    const [salaryMin, setSalaryMin] =
-        useState('')
-
-    const [salaryMax, setSalaryMax] =
-        useState('')
-
-    const [currency, setCurrency] =
-        useState('EUR')
-
+    const [salaryMin, setSalaryMin] = useState('')
+    const [salaryMax, setSalaryMax] = useState('')
+    const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY)
     const [expiresAt, setExpiresAt] =
         useState(getInitialDate())
 
@@ -400,13 +380,10 @@ export default function RecruiterJobFormPage() {
 
     const [selectedSkillId, setSelectedSkillId] =
         useState('')
-
     const [skillSearch, setSkillSearch] =
         useState('')
-
     const [selectedRequired, setSelectedRequired] =
         useState(true)
-
     const [
         selectedMinimumLevel,
         setSelectedMinimumLevel,
@@ -414,18 +391,13 @@ export default function RecruiterJobFormPage() {
 
     const [loading, setLoading] =
         useState(isEditMode)
-
     const [skillsLoading, setSkillsLoading] =
         useState(true)
-
     const [
         requirementsLoading,
         setRequirementsLoading,
     ] = useState(false)
-
-    const [saving, setSaving] =
-        useState(false)
-
+    const [saving, setSaving] = useState(false)
     const [
         requirementSaving,
         setRequirementSaving,
@@ -433,7 +405,6 @@ export default function RecruiterJobFormPage() {
 
     const [error, setError] =
         useState<string | null>(null)
-
     const [
         validationError,
         setValidationError,
@@ -444,44 +415,10 @@ export default function RecruiterJobFormPage() {
 
     const jobDetailsRef =
         useRef<HTMLElement | null>(null)
-
     const salaryExpirationRef =
         useRef<HTMLElement | null>(null)
-
     const jobRequirementsRef =
         useRef<HTMLElement | null>(null)
-
-    function getEmploymentTypeLabel(
-        type: EmploymentType,
-    ): string {
-        switch (type) {
-            case 'FULL_TIME':
-                return t('candidateJobs.fullTime')
-            case 'PART_TIME':
-                return t('candidateJobs.partTime')
-            case 'CONTRACT':
-                return t('candidateJobs.contract')
-            case 'FREELANCE':
-                return t('candidateJobs.freelance')
-            case 'INTERNSHIP':
-                return t('candidateJobs.internship')
-        }
-    }
-
-    function getWorkModeLabel(
-        mode: WorkMode,
-    ): string {
-        switch (mode) {
-            case 'ONSITE':
-                return t('candidateJobs.onsite')
-            case 'HYBRID':
-                return t('candidateJobs.hybrid')
-            case 'REMOTE':
-                return t('candidateJobs.remote')
-            case 'FLEXIBLE':
-                return t('candidateJobs.flexible')
-        }
-    }
 
     function getSkillName(
         skillId: string,
@@ -550,9 +487,7 @@ export default function RecruiterJobFormPage() {
                 }
 
                 setTitle(response.title)
-                setDescription(
-                    response.description,
-                )
+                setDescription(response.description)
                 setLocation(
                     response.location ?? '',
                 )
@@ -574,7 +509,8 @@ export default function RecruiterJobFormPage() {
                 )
 
                 setCurrency(
-                    response.currency ?? 'EUR',
+                    response.currency ??
+                    DEFAULT_CURRENCY,
                 )
 
                 setExpiresAt(
@@ -749,10 +685,7 @@ export default function RecruiterJobFormPage() {
             return
         }
 
-        const alreadyExists =
-            usedSkillIds.has(selectedSkillId)
-
-        if (alreadyExists) {
+        if (usedSkillIds.has(selectedSkillId)) {
             setError(
                 t(
                     'recruiterJobForm.duplicateSkillError',
@@ -990,7 +923,7 @@ export default function RecruiterJobFormPage() {
         }
 
         if (
-            !employmentTypes.includes(
+            !EMPLOYMENT_TYPES.includes(
                 employmentType,
             )
         ) {
@@ -999,7 +932,7 @@ export default function RecruiterJobFormPage() {
             )
         }
 
-        if (!workModes.includes(workMode)) {
+        if (!WORK_MODES.includes(workMode)) {
             return t(
                 'recruiterJobForm.invalidWorkMode',
             )
@@ -1083,10 +1016,8 @@ export default function RecruiterJobFormPage() {
         if (
             pendingRequirements.some(
                 (requirement) =>
-                    requirement.minimumLevel <
-                    1 ||
-                    requirement.minimumLevel >
-                    5 ||
+                    requirement.minimumLevel < 1 ||
+                    requirement.minimumLevel > 5 ||
                     !Number.isInteger(
                         requirement.minimumLevel,
                     ),
@@ -1316,10 +1247,9 @@ export default function RecruiterJobFormPage() {
             >
                 <button
                     type="button"
-                    className={`job-form-tab ${activeSection ===
-                            'job-details'
-                            ? 'job-form-tab--active'
-                            : ''
+                    className={`job-form-tab ${activeSection === 'job-details'
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection ===
@@ -1341,9 +1271,9 @@ export default function RecruiterJobFormPage() {
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection ===
-                            'salary-expiration'
-                            ? 'job-form-tab--active'
-                            : ''
+                        'salary-expiration'
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection ===
@@ -1365,9 +1295,9 @@ export default function RecruiterJobFormPage() {
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection ===
-                            'job-requirements'
-                            ? 'job-form-tab--active'
-                            : ''
+                        'job-requirements'
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection ===
@@ -1395,10 +1325,9 @@ export default function RecruiterJobFormPage() {
                 <section
                     ref={jobDetailsRef}
                     id="job-details"
-                    className={`form-card ${activeSection ===
-                            'job-details'
-                            ? 'form-card--active'
-                            : ''
+                    className={`form-card ${activeSection === 'job-details'
+                        ? 'form-card--active'
+                        : ''
                         }`}
                 >
                     <div className="form-card__header">
@@ -1453,13 +1382,13 @@ export default function RecruiterJobFormPage() {
                                     )
                                 }
                             >
-                                {employmentTypes.map(
+                                {EMPLOYMENT_TYPES.map(
                                     (type) => (
                                         <option
                                             key={type}
                                             value={type}
                                         >
-                                            {getEmploymentTypeLabel(
+                                            {employmentTypeLabel(
                                                 type,
                                             )}
                                         </option>
@@ -1485,13 +1414,13 @@ export default function RecruiterJobFormPage() {
                                     )
                                 }
                             >
-                                {workModes.map(
+                                {WORK_MODES.map(
                                     (mode) => (
                                         <option
                                             key={mode}
                                             value={mode}
                                         >
-                                            {getWorkModeLabel(
+                                            {workModeLabel(
                                                 mode,
                                             )}
                                         </option>
@@ -1544,9 +1473,9 @@ export default function RecruiterJobFormPage() {
                     ref={salaryExpirationRef}
                     id="salary-and-expiration"
                     className={`form-card ${activeSection ===
-                            'salary-expiration'
-                            ? 'form-card--active'
-                            : ''
+                        'salary-expiration'
+                        ? 'form-card--active'
+                        : ''
                         }`}
                 >
                     <div className="form-card__header">
@@ -1659,9 +1588,9 @@ export default function RecruiterJobFormPage() {
                     ref={jobRequirementsRef}
                     id="job-requirements"
                     className={`form-card ${activeSection ===
-                            'job-requirements'
-                            ? 'form-card--active'
-                            : ''
+                        'job-requirements'
+                        ? 'form-card--active'
+                        : ''
                         }`}
                 >
                     <div className="form-card__header">

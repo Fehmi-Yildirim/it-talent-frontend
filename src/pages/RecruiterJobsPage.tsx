@@ -1,63 +1,13 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getJobs } from '../features/jobs/jobs.api'
+import {
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job } from '../types/job'
 import './RecruiterJobsPage.css'
-
-function formatEmploymentType(
-    value: Job['employmentType'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'FULL_TIME':
-            return t('recruiterJobs.fullTime')
-        case 'PART_TIME':
-            return t('recruiterJobs.partTime')
-        case 'CONTRACT':
-            return t('recruiterJobs.contract')
-        case 'FREELANCE':
-            return t('recruiterJobs.freelance')
-        case 'INTERNSHIP':
-            return t('recruiterJobs.internship')
-        default:
-            return value
-    }
-}
-
-function formatWorkMode(
-    value: Job['workMode'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'REMOTE':
-            return t('recruiterJobs.remote')
-        case 'HYBRID':
-            return t('recruiterJobs.hybrid')
-        case 'ONSITE':
-            return t('recruiterJobs.onsite')
-        case 'FLEXIBLE':
-            return t('recruiterJobs.flexible')
-        default:
-            return value
-    }
-}
-
-function formatStatus(
-    value: Job['status'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'DRAFT':
-            return t('recruiterJobs.draft')
-        case 'PUBLISHED':
-            return t('recruiterJobs.published')
-        case 'CLOSED':
-            return t('recruiterJobs.closed')
-        default:
-            return value
-    }
-}
 
 function formatSalary(
     job: Job,
@@ -86,6 +36,15 @@ export default function RecruiterJobsPage() {
     const [jobs, setJobs] = useState<Job[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+
+    const employmentTypeLabel = (value: Job['employmentType']) =>
+        t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
+
+    const workModeLabel = (value: Job['workMode']) =>
+        t(WORK_MODE_TRANSLATION_KEYS[value])
+
+    const statusLabel = (value: Job['status']) =>
+        t(`recruiterJobs.${value.toLowerCase()}` as import('../i18n').TranslationKey)
 
     useEffect(() => {
         let active = true
@@ -231,10 +190,7 @@ export default function RecruiterJobsPage() {
                                     <span
                                         className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
                                     >
-                                        {formatStatus(
-                                            job.status,
-                                            t,
-                                        )}
+                                        {statusLabel(job.status)}
                                     </span>
                                 </div>
 
@@ -247,17 +203,13 @@ export default function RecruiterJobsPage() {
 
                                 <div className="recruiter-job-meta">
                                     <span>
-                                        {formatEmploymentType(
+                                        {employmentTypeLabel(
                                             job.employmentType,
-                                            t,
                                         )}
                                     </span>
 
                                     <span>
-                                        {formatWorkMode(
-                                            job.workMode,
-                                            t,
-                                        )}
+                                        {workModeLabel(job.workMode)}
                                     </span>
 
                                     <span>

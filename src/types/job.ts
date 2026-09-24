@@ -1,21 +1,30 @@
-export type EmploymentType =
-  | 'FULL_TIME'
-  | 'PART_TIME'
-  | 'CONTRACT'
-  | 'FREELANCE'
-  | 'INTERNSHIP'
+export const EMPLOYMENT_TYPES = [
+  'FULL_TIME',
+  'PART_TIME',
+  'CONTRACT',
+  'FREELANCE',
+  'INTERNSHIP',
+] as const
 
-export type WorkMode =
-  | 'ONSITE'
-  | 'HYBRID'
-  | 'REMOTE'
-  | 'FLEXIBLE'
+export const WORK_MODES = [
+  'ONSITE',
+  'HYBRID',
+  'REMOTE',
+  'FLEXIBLE',
+] as const
 
-export type JobStatus =
-  | 'DRAFT'
-  | 'PUBLISHED'
-  | 'PAUSED'
-  | 'CLOSED'
+export const JOB_STATUSES = [
+  'DRAFT',
+  'PUBLISHED',
+  'PAUSED',
+  'CLOSED',
+] as const
+
+export type EmploymentType = (typeof EMPLOYMENT_TYPES)[number]
+
+export type WorkMode = (typeof WORK_MODES)[number]
+
+export type JobStatus = (typeof JOB_STATUSES)[number]
 
 export interface Skill {
   id: string

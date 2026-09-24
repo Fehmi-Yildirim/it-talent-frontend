@@ -8,65 +8,14 @@ import {
     reopenJob,
     resumeJob,
 } from '../features/jobs/jobs.api'
+import {
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    LOCALES,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job, JobRequirement } from '../types/job'
 import './RecruiterJobDetailsPage.css'
-
-function formatEmploymentType(
-    value: Job['employmentType'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'FULL_TIME':
-            return t('recruiterJobs.fullTime')
-        case 'PART_TIME':
-            return t('recruiterJobs.partTime')
-        case 'CONTRACT':
-            return t('recruiterJobs.contract')
-        case 'FREELANCE':
-            return t('recruiterJobs.freelance')
-        case 'INTERNSHIP':
-            return t('recruiterJobs.internship')
-        default:
-            return value
-    }
-}
-
-function formatWorkMode(
-    value: Job['workMode'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'REMOTE':
-            return t('recruiterJobs.remote')
-        case 'HYBRID':
-            return t('recruiterJobs.hybrid')
-        case 'ONSITE':
-            return t('recruiterJobs.onsite')
-        case 'FLEXIBLE':
-            return t('recruiterJobs.flexible')
-        default:
-            return value
-    }
-}
-
-function formatStatus(
-    value: Job['status'],
-    t: (key: import('../i18n').TranslationKey) => string,
-): string {
-    switch (value) {
-        case 'DRAFT':
-            return t('recruiterJobs.draft')
-        case 'PUBLISHED':
-            return t('recruiterJobs.published')
-        case 'PAUSED':
-            return t('recruiterJobs.paused')
-        case 'CLOSED':
-            return t('recruiterJobs.closed')
-        default:
-            return value
-    }
-}
 
 function formatSalaryValue(
     value: string | number,
@@ -175,7 +124,36 @@ export default function RecruiterJobDetailsPage() {
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
 
-    const locale = language === 'nl' ? 'nl-NL' : 'en-US'
+    const locale = LOCALES[language]
+
+    const formatEmploymentType = (
+        value: Job['employmentType'],
+    ): string => {
+        return t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
+    }
+
+    const formatWorkMode = (
+        value: Job['workMode'],
+    ): string => {
+        return t(WORK_MODE_TRANSLATION_KEYS[value])
+    }
+
+    const formatStatus = (
+        value: Job['status'],
+    ): string => {
+        switch (value) {
+            case 'DRAFT':
+                return t('recruiterJobs.draft')
+            case 'PUBLISHED':
+                return t('recruiterJobs.published')
+            case 'PAUSED':
+                return t('recruiterJobs.paused')
+            case 'CLOSED':
+                return t('recruiterJobs.closed')
+            default:
+                return value
+        }
+    }
 
     useEffect(() => {
         if (!jobId) {
@@ -391,18 +369,17 @@ export default function RecruiterJobDetailsPage() {
                         <span
                             className={`recruiter-job-details-status recruiter-job-details-status-${job.status.toLowerCase()}`}
                         >
-                            {formatStatus(job.status, t)}
+                            {formatStatus(job.status)}
                         </span>
 
                         <span>
                             {formatEmploymentType(
                                 job.employmentType,
-                                t,
                             )}
                         </span>
 
                         <span>
-                            {formatWorkMode(job.workMode, t)}
+                            {formatWorkMode(job.workMode)}
                         </span>
 
                         {job.location && (
@@ -548,7 +525,9 @@ export default function RecruiterJobDetailsPage() {
 
                     <div
                         className="recruiter-job-details-description"
-                        dangerouslySetInnerHTML={{ __html: job.description }}
+                        dangerouslySetInnerHTML={{
+                            __html: job.description,
+                        }}
                     />
                 </section>
 
@@ -561,7 +540,6 @@ export default function RecruiterJobDetailsPage() {
                             <dd>
                                 {formatEmploymentType(
                                     job.employmentType,
-                                    t,
                                 )}
                             </dd>
                         </div>
@@ -569,7 +547,7 @@ export default function RecruiterJobDetailsPage() {
                         <div>
                             <dt>{t('recruiterJobs.workMode')}</dt>
                             <dd>
-                                {formatWorkMode(job.workMode, t)}
+                                {formatWorkMode(job.workMode)}
                             </dd>
                         </div>
 
@@ -577,7 +555,9 @@ export default function RecruiterJobDetailsPage() {
                             <dt>{t('recruiterJobs.locationNotSpecified')}</dt>
                             <dd>
                                 {job.location ||
-                                    t('recruiterJobs.locationNotSpecified')}
+                                    t(
+                                        'recruiterJobs.locationNotSpecified',
+                                    )}
                             </dd>
                         </div>
 
