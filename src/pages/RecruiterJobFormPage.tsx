@@ -1177,18 +1177,18 @@ export default function RecruiterJobFormPage() {
 
     if (loading) {
         return (
-            <main className="recruiter-job-form-page">
+            <div className="recruiter-job-form-page">
                 <div className="form-state">
                     {t(
                         'recruiterJobForm.loading',
                     )}
                 </div>
-            </main>
+            </div>
         )
     }
 
     return (
-        <main className="recruiter-job-form-page">
+        <div className="recruiter-job-form-page">
             <header className="page-header">
                 <Link
                     to="/recruiter/jobs"
@@ -1953,6 +1953,6 @@ export default function RecruiterJobFormPage() {
                     </button>
                 </div>
             </form>
-        </main>
+        </div>
     )
 }

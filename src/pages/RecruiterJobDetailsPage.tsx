@@ -304,20 +304,20 @@ export default function RecruiterJobDetailsPage() {
 
     if (loading) {
         return (
-            <main className="recruiter-job-details-page">
+            <div className="recruiter-job-details-page">
                 <div
                     className="recruiter-job-details-state"
                     role="status"
                 >
                     {t('recruiterJobForm.loading')}
                 </div>
-            </main>
+            </div>
         )
     }
 
     if (error && !job) {
         return (
-            <main className="recruiter-job-details-page">
+            <div className="recruiter-job-details-page">
                 <div className="recruiter-job-details-state recruiter-job-details-error">
                     <p>{error}</p>
 
@@ -328,17 +328,17 @@ export default function RecruiterJobDetailsPage() {
                         {t('recruiterJobs.backToJobs')}
                     </Link>
                 </div>
-            </main>
+            </div>
         )
     }
 
     if (!job) {
         return (
-            <main className="recruiter-job-details-page">
+            <div className="recruiter-job-details-page">
                 <div className="recruiter-job-details-state">
                     {t('recruiterJobs.jobNotFound')}
                 </div>
-            </main>
+            </div>
         )
     }
 
@@ -353,7 +353,7 @@ export default function RecruiterJobDetailsPage() {
     )
 
     return (
-        <main className="recruiter-job-details-page">
+        <div className="recruiter-job-details-page">
             <header className="recruiter-job-details-header">
                 <div>
                     <Link
@@ -676,6 +676,6 @@ export default function RecruiterJobDetailsPage() {
                     {t('recruiterJobs.backToJobs')}
                 </button>
             </footer>
-        </main>
+        </div>
     )
 }

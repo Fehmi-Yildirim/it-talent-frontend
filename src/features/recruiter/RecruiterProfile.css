@@ -1,22 +1,22 @@
-section {
+.recruiter-profile {
     max-width: 640px;
 }
 
-section h2 {
+.recruiter-profile h1 {
     margin-bottom: 1.5rem;
 }
 
-form {
+.recruiter-profile form {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
 }
 
-label {
+.recruiter-profile label {
     font-weight: 600;
 }
 
-input {
+.recruiter-profile input {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ccc;
@@ -25,12 +25,12 @@ input {
     box-sizing: border-box;
 }
 
-input:focus {
+.recruiter-profile input:focus {
     outline: 2px solid #646cff;
     outline-offset: 1px;
 }
 
-button {
+.recruiter-profile button {
     align-self: flex-start;
     padding: 0.7rem 1.25rem;
     border: 0;
@@ -40,19 +40,19 @@ button {
     cursor: pointer;
 }
 
-button:disabled {
+.recruiter-profile button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-[role='alert'] {
+.recruiter-profile [role='alert'] {
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 6px;
     background: #fee2e2;
 }
 
-[role='status'] {
+.recruiter-profile [role='status'] {
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 6px;

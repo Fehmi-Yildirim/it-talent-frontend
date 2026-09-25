@@ -195,7 +195,7 @@ function CompanyManagement() {
     if (!company && !isCreating) {
         if (error) {
             return (
-                <section>
+                <section className="company-management">
                     <h2>Company</h2>
 
                     <ErrorState
@@ -221,7 +221,7 @@ function CompanyManagement() {
         }
 
         return (
-            <section>
+            <section className="company-management">
                 <h2>Company</h2>
 
                 <p>
@@ -239,7 +239,7 @@ function CompanyManagement() {
     }
 
     return (
-        <section>
+        <section className="company-management">
             <h2>
                 {company
                     ? 'Company information'

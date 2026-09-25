@@ -1,30 +1,30 @@
-section {
+.company-management {
     max-width: 640px;
 }
 
-section h2 {
+.company-management h2 {
     margin-bottom: 1.5rem;
 }
 
-form {
+.company-management form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
 }
 
-form>div {
+.company-management form>div {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
 
-label,
-form>div>span {
+.company-management label,
+.company-management form>div>span {
     font-weight: 600;
 }
 
-input,
-textarea {
+.company-management input,
+.company-management textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #ccc;
@@ -33,18 +33,18 @@ textarea {
     box-sizing: border-box;
 }
 
-textarea {
+.company-management textarea {
     resize: vertical;
     min-height: 120px;
 }
 
-input:focus,
-textarea:focus {
+.company-management input:focus,
+.company-management textarea:focus {
     outline: 2px solid #646cff;
     outline-offset: 1px;
 }
 
-button {
+.company-management button {
     align-self: flex-start;
     padding: 0.7rem 1.25rem;
     border: 0;
@@ -54,29 +54,29 @@ button {
     cursor: pointer;
 }
 
-button:disabled {
+.company-management button:disabled {
     cursor: not-allowed;
     opacity: 0.6;
 }
 
-form>div:has(> span) {
+.company-management form>div:has(> span) {
     padding: 0.75rem;
     border-radius: 6px;
     background: #f5f5f5;
 }
 
-form>div:has(> span) p {
+.company-management form>div:has(> span) p {
     margin: 0;
 }
 
-[role='alert'] {
+.company-management [role='alert'] {
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 6px;
     background: #fee2e2;
 }
 
-[role='status'] {
+.company-management [role='status'] {
     margin-bottom: 1rem;
     padding: 0.75rem;
     border-radius: 6px;
