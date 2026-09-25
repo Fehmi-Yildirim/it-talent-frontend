@@ -73,8 +73,8 @@ function RecruiterProfile() {
     }
 
     return (
-        <section>
-            <h2>Recruiter profile</h2>
+        <section className="recruiter-profile">
+            <h1>Recruiter profile</h1>
 
             {error && (
                 <ErrorState
