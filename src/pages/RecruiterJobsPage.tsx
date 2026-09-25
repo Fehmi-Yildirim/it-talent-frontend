@@ -79,7 +79,7 @@ export default function RecruiterJobsPage() {
 
     if (loading) {
         return (
-            <main className="recruiter-jobs-page">
+            <div className="recruiter-jobs-page">
                 <div className="recruiter-jobs-header">
                     <div>
                         <h1>{t('recruiterJobs.title')}</h1>
@@ -96,13 +96,13 @@ export default function RecruiterJobsPage() {
                 >
                     {t('recruiterJobs.loading')}
                 </div>
-            </main>
+            </div>
         )
     }
 
     if (error) {
         return (
-            <main className="recruiter-jobs-page">
+            <div className="recruiter-jobs-page">
                 <div className="recruiter-jobs-header">
                     <div>
                         <h1>{t('recruiterJobs.title')}</h1>
@@ -133,12 +133,12 @@ export default function RecruiterJobsPage() {
                         {t('recruiterJobs.tryAgain')}
                     </button>
                 </div>
-            </main>
+            </div>
         )
     }
 
     return (
-        <main className="recruiter-jobs-page">
+        <div className="recruiter-jobs-page">
             <div className="recruiter-jobs-header">
                 <div>
                     <h1>{t('recruiterJobs.title')}</h1>
@@ -237,6 +237,6 @@ export default function RecruiterJobsPage() {
                     ))}
                 </section>
             )}
-        </main>
+        </div>
     )
 }

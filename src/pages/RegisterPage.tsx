@@ -77,7 +77,7 @@ function RegisterPage() {
   }
 
   return (
-    <main className="register-page">
+    <div className="register-page">
       <h1>{t('auth.register')}</h1>
 
       <form onSubmit={handleSubmit}>
@@ -143,7 +143,7 @@ function RegisterPage() {
             : t('auth.register')}
         </button>
       </form>
-    </main>
+    </div>
   )
 }
 
