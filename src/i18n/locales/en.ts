@@ -550,6 +550,16 @@ export const en = {
             'Unable to create your candidate profile.',
         accountUpdateError:
             'Unable to update your account information.',
+        recruiter: 'Recruiter',
+        recruiterInformation: 'Recruiter information',
+        recruiterLoading: 'Loading recruiter profile...',
+        recruiterUnavailable: 'Recruiter profile unavailable',
+        recruiterLoadError: 'Unable to load recruiter profile.',
+        recruiterUpdated: 'Recruiter profile saved.',
+        recruiterUpdateError: 'Unable to save recruiter profile.',
+        jobTitle: 'Job title',
+        jobTitlePlaceholder: 'e.g. Senior Recruiter',
+        saveRecruiterProfile: 'Save profile',
     },
 
     recruiterJobs: {

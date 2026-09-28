@@ -1,4 +1,4 @@
-import { createBrowserRouter } from 'react-router-dom'
+import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from './App'
 import AdminRoute from './AdminRoute'
 import CandidateRoute from './CandidateRoute'
@@ -20,7 +20,6 @@ import {
   RecruiterJobDetailsPage,
   RecruiterJobFormPage,
   RecruiterJobsPage,
-  RecruiterProfile,
   RegisterPage,
 } from './lazyPages'
 import LandingPage from '../pages/LandingPage'
@@ -106,11 +105,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'recruiter/profile',
-            element: (
-              <LazyPage>
-                <RecruiterProfile />
-              </LazyPage>
-            ),
+            element: <Navigate to="/profile" replace />,
           },
           {
             path: 'recruiter/company',

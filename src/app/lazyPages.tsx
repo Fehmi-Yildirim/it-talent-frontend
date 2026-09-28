@@ -28,10 +28,6 @@ export const ProfilePage = lazy(
     () => import('../pages/ProfilePage'),
 )
 
-export const RecruiterProfile = lazy(
-    () => import('../features/recruiter/RecruiterProfile'),
-)
-
 export const CompanyManagement = lazy(
     () => import('../features/recruiter/CompanyManagement'),
 )
