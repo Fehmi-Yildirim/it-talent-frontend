@@ -538,8 +538,6 @@ export const nl: DeepPartial<typeof en> = {
         createCandidateProfile: 'Kandidaatprofiel aanmaken',
         editProfile: 'Profiel bewerken',
 
-        // ...
-
         profileUpdated:
             'Profiel succesvol bijgewerkt.',
         profileCreated:
@@ -547,19 +545,25 @@ export const nl: DeepPartial<typeof en> = {
         accountUpdated:
             'Accountgegevens zijn succesvol bijgewerkt.',
 
-        // ...
-
         invalidInformation:
             'Controleer je profielgegevens en probeer het opnieuw.',
         invalidAccountInformation:
             'Controleer je voornaam en achternaam en probeer het opnieuw.',
 
-        // ...
-
         createError:
             'Je kandidaatprofiel kan niet worden aangemaakt.',
         accountUpdateError:
             'Het bijwerken van je accountgegevens is mislukt.',
+        recruiter: 'Recruiter',
+        recruiterInformation: 'Recruiterinformatie',
+        recruiterLoading: 'Recruiterprofiel laden...',
+        recruiterUnavailable: 'Recruiterprofiel niet beschikbaar',
+        recruiterLoadError: 'Het recruiterprofiel kon niet worden geladen.',
+        recruiterUpdated: 'Recruiterprofiel opgeslagen.',
+        recruiterUpdateError: 'Het recruiterprofiel kon niet worden opgeslagen.',
+        jobTitle: 'Functietitel',
+        jobTitlePlaceholder: 'bijv. Senior Recruiter',
+        saveRecruiterProfile: 'Profiel opslaan',
     },
 
     recruiterJobs: {

@@ -376,7 +376,7 @@ function DashboardPage() {
               </h2>
 
               <Link
-                to="/recruiter/profile"
+                to="/profile"
                 className="dashboard-action dashboard-action--secondary"
               >
                 {t('dashboard.recruiter.editProfile')}

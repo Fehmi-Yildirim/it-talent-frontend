@@ -1,4 +1,10 @@
-import { fireEvent, render, screen, waitFor } from '../test-utils'
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from '../test-utils'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
 
@@ -9,6 +15,10 @@ import {
   getCandidateProfile,
   updateCandidateProfile,
 } from '../../src/features/candidate/candidate.api'
+import {
+  getRecruiterProfile,
+  updateRecruiterProfile,
+} from '../../src/features/recruiter/recruiter.api'
 import { ApiError } from '../../src/services/api/apiError'
 
 vi.mock('../../src/features/auth/useAuth', () => ({
@@ -23,6 +33,11 @@ vi.mock('../../src/features/candidate/candidate.api', () => ({
 
 vi.mock('../../src/features/candidate/CandidateSkills', () => ({
   default: () => <div>Candidate skills</div>,
+}))
+
+vi.mock('../../src/features/recruiter/recruiter.api', () => ({
+  getRecruiterProfile: vi.fn(),
+  updateRecruiterProfile: vi.fn(),
 }))
 
 const candidateUser = {
@@ -53,6 +68,29 @@ const candidateProfile = {
   updatedAt: '2026-01-01',
 }
 
+
+const recruiterUser = {
+  id: 'user-2',
+  email: 'recruiter@example.com',
+  firstName: 'Robert',
+  lastName: 'Cook',
+  role: 'RECRUITER' as const,
+  status: 'ACTIVE' as const,
+  candidate: null,
+  recruiter: null,
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
+}
+
+const recruiterProfile = {
+  id: 'recruiter-profile-1',
+  userId: 'user-2',
+  companyId: 'company-1',
+  jobTitle: 'Technical Recruiter',
+  createdAt: '2026-01-01',
+  updatedAt: '2026-01-01',
+}
+
 const mockedUseAuth = vi.mocked(useAuth)
 const mockedGetCandidateProfile = vi.mocked(getCandidateProfile)
 const mockedCreateCandidateProfile = vi.mocked(
@@ -60,6 +98,12 @@ const mockedCreateCandidateProfile = vi.mocked(
 )
 const mockedUpdateCandidateProfile = vi.mocked(
   updateCandidateProfile,
+)
+const mockedGetRecruiterProfile = vi.mocked(
+  getRecruiterProfile,
+)
+const mockedUpdateRecruiterProfile = vi.mocked(
+  updateRecruiterProfile,
 )
 
 function renderProfilePage() {
@@ -84,12 +128,21 @@ describe('ProfilePage', () => {
       updateUser: vi.fn(),
     })
 
-    mockedGetCandidateProfile.mockResolvedValue(candidateProfile)
+    mockedGetCandidateProfile.mockResolvedValue(
+      candidateProfile,
+    )
     mockedCreateCandidateProfile.mockResolvedValue(
       candidateProfile,
     )
     mockedUpdateCandidateProfile.mockResolvedValue(
       candidateProfile,
+    )
+
+    mockedGetRecruiterProfile.mockResolvedValue(
+      recruiterProfile,
+    )
+    mockedUpdateRecruiterProfile.mockResolvedValue(
+      recruiterProfile,
     )
   })
 
@@ -251,8 +304,18 @@ describe('ProfilePage', () => {
   it('updates the candidate profile', async () => {
     renderProfilePage()
 
+    const candidateHeading = await screen.findByRole('heading', {
+      name: 'Candidate profile',
+    })
+
+    const candidateSection = candidateHeading.closest('section')
+
+    if (!candidateSection) {
+      throw new Error('Candidate section not found')
+    }
+
     fireEvent.click(
-      await screen.findByRole('button', {
+      within(candidateSection).getByRole('button', {
         name: 'Edit profile',
       }),
     )
@@ -268,7 +331,7 @@ describe('ProfilePage', () => {
     })
 
     fireEvent.click(
-      screen.getByRole('button', {
+      within(candidateSection).getByRole('button', {
         name: 'Save profile',
       }),
     )
@@ -317,10 +380,10 @@ describe('ProfilePage', () => {
     )
 
     expect(
-      await screen.findByRole('alert'),
-    ).toHaveTextContent(
-      'Unable to create your candidate profile.',
-    )
+      await screen.findByText(
+        'Unable to create your candidate profile.',
+      ),
+    ).toBeInTheDocument()
   })
 
   it('shows an error when updating the profile fails', async () => {
@@ -330,8 +393,18 @@ describe('ProfilePage', () => {
 
     renderProfilePage()
 
+    const candidateHeading = await screen.findByRole('heading', {
+      name: 'Candidate profile',
+    })
+
+    const candidateSection = candidateHeading.closest('section')
+
+    if (!candidateSection) {
+      throw new Error('Candidate section not found')
+    }
+
     fireEvent.click(
-      await screen.findByRole('button', {
+      within(candidateSection).getByRole('button', {
         name: 'Edit profile',
       }),
     )
@@ -348,26 +421,21 @@ describe('ProfilePage', () => {
     )
 
     fireEvent.click(
-      screen.getByRole('button', {
+      within(candidateSection).getByRole('button', {
         name: 'Save profile',
       }),
     )
 
     expect(
-      await screen.findByRole('alert'),
-    ).toHaveTextContent(
-      'Unable to update your candidate profile.',
-    )
+      await screen.findByText(
+        'Unable to update your candidate profile.',
+      ),
+    ).toBeInTheDocument()
   })
 
-  it('does not load the candidate profile for non-candidates', async () => {
+  it('loads and displays the recruiter profile', async () => {
     mockedUseAuth.mockReturnValue({
-      user: {
-        ...candidateUser,
-        role: 'RECRUITER',
-        firstName: 'Recruiter',
-        lastName: 'User',
-      },
+      user: recruiterUser,
       accessToken: 'test-access-token',
       isAuthenticated: true,
       isLoading: false,
@@ -379,11 +447,210 @@ describe('ProfilePage', () => {
     renderProfilePage()
 
     expect(
-      screen.getByText(candidateUser.email),
+      await screen.findByText('Technical Recruiter'),
+    ).toBeInTheDocument()
+
+    expect(
+      mockedGetRecruiterProfile,
+    ).toHaveBeenCalledTimes(1)
+  })
+
+  it('does not load the candidate profile for recruiters', async () => {
+    mockedUseAuth.mockReturnValue({
+      user: recruiterUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateUser: vi.fn(),
+    })
+
+    renderProfilePage()
+
+    expect(
+      await screen.findByText('Technical Recruiter'),
     ).toBeInTheDocument()
 
     expect(
       mockedGetCandidateProfile,
     ).not.toHaveBeenCalled()
   })
+
+  it('updates the recruiter profile', async () => {
+    const updateUser = vi.fn().mockResolvedValue(undefined)
+
+    mockedUseAuth.mockReturnValue({
+      user: recruiterUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateUser,
+    })
+
+    renderProfilePage()
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Edit profile',
+      }),
+    )
+
+    const jobTitle = screen.getByDisplayValue(
+      'Technical Recruiter',
+    )
+
+    fireEvent.change(jobTitle, {
+      target: {
+        value: 'Senior Technical Recruiter',
+      },
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Save profile',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(updateUser).toHaveBeenCalledWith(
+        'Robert',
+        'Cook',
+      )
+    })
+
+    expect(
+      mockedUpdateRecruiterProfile,
+    ).toHaveBeenCalledWith({
+      jobTitle: 'Senior Technical Recruiter',
+    })
+  })
+
+  it('shows a success message after updating the recruiter profile', async () => {
+    const updateUser = vi.fn().mockResolvedValue(undefined)
+
+    mockedUseAuth.mockReturnValue({
+      user: recruiterUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateUser,
+    })
+
+    renderProfilePage()
+
+    fireEvent.click(
+      await screen.findByRole('button', {
+        name: 'Edit profile',
+      }),
+    )
+
+    fireEvent.change(
+      screen.getByDisplayValue(
+        'Technical Recruiter',
+      ),
+      {
+        target: {
+          value: 'Senior Technical Recruiter',
+        },
+      },
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Save profile',
+      }),
+    )
+
+    expect(
+      await screen.findByText(
+        'Profile updated successfully.',
+      ),
+    ).toBeInTheDocument()
+  })
+
+  it('shows an error when loading the recruiter profile fails', async () => {
+    mockedUseAuth.mockReturnValue({
+      user: recruiterUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateUser: vi.fn(),
+    })
+
+    mockedGetRecruiterProfile.mockRejectedValue(
+      new Error('Request failed'),
+    )
+
+    renderProfilePage()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Recruiter profile unavailable',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('alert'),
+    ).toHaveTextContent(
+      'Unable to load recruiter profile.',
+    )
+
+    expect(
+      screen.getByRole('button', {
+        name: 'Try again',
+      }),
+    ).toBeInTheDocument()
+  })
+
+  it('retries loading the recruiter profile', async () => {
+    mockedUseAuth.mockReturnValue({
+      user: recruiterUser,
+      accessToken: 'test-access-token',
+      isAuthenticated: true,
+      isLoading: false,
+      login: vi.fn(),
+      logout: vi.fn(),
+      updateUser: vi.fn(),
+    })
+
+    mockedGetRecruiterProfile
+      .mockRejectedValueOnce(
+        new Error('Request failed'),
+      )
+      .mockResolvedValueOnce(recruiterProfile)
+
+    renderProfilePage()
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Recruiter profile unavailable',
+      }),
+    ).toBeInTheDocument()
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: 'Try again',
+      }),
+    )
+
+    await waitFor(() => {
+      expect(
+        mockedGetRecruiterProfile,
+      ).toHaveBeenCalledTimes(2)
+    })
+
+    expect(
+      await screen.findByText(
+        'Technical Recruiter',
+      ),
+    ).toBeInTheDocument()
+  })
+
 })
