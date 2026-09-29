@@ -295,7 +295,7 @@ function CandidateApplicationDetailsPage() {
 
                         <dt>
                             {t(
-                                'candidateApplications.details.workMode',
+                                'common.workMode',
                             )}
                         </dt>
 
@@ -305,7 +305,7 @@ function CandidateApplicationDetailsPage() {
 
                         <dt>
                             {t(
-                                'candidateApplications.details.employmentType',
+                                'common.employmentType',
                             )}
                         </dt>
 
@@ -325,7 +325,7 @@ function CandidateApplicationDetailsPage() {
                     <dl>
                         <dt>
                             {t(
-                                'candidateApplications.details.status',
+                                'common.status',
                             )}
                         </dt>
 

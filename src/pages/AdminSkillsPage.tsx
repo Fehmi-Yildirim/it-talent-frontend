@@ -383,7 +383,7 @@ export default function AdminSkillsPage() {
                             <table className="admin-skills-table">
                                 <thead>
                                     <tr>
-                                        <th>{t('adminSkills.name')}</th>
+                                        <th>{t('common.name')}</th>
                                         <th>{t('adminSkills.category')}</th>
                                         <th>
                                             {t(
@@ -464,7 +464,7 @@ export default function AdminSkillsPage() {
                     >
                         <div>
                             <label htmlFor="skill-name">
-                                {t('adminSkills.name')}
+                                {t('common.name')}
                             </label>
 
                             <input

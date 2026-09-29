@@ -110,7 +110,7 @@ function DashboardPage() {
           <section className="dashboard-grid">
             <article className="dashboard-card">
               <p className="dashboard-eyebrow">
-                {t('dashboard.candidate.profile')}
+                {t('common.profile')}
               </p>
 
               <h2>
@@ -119,7 +119,7 @@ function DashboardPage() {
               </h2>
 
               <p>
-                {t('dashboard.candidate.status')}:{' '}
+                {t('common.status')}:{' '}
                 {candidateDashboard.profile.status}
               </p>
 
@@ -312,7 +312,7 @@ function DashboardPage() {
               </h2>
 
               <p>
-                {t('dashboard.recruiter.status')}:{' '}
+                {t('common.status')}:{' '}
                 {recruiterDashboard.profile.status}
               </p>
 
@@ -367,12 +367,12 @@ function DashboardPage() {
 
             <article className="dashboard-card">
               <p className="dashboard-eyebrow">
-                {t('dashboard.recruiter.recruiter')}
+                {t('common.recruiter')}
               </p>
 
               <h2>
                 {recruiterDashboard.profile.jobTitle ??
-                  t('dashboard.recruiter.recruiter')}
+                  t('common.recruiter')}
               </h2>
 
               <Link
@@ -441,7 +441,7 @@ function DashboardPage() {
                     <div>
                       <strong>
                         {application.candidate.headline ??
-                          t('dashboard.recruiter.candidate')}
+                          t('common.candidate')}
                       </strong>
 
                       <span>{application.job.title}</span>
@@ -558,17 +558,17 @@ function DashboardPage() {
         {user && (
           <dl className="dashboard-account-details">
             <div className="dashboard-account-item">
-              <dt>{t('dashboard.account.email')}</dt>
+              <dt>{t('common.email')}</dt>
               <dd>{user.email}</dd>
             </div>
 
             <div className="dashboard-account-item">
-              <dt>{t('dashboard.account.role')}</dt>
+              <dt>{t('common.role')}</dt>
               <dd>{user.role}</dd>
             </div>
 
             <div className="dashboard-account-item">
-              <dt>{t('dashboard.account.status')}</dt>
+              <dt>{t('common.status')}</dt>
               <dd>{user.status}</dd>
             </div>
           </dl>

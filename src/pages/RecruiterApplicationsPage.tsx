@@ -15,7 +15,7 @@ function formatStatus(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     switch (status) {
-        case APPLICATION_STATUSES.PENDING: return t('recruiterApplications.pending')
+        case APPLICATION_STATUSES.PENDING: return t('common.pending')
         case APPLICATION_STATUSES.REVIEWING: return t('recruiterApplications.reviewing')
         case APPLICATION_STATUSES.ACCEPTED: return t('recruiterApplications.accepted')
         case APPLICATION_STATUSES.REJECTED: return t('recruiterApplications.rejected')
@@ -201,7 +201,7 @@ function RecruiterApplicationsPage() {
                 </label>
 
                 <label>
-                    {t('recruiterApplications.status')}
+                    {t('common.status')}
 
                     <select
                         value={selectedStatus}
@@ -217,7 +217,7 @@ function RecruiterApplicationsPage() {
                             {t('recruiterApplications.allStatuses')}
                         </option>
                         <option value={APPLICATION_STATUSES.PENDING}>
-                            {t('recruiterApplications.pending')}
+                            {t('common.pending')}
                         </option>
 
                         <option value={APPLICATION_STATUSES.REVIEWING}>

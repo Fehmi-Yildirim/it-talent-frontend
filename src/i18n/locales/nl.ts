@@ -73,7 +73,6 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     adminSkills: {
-        slug: 'Slug',
         category: 'Categorie',
         description: 'Beschrijving',
         title: 'Admin — Skills beheren',
@@ -313,7 +312,6 @@ export const nl: DeepPartial<typeof en> = {
 
         candidate: {
             dashboardLabel: 'Kandidaatdashboard',
-            profile: 'Profiel',
             complete: 'volledig',
             editProfile: 'Profiel bewerken',
             applications: 'Sollicitaties',
@@ -638,8 +636,6 @@ export const nl: DeepPartial<typeof en> = {
             'Voeg de vaardigheden toe waar kandidaten over moeten beschikken.',
         selectSkill: 'Selecteer een vaardigheid',
         type: 'Type',
-        required: 'Vereist',
-        preferred: 'Gewenst',
         minimumLevel: 'Minimaal niveau',
         addRequirement: 'Functie-eis toevoegen',
         loadingRequirements: 'Functie-eisen laden...',
@@ -719,7 +715,6 @@ export const nl: DeepPartial<typeof en> = {
         job: 'Vacature',
         allJobs: 'Alle vacatures',
         allStatuses: 'Alle statussen',
-        pending: 'In behandeling',
         reviewing: 'In beoordeling',
         accepted: 'Geaccepteerd',
         rejected: 'Afgewezen',

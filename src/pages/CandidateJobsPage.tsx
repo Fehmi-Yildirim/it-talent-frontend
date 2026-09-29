@@ -54,7 +54,7 @@ export function CandidateJobsPage() {
 
     function formatDate(value: string | null): string {
         if (!value) {
-            return t('candidateJobs.notSpecified')
+            return t('common.notSpecified')
         }
 
         return new Intl.DateTimeFormat(locale, {
@@ -415,7 +415,7 @@ export function CandidateJobsPage() {
 
                         <div className="candidate-jobs-work-mode-filter">
                             <span className="candidate-jobs-filter-label">
-                                {t('candidateJobs.workMode')}
+                                {t('common.workMode')}
                             </span>
 
                             <div className="candidate-jobs-work-mode-dropdown">
@@ -423,7 +423,7 @@ export function CandidateJobsPage() {
                                     type="button"
                                     className="candidate-jobs-work-mode-trigger"
                                     aria-label={t(
-                                        'candidateJobs.workMode',
+                                        'common.workMode',
                                     )}
                                     aria-haspopup="true"
                                     aria-expanded={
@@ -469,7 +469,7 @@ export function CandidateJobsPage() {
                                         <fieldset>
                                             <legend className="sr-only">
                                                 {t(
-                                                    'candidateJobs.workMode',
+                                                    'common.workMode',
                                                 )}
                                             </legend>
 
@@ -530,7 +530,7 @@ export function CandidateJobsPage() {
 
                         <div className="candidate-jobs-work-mode-filter">
                             <span className="candidate-jobs-filter-label">
-                                {t('candidateJobs.employmentType')}
+                                {t('common.employmentType')}
                             </span>
 
                             <div className="candidate-jobs-work-mode-dropdown">
@@ -538,7 +538,7 @@ export function CandidateJobsPage() {
                                     type="button"
                                     className="candidate-jobs-work-mode-trigger"
                                     aria-label={t(
-                                        'candidateJobs.employmentType',
+                                        'common.employmentType',
                                     )}
                                     aria-haspopup="true"
                                     aria-expanded={
@@ -584,7 +584,7 @@ export function CandidateJobsPage() {
                                         <fieldset>
                                             <legend className="sr-only">
                                                 {t(
-                                                    'candidateJobs.employmentType',
+                                                    'common.employmentType',
                                                 )}
                                             </legend>
 
@@ -676,7 +676,7 @@ export function CandidateJobsPage() {
                                             {selectedSkills.length === 0
                                                 ? t('candidateJobs.allSkills')
                                                 : selectedSkills.length === 1
-                                                    ? t('candidateJobs.skill')
+                                                    ? t('common.skill')
                                                     : t('candidateJobs.skills')}
                                         </span>
                                     </div>
@@ -832,7 +832,7 @@ export function CandidateJobsPage() {
                                 </option>
 
                                 <option value="salary">
-                                    {t('candidateJobs.salary')}
+                                    {t('common.salary')}
                                 </option>
 
                                 <option value="title">

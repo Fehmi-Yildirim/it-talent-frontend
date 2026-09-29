@@ -25,7 +25,7 @@ function formatSalary(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (salaryMin === null && salaryMax === null) {
-        return t('candidateJobDetails.notSpecified')
+        return t('common.notSpecified')
     }
 
     const formatAmount = (value: string | number): string => {
@@ -47,10 +47,10 @@ function formatSalary(
     }
 
     if (salaryMin !== null) {
-        return `${t('candidateJobDetails.from')} ${formatAmount(salaryMin)}${currencyLabel}`
+        return `${t('common.from')} ${formatAmount(salaryMin)}${currencyLabel}`
     }
 
-    return `${t('candidateJobDetails.upTo')} ${formatAmount(salaryMax!)}${currencyLabel}`
+    return `${t('common.upTo')} ${formatAmount(salaryMax!)}${currencyLabel}`
 }
 
 function formatDate(
@@ -59,7 +59,7 @@ function formatDate(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (!value) {
-        return t('candidateJobDetails.notSpecified')
+        return t('common.notSpecified')
     }
 
     return new Intl.DateTimeFormat(locale, {
@@ -268,12 +268,12 @@ function CandidateJobDetailsPage() {
                     )}
 
                     <div>
-                        <dt>{t('candidateJobDetails.workMode')}</dt>
+                        <dt>{t('common.workMode')}</dt>
                         <dd>{workModeLabel(job.workMode)}</dd>
                     </div>
 
                     <div>
-                        <dt>{t('candidateJobDetails.employmentType')}</dt>
+                        <dt>{t('common.employmentType')}</dt>
                         <dd>{employmentTypeLabel(job.employmentType)}</dd>
                     </div>
 
@@ -451,7 +451,7 @@ function CandidateJobDetailsPage() {
 
                     <dl className="candidate-job-company-details">
                         <div>
-                            <dt>{t('candidateJobDetails.name')}</dt>
+                            <dt>{t('common.name')}</dt>
                             <dd>{job.company.name}</dd>
                         </div>
 

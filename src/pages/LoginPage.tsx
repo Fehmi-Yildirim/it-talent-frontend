@@ -62,7 +62,7 @@ function LoginPage() {
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">{t('auth.email')}</label>
+          <label htmlFor="email">{t('common.email')}</label>
           <input
             id="email"
             name="email"
