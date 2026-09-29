@@ -130,7 +130,7 @@ export default function RecruiterJobsPage() {
                             window.location.reload()
                         }
                     >
-                        {t('recruiterJobs.tryAgain')}
+                        {t('common.tryAgain')}
                     </button>
                 </div>
             </div>

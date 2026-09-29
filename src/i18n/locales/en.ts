@@ -15,29 +15,37 @@ export const en = {
         deleted: 'Deleted',
         edit: 'Edit',
         email: 'Email',
+        employmentType: 'Employment type',
         findJobs: 'Find jobs',
         from: 'From',
         language: 'Language',
         location: 'Location',
         login: 'Login',
         logout: 'Logout',
+        name: 'Name',
         next: 'Next',
+        notSpecified: 'Not specified',
         of: 'of',
         page: 'Page',
         pending: 'Pending',
+        preferred: 'Preferred',
         previous: 'Previous',
         profile: 'Profile',
         recruiter: 'Recruiter',
         refresh: 'Refresh',
         register: 'Register',
+        required: 'Required',
         role: 'Role',
+        salary: 'Salary',
         save: 'Save',
         saving: 'Saving...',
         search: 'Search',
+        skill: 'Skill',
         status: 'Status',
         suspended: 'Suspended',
         tryAgain: 'Try again',
         upTo: 'Up to',
+        workMode: 'Work mode',
     },
 
     accessibility: {
@@ -208,7 +216,6 @@ export const en = {
         application: 'application',
         applications: 'applications',
 
-        pending: 'Pending',
         reviewing: 'Reviewing',
         accepted: 'Accepted',
         rejected: 'Rejected',
@@ -220,11 +227,9 @@ export const en = {
 
         details: {
             loading: 'Loading application...',
-
             accessDenied: 'Access denied',
             applicationNotFound: 'Application not found',
             unableToLoad: 'Unable to load application',
-
             unauthorized:
                 'You are not authorized to view this application.',
             notFound:
@@ -234,19 +239,14 @@ export const en = {
 
             backToApplications: 'Back to applications',
             eyebrow: 'Candidate application',
-
             jobDetails: 'Job details',
-            location: 'Location',
             workMode: 'Work mode',
             employmentType: 'Employment type',
-
             applicationDetails: 'Application details',
             status: 'Status',
             applied: 'Applied',
             lastUpdated: 'Last updated',
-
             coverLetter: 'Cover letter',
-
             withdrawApplication: 'Withdraw application',
             withdrawDescription:
                 'You can withdraw your application while it is still being processed.',

@@ -278,7 +278,7 @@ function CandidateJobDetailsPage() {
                     </div>
 
                     <div>
-                        <dt>{t('candidateJobDetails.salary')}</dt>
+                        <dt>{t('common.salary')}</dt>
                         <dd>
                             {formatSalary(
                                 job.salaryMin,

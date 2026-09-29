@@ -19,7 +19,7 @@ function formatStatus(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     switch (status) {
-        case APPLICATION_STATUSES.PENDING: return t('candidateApplications.pending')
+        case APPLICATION_STATUSES.PENDING: return t('common.pending')
         case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
         case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
         case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
@@ -283,7 +283,7 @@ function CandidateApplicationDetailsPage() {
                             <>
                                 <dt>
                                     {t(
-                                        'candidateApplications.details.location',
+                                        'common.location',
                                     )}
                                 </dt>
 

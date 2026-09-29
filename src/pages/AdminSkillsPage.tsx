@@ -325,7 +325,7 @@ export default function AdminSkillsPage() {
                             void loadSkills('')
                         }}
                     >
-                        {t('adminSkills.refresh')}
+                        {t('common.refresh')}
                     </button>
                 </section>
 
@@ -536,7 +536,7 @@ export default function AdminSkillsPage() {
                                 disabled={isSaving}
                             >
                                 {isSaving
-                                    ? t('adminSkills.saving')
+                                    ? t('common.saving')
                                     : t('common.save')}
                             </button>
 

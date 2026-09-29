@@ -66,7 +66,7 @@ function formatSalary(
         )}+`
     }
 
-    return `${t('recruiterJobs.upTo')} ${formatSalaryValue(
+    return `${t('common.upTo')} ${formatSalaryValue(
         salaryMax as string | number,
         currencyCode,
     )}`
