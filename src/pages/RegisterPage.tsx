@@ -118,7 +118,7 @@ function RegisterPage() {
             }
           >
             <option value={USER_ROLES.CANDIDATE}>
-              {t('auth.candidate')}
+              {t('common.candidate')}
             </option>
 
             <option value={USER_ROLES.RECRUITER}>

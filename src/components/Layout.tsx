@@ -34,17 +34,17 @@ function Layout() {
             <>
               <div className="main-nav__links">
                 <NavLink to="/dashboard">
-                  {t('navigation.dashboard')}
+                  {t('common.dashboard')}
                 </NavLink>
 
                 {isCandidate && (
                   <NavLink to="/jobs">
-                    {t('navigation.findJobs')}
+                    {t('common.findJobs')}
                   </NavLink>
                 )}
 
                 <NavLink to="/profile">
-                  {t('navigation.profile')}
+                  {t('common.profile')}
                 </NavLink>
 
                 <div className="language-switcher">
@@ -73,18 +73,18 @@ function Layout() {
                   type="button"
                   onClick={handleLogout}
                 >
-                  {t('navigation.logout')}
+                  {t('common.logout')}
                 </button>
               </div>
             </>
           ) : (
             <div className="main-nav__links">
               <NavLink to="/login">
-                {t('navigation.login')}
+                {t('common.login')}
               </NavLink>
 
               <NavLink to="/register">
-                {t('navigation.register')}
+                {t('common.register')}
               </NavLink>
 
               <div className="language-switcher">

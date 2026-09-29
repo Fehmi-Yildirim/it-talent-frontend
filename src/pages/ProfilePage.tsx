@@ -171,7 +171,7 @@ function ProfileForm({
       </label>
 
       <label>
-        {t('profile.location')}
+        {t('common.location')}
         <input
           value={value.location ?? ''}
           onChange={(event) =>
@@ -405,7 +405,7 @@ function RecruiterProfileForm({
           onClick={onCancel}
           disabled={submitting}
         >
-          {t('profile.cancel')}
+          {t('common.cancel')}
         </button>
       </div>
     </form>
@@ -733,7 +733,7 @@ function ProfilePage() {
   </div>
 
     <Link to="/dashboard">
-      {t('profile.backToDashboard')}
+      {t('common.backToDashboard')}
     </Link>
   </div>
 
@@ -939,7 +939,7 @@ function ProfilePage() {
                 onClick={cancelProfileEditing}
                 disabled={profileSubmitting}
               >
-                {t('profile.cancel')}
+                {t('common.cancel')}
               </button>
             </div>
           </form>
@@ -1035,7 +1035,7 @@ function ProfilePage() {
             submitting={submitting}
             submitLabel={t('profile.saveProfile')}
             savingLabel={t('profile.saving')}
-            cancelLabel={t('profile.cancel')}
+            cancelLabel={t('common.cancel')}
             onChange={setFormValue}
             onSubmit={() => void handleSubmit()}
             onCancel={cancelEditing}
@@ -1068,7 +1068,7 @@ function ProfilePage() {
                 </div>
 
                 <div>
-                  <dt>{t('profile.location')}</dt>
+                  <dt>{t('common.location')}</dt>
                   <dd>
                     {formatNullable(
                       candidateProfile.location,
@@ -1127,7 +1127,7 @@ function ProfilePage() {
               submitting={submitting}
               submitLabel={t('profile.createProfile')}
               savingLabel={t('profile.saving')}
-              cancelLabel={t('profile.cancel')}
+              cancelLabel={t('common.cancel')}
               onChange={setFormValue}
               onSubmit={() => void handleSubmit()}
             />

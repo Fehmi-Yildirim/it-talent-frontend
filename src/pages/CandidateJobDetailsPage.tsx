@@ -209,7 +209,7 @@ function CandidateJobDetailsPage() {
                                     setRetryCount((current) => current + 1)
                                 }
                             >
-                                {t('candidateJobDetails.tryAgain')}
+                                {t('common.tryAgain')}
                             </button>
                         )}
 
@@ -262,7 +262,7 @@ function CandidateJobDetailsPage() {
                 <div className="candidate-job-details-meta">
                     {job.location && (
                         <div>
-                            <dt>{t('candidateJobDetails.location')}</dt>
+                            <dt>{t('common.location')}</dt>
                             <dd>{job.location}</dd>
                         </div>
                     )}
@@ -457,7 +457,7 @@ function CandidateJobDetailsPage() {
 
                         {job.company.location && (
                             <div>
-                                <dt>{t('candidateJobDetails.location')}</dt>
+                                <dt>{t('common.location')}</dt>
                                 <dd>{job.company.location}</dd>
                             </div>
                         )}

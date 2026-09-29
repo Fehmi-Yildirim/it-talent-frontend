@@ -129,7 +129,7 @@ function CandidateApplicationsPage() {
 
                         <Link to="/dashboard">
                             {t(
-                                'candidateApplications.backToDashboard',
+                                'common.backToDashboard',
                             )}
                         </Link>
                     </section>
@@ -168,7 +168,7 @@ function CandidateApplicationsPage() {
                                 )
                             }
                         >
-                            {t('candidateApplications.tryAgain')}
+                            {t('common.tryAgain')}
                         </button>
                     </section>
                 </section>
@@ -201,7 +201,7 @@ function CandidateApplicationsPage() {
                             )
                         }
                     >
-                        {t('candidateApplications.tryAgain')}
+                        {t('common.tryAgain')}
                     </button>
                 </section>
             </section>

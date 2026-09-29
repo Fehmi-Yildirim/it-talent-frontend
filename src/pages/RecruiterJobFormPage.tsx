@@ -210,10 +210,10 @@ function RequirementRow({
                     className="button button--danger"
                     disabled={saving}
                     aria-label={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     title={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     onClick={() =>
                         void onDelete(
@@ -329,10 +329,10 @@ function PendingRequirementRow({
                     type="button"
                     className="button button--danger"
                     aria-label={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     title={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     onClick={onDelete}
                 >
@@ -1930,7 +1930,7 @@ export default function RecruiterJobFormPage() {
                         className="button button--secondary"
                     >
                         {t(
-                            'recruiterJobForm.cancel',
+                            'common.cancel',
                         )}
                     </Link>
 

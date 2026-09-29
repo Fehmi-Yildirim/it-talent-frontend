@@ -1,44 +1,43 @@
 export const en = {
     common: {
-        backToDashboard: 'Back to dashboard',
-        confirmDeleteTitle: 'Confirm deletion',
-        delete: 'Delete',
-        cancel: 'Cancel',
-        refresh: 'Refresh',
         actions: 'Actions',
-        email: 'Email',
-        role: 'Role',
-        status: 'Status',
-        created: 'Created',
-        candidate: 'Candidate',
-        recruiter: 'Recruiter',
-        admin: 'Admin',
         active: 'Active',
-        pending: 'Pending',
-        suspended: 'Suspended',
-        deleted: 'Deleted',
-        saving: 'Saving...',
-        save: 'Save',
-        edit: 'Edit',
-        close: 'Close',
-        location: 'Location',
-
-        search: 'Search',
+        admin: 'Admin',
+        backToDashboard: 'Back to dashboard',
+        cancel: 'Cancel',
+        candidate: 'Candidate',
         clearFilters: 'Clear filters',
-        tryAgain: 'Try again',
-        previous: 'Previous',
-        next: 'Next',
-        page: 'Page',
-        of: 'of',
-    },
-    navigation: {
+        close: 'Close',
+        confirmDeleteTitle: 'Confirm deletion',
+        created: 'Created',
         dashboard: 'Dashboard',
+        delete: 'Delete',
+        deleted: 'Deleted',
+        edit: 'Edit',
+        email: 'Email',
         findJobs: 'Find jobs',
-        login: 'Login',
+        from: 'From',
         language: 'Language',
+        location: 'Location',
+        login: 'Login',
         logout: 'Logout',
+        next: 'Next',
+        of: 'of',
+        page: 'Page',
+        pending: 'Pending',
+        previous: 'Previous',
         profile: 'Profile',
+        recruiter: 'Recruiter',
+        refresh: 'Refresh',
         register: 'Register',
+        role: 'Role',
+        save: 'Save',
+        saving: 'Saving...',
+        search: 'Search',
+        status: 'Status',
+        suspended: 'Suspended',
+        tryAgain: 'Try again',
+        upTo: 'Up to',
     },
 
     accessibility: {
@@ -58,6 +57,13 @@ export const en = {
     },
 
     adminSkills: {
+        refresh: 'Refresh',
+        name: 'Name',
+        slug: 'Slug',
+        category: 'Category',
+        description: 'Description',
+        saving: 'Saving...',
+
         title: 'Admin — Skills Management',
         loading: 'Loading skills...',
         loadError: 'Failed to load skills.',
@@ -66,34 +72,15 @@ export const en = {
         deleteError: 'Failed to delete skill.',
         skillInUseError: 'Skill cannot be deleted because it is still in use.',
         duplicateSlug: 'A skill with this slug already exists.',
-
-        refresh: 'Refresh',
         noSkills: 'No skills found',
         noSkillsMatch: 'No skills match your search.',
-
-        search: 'Search',
         searchPlaceholder: 'Search skills...',
-
-        name: 'Name',
-        slug: 'Slug',
-        category: 'Category',
-        description: 'Description',
-        actions: 'Actions',
-
         createSkill: 'Create skill',
         editSkill: 'Edit skill',
         deleteSkill: 'Delete skill',
-
-        saving: 'Saving...',
-        save: 'Save',
-        cancel: 'Cancel',
-        edit: 'Edit',
-        delete: 'Delete',
-
         nameRequired: 'Name is required.',
         slugRequired: 'Slug is required.',
         categoryRequired: 'Category is required.',
-
         deleteConfirmation: 'Are you sure you want to delete this skill?',
 
         categories: {
@@ -120,7 +107,6 @@ export const en = {
         email: 'Email',
         password: 'Password',
         accountType: 'Account type',
-        candidate: 'Candidate',
         recruiter: 'Recruiter',
         emailRequired: 'Email is required.',
         invalidEmail: 'Please enter a valid email address.',
@@ -132,21 +118,12 @@ export const en = {
         accountNotActive: 'Account is not active.',
     },
 
-    buttons: {
-        save: 'Save',
-        cancel: 'Cancel',
-    },
-
     candidateJobs: {
         eyebrow: 'Candidate',
         title: 'Find your next opportunity',
-        description:
-            'Search published jobs and filter them by your preferences.',
-
+        description: 'Search published jobs and filter them by your preferences.',
         searchJobs: 'Search jobs',
-        search: 'Search',
         searchPlaceholder: 'Title, description or company',
-        location: 'Location',
         locationPlaceholder: 'Amsterdam',
         workMode: 'Work mode',
         allWorkModes: 'All work modes',
@@ -155,33 +132,26 @@ export const en = {
         minimumSalary: 'Minimum salary',
         maximumSalary: 'Maximum salary',
         sort: 'Sort',
-
         newest: 'Newest',
         salary: 'Salary',
         titleSort: 'Title',
-
         skills: 'Skills',
         loadingSkills: 'Loading skills...',
         noSkills: 'No skills available.',
-
         fullTime: 'Full-time',
         partTime: 'Part-time',
         contract: 'Contract',
         freelance: 'Freelance',
         internship: 'Internship',
-
         remote: 'Remote',
         hybrid: 'Hybrid',
         onsite: 'On-site',
         flexible: 'Flexible',
-
         clearFilters: 'Clear filters',
-
         unableToLoadJobs: 'Unable to load jobs',
         loadError: 'Unable to load jobs. Please try again.',
         invalidSearch:
             'The search request is invalid. Please check your filters.',
-        tryAgain: 'Try again',
         loadingJobs: 'Loading jobs...',
 
         noJobsFound: 'No jobs found',
@@ -229,7 +199,6 @@ export const en = {
         unableToLoad: 'Unable to load applications',
         loadError:
             'Something went wrong while loading your applications. Please try again.',
-        tryAgain: 'Try again',
 
         noApplications: 'No applications yet',
         noApplicationsDescription:
@@ -248,8 +217,6 @@ export const en = {
         applied: 'Applied',
         coverLetterSubmitted: 'Cover letter submitted',
         viewApplication: 'View application',
-
-        backToDashboard: 'Back to dashboard',
 
         details: {
             loading: 'Loading application...',
@@ -303,11 +270,9 @@ export const en = {
             'This job is no longer available or could not be found.',
         loadError:
             'Something went wrong while loading this job. Please try again.',
-        tryAgain: 'Try again',
         backToJobs: 'Back to jobs',
 
         jobOpportunity: 'Job opportunity',
-        location: 'Location',
         workMode: 'Work mode',
         employmentType: 'Employment type',
         salary: 'Salary',
@@ -445,7 +410,6 @@ export const en = {
 
     feedback: {
         somethingWentWrong: 'Something went wrong',
-        tryAgain: 'Try again',
         loading: 'Loading...',
     },
 
@@ -478,10 +442,9 @@ export const en = {
     },
 
     profile: {
-        title: 'Profile',
-        backToDashboard: 'Back to dashboard',
-
+        saving: 'Saving...',
         account: 'Account',
+        title: 'Profile',
         accountInformation: 'Account information',
         firstName: 'First name',
         lastName: 'Last name',
@@ -490,15 +453,12 @@ export const en = {
         status: 'Status',
         editAccount: 'Edit account',
         saveAccount: 'Save account',
-
         candidate: 'Candidate',
         candidateProfile: 'Candidate profile',
         createCandidateProfile: 'Create candidate profile',
         editProfile: 'Edit profile',
-
         loading: 'Loading candidate profile...',
         profileUnavailable: 'Profile unavailable',
-
         headline: 'Headline',
         summary: 'Summary',
         location: 'Location',
@@ -509,20 +469,14 @@ export const en = {
         availabilityDate: 'Availability date',
         availability: 'Availability',
         remotePreference: 'Remote preference',
-
         notSpecified: 'Not specified',
         upTo: 'Up to',
         from: 'From',
-
         saveProfile: 'Save profile',
         createProfile: 'Create profile',
-        saving: 'Saving...',
-        cancel: 'Cancel',
-
         profileUpdated: 'Profile updated successfully.',
         profileCreated: 'Profile created successfully.',
         accountUpdated: 'Account information updated successfully.',
-
         unauthorizedAccess:
             'You are not authorized to access your candidate profile.',
         serverLoadError:
@@ -531,7 +485,6 @@ export const en = {
             'Unable to connect to the server. Please check your connection and try again.',
         loadError:
             'Unable to load your candidate profile.',
-
         unauthorizedModify:
             'You are not authorized to modify your candidate profile.',
         invalidInformation:
@@ -565,104 +518,68 @@ export const en = {
     recruiterJobs: {
         title: 'Jobs',
         description: "Manage your company's job vacancies.",
-
         newJob: 'New Job',
-
         loading: 'Loading jobs...',
-        loadError:
-            'Unable to load your jobs. Please try again.',
+        loadError: 'Unable to load your jobs. Please try again.',
         tryAgain: 'Try again',
-
         noJobs: 'No jobs yet',
-        noJobsDescription:
-            'Create your first job vacancy to start recruiting.',
+        noJobsDescription: 'Create your first job vacancy to start recruiting.',
         createFirstJob: 'Create your first job',
-
         yourJobs: 'Your jobs',
-
         locationNotSpecified: 'Location not specified',
         location: 'Location',
-
         salaryNotSpecified: 'Salary not specified',
         salary: 'Salary',
         upTo: 'Up to',
-
         employmentType: 'Employment type',
         workMode: 'Work mode',
         notSpecified: 'Not specified',
-
         fullTime: 'Full-time',
         partTime: 'Part-time',
         contract: 'Contract',
         freelance: 'Freelance',
         internship: 'Internship',
-
         remote: 'Remote',
         hybrid: 'Hybrid',
         onsite: 'On-site',
         flexible: 'Flexible',
-
         draft: 'Draft',
         published: 'Published',
         paused: 'Paused',
         closed: 'Closed',
-
         view: 'View',
         edit: 'Edit',
-
         jobNotFound: 'Job not found.',
         jobIdMissing: 'Job ID is missing.',
-        unableToLoadDetails:
-            'Unable to load this job.',
+        unableToLoadDetails: 'Unable to load this job.',
         backToJobs: 'Back to jobs',
-
         publish: 'Publish job',
         publishing: 'Publishing...',
-
         pause: 'Pause job',
         pausing: 'Pausing...',
-
         resume: 'Resume job',
         resuming: 'Resuming...',
-
         close: 'Close job',
         closing: 'Closing...',
-
         reopen: 'Reopen job',
         reopening: 'Reopening...',
-
-        publishedSuccessfully:
-            'Job published successfully.',
-        pausedSuccessfully:
-            'Job paused successfully.',
-        resumedSuccessfully:
-            'Job resumed successfully.',
-        closedSuccessfully:
-            'Job closed successfully.',
-        reopenedSuccessfully:
-            'Job reopened successfully.',
-
-        publishError:
-            'Unable to publish this job. Please try again.',
-        pauseError:
-            'Unable to pause this job. Please try again.',
-        resumeError:
-            'Unable to resume this job. Please try again.',
-        closeError:
-            'Unable to close this job. Please try again.',
-        reopenError:
-            'Unable to reopen this job. Please try again.',
-
+        publishedSuccessfully: 'Job published successfully.',
+        pausedSuccessfully: 'Job paused successfully.',
+        resumedSuccessfully: 'Job resumed successfully.',
+        closedSuccessfully: 'Job closed successfully.',
+        reopenedSuccessfully: 'Job reopened successfully.',
+        publishError: 'Unable to publish this job. Please try again.',
+        pauseError: 'Unable to pause this job. Please try again.',
+        resumeError: 'Unable to resume this job. Please try again.',
+        closeError: 'Unable to close this job. Please try again.',
+        reopenError: 'Unable to reopen this job. Please try again.',
         jobDescription: 'Job description',
         jobInformation: 'Job information',
         expirationDate: 'Expiration date',
-
         requirements: 'Requirements',
-        requirementsDescription:
-            'Skills required or preferred for this position.',
+        requirementsDescription: 'Skills required or preferred for this position.',
         manageRequirements: 'Manage requirements',
-        noRequirements:
-            'No requirements configured.',
+        noRequirements: 'No requirements configured.',
         requiredSkills: 'Required skills',
         preferredSkills: 'Preferred skills',
         minimumLevel: 'Minimum level',
@@ -672,49 +589,33 @@ export const en = {
         jobTitle: 'Job title',
         titleRequired: 'Title is required.',
         descriptionRequired: 'Description is required.',
-        descriptionPlaceholder:
-            'Describe the role, responsibilities and expectations...',
+        descriptionPlaceholder: 'Describe the role, responsibilities and expectations...',
         jobTitlePlaceholder: 'e.g. Senior Frontend Developer',
         locationPlaceholder: 'e.g. Amsterdam, Netherlands',
-
         salaryExpiration: 'Salary & expiration',
         salaryMin: 'Minimum salary',
         salaryMax: 'Maximum salary',
         currency: 'Currency',
-
         jobRequirements: 'Job requirements',
-        jobRequirementsDescription:
-            'Add the skills candidates should have.',
+        jobRequirementsDescription: 'Add the skills candidates should have.',
         skill: 'Skill',
         selectSkill: 'Select a skill',
         type: 'Type',
         addRequirement: 'Add requirement',
-
-        delete: 'Delete',
         unknownSkill: 'Unknown skill',
-
         loadingRequirements: 'Loading requirements...',
         noRequirementsAddedYet: 'No requirements added yet.',
-        noRequirementsHaveBeenAdded:
-            'No requirements have been added yet.',
-        requirementsWillBeCreated:
-            'These requirements will be created through the Requirements API when you save the job.',
-
+        noRequirementsHaveBeenAdded: 'No requirements have been added yet.',
+        requirementsWillBeCreated: 'These requirements will be created through the Requirements API when you save the job.',
         editJob: 'Edit job',
         createJob: 'Create job',
-        updateJobDescription:
-            'Update the details of your job vacancy.',
-        createJobDescription:
-            'Create a new job vacancy for your company.',
-
+        updateJobDescription: 'Update the details of your job vacancy.',
+        createJobDescription: 'Create a new job vacancy for your company.',
         saving: 'Saving...',
         saveChanges: 'Save changes',
-        cancel: 'Cancel',
-
         loadSkillsError: 'Unable to load skills.',
         loadJobError: 'Unable to load the job.',
-        loadRequirementsError:
-            'Unable to load job requirements.',
+        loadRequirementsError: 'Unable to load job requirements.',
         selectSkillError: 'Please select a skill.',
         validSkillError: 'Please select a valid skill.',
         minimumLevelRangeError:
@@ -808,7 +709,6 @@ export const en = {
             'These requirements will be created through the Requirements API when you save the job.',
         noSkillsFound: 'No skills found',
 
-        cancel: 'Cancel',
         saving: 'Saving...',
         saveChanges: 'Save changes',
         createJob: 'Create job',

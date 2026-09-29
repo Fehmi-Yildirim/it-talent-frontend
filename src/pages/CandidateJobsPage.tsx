@@ -46,10 +46,10 @@ export function CandidateJobsPage() {
         }
 
         if (salaryMin !== null) {
-            return `${t('candidateJobs.from')} ${salaryMin}${currencyLabel}`
+            return `${t('common.from')} ${salaryMin}${currencyLabel}`
         }
 
-        return `${t('candidateJobs.upTo')} ${salaryMax}${currencyLabel}`
+        return `${t('common.upTo')} ${salaryMax}${currencyLabel}`
     }
 
     function formatDate(value: string | null): string {

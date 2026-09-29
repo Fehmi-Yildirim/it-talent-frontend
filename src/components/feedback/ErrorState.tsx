@@ -19,7 +19,7 @@ function ErrorState({
         title ?? t('feedback.somethingWentWrong')
 
     const resolvedRetryLabel =
-        retryLabel ?? t('feedback.tryAgain')
+        retryLabel ?? t('common.tryAgain')
 
     return (
         <div role="alert">

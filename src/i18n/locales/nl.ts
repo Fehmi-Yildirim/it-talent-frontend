@@ -8,45 +8,44 @@ type DeepPartial<T> = {
 
 export const nl: DeepPartial<typeof en> = {
     common: {
-        backToDashboard: 'Terug naar dashboard',
-        confirmDeleteTitle: 'Verwijdering bevestigen',
-        delete: 'Verwijderen',
-        cancel: 'Annuleren',
-        refresh: 'Vernieuwen',
         actions: 'Acties',
-        email: 'E-mail',
-        role: 'Rol',
-        status: 'Status',
-        created: 'Aangemaakt',
-        candidate: 'Kandidaat',
-        recruiter: 'Recruiter',
-        admin: 'Beheerder',
         active: 'Actief',
-        pending: 'In behandeling',
-        suspended: 'Opgeschort',
-        deleted: 'Verwijderd',
-        saving: 'Opslaan...',
-        save: 'Opslaan',
-        edit: 'Bewerken',
-        close: 'Sluiten',
-        location: 'Locatie',
-
-        search: 'Zoeken',
+        admin: 'Beheerder',
+        backToDashboard: 'Terug naar dashboard',
+        cancel: 'Annuleren',
+        candidate: 'Kandidaat',
         clearFilters: 'Filters wissen',
-        tryAgain: 'Opnieuw proberen',
-        previous: 'Vorige',
-        next: 'Volgende',
-        page: 'Pagina',
-        of: 'van',
-    },
-    navigation: {
+        close: 'Sluiten',
+        confirmDeleteTitle: 'Verwijdering bevestigen',
+        created: 'Aangemaakt',
         dashboard: 'Dashboard',
+        delete: 'Verwijderen',
+        deleted: 'Verwijderd',
+        edit: 'Bewerken',
+        email: 'E-mail',
         findJobs: 'Vacatures zoeken',
-        login: 'Inloggen',
+        from: 'Vanaf',
         language: 'Taal',
+        location: 'Locatie',
+        login: 'Inloggen',
         logout: 'Uitloggen',
+        next: 'Volgende',
+        of: 'van',
+        page: 'Pagina',
+        pending: 'In behandeling',
+        previous: 'Vorige',
         profile: 'Profiel',
+        recruiter: 'Recruiter',
+        refresh: 'Vernieuwen',
         register: 'Registreren',
+        role: 'Rol',
+        save: 'Opslaan',
+        saving: 'Opslaan...',
+        search: 'Zoeken',
+        status: 'Status',
+        suspended: 'Opgeschort',
+        tryAgain: 'Opnieuw proberen',
+        upTo: 'Tot',
     },
 
     accessibility: {
@@ -66,6 +65,13 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     adminSkills: {
+        refresh: 'Vernieuwen',
+        name: 'Naam',
+        slug: 'Slug',
+        category: 'Categorie',
+        description: 'Beschrijving',
+        saving: 'Opslaan...',
+
         title: 'Admin — Skills beheren',
         loading: 'Skills laden...',
         loadError: 'Skills konden niet worden geladen.',
@@ -74,37 +80,16 @@ export const nl: DeepPartial<typeof en> = {
         deleteError: 'Skill kon niet worden verwijderd.',
         skillInUseError: 'Deze skill kan niet worden verwijderd omdat deze nog in gebruik is.',
         duplicateSlug: 'Er bestaat al een skill met deze slug.',
-
-        refresh: 'Vernieuwen',
         noSkills: 'Geen skills gevonden',
-        noSkillsMatch:
-            'Geen skills gevonden die overeenkomen met je zoekopdracht.',
-
-        search: 'Zoeken',
+        noSkillsMatch: 'Geen skills gevonden die overeenkomen met je zoekopdracht.',
         searchPlaceholder: 'Zoek naar skills...',
-
-        name: 'Naam',
-        slug: 'Slug',
-        category: 'Categorie',
-        description: 'Beschrijving',
-        actions: 'Acties',
-
         createSkill: 'Skill aanmaken',
         editSkill: 'Skill bewerken',
         deleteSkill: 'Skill verwijderen',
-
-        saving: 'Opslaan...',
-        save: 'Opslaan',
-        cancel: 'Annuleren',
-        edit: 'Bewerken',
-        delete: 'Verwijderen',
-
         nameRequired: 'Naam is verplicht.',
         slugRequired: 'Slug is verplicht.',
         categoryRequired: 'Categorie is verplicht.',
-
-        deleteConfirmation:
-            'Weet je zeker dat je deze skill wilt verwijderen?',
+        deleteConfirmation: 'Weet je zeker dat je deze skill wilt verwijderen?',
 
         categories: {
             frontend: 'Frontend',
@@ -130,7 +115,6 @@ export const nl: DeepPartial<typeof en> = {
         email: 'E-mail',
         password: 'Wachtwoord',
         accountType: 'Accounttype',
-        candidate: 'Kandidaat',
         recruiter: 'Recruiter',
         emailRequired: 'E-mail is verplicht.',
         invalidEmail: 'Vul een geldig e-mailadres in.',
@@ -143,21 +127,12 @@ export const nl: DeepPartial<typeof en> = {
         accountNotActive: 'Account is niet actief.',
     },
 
-    buttons: {
-        save: 'Opslaan',
-        cancel: 'Annuleren',
-    },
-
     candidateJobs: {
         eyebrow: 'Kandidaat',
         title: 'Vind je volgende kans',
-        description:
-            'Zoek gepubliceerde vacatures en filter ze op basis van je voorkeuren.',
-
+        description: 'Zoek gepubliceerde vacatures en filter ze op basis van je voorkeuren.',
         searchJobs: 'Vacatures zoeken',
-        search: 'Zoeken',
         searchPlaceholder: 'Titel, beschrijving of bedrijf',
-        location: 'Locatie',
         locationPlaceholder: 'Amsterdam',
         workMode: 'Werkvorm',
         allWorkModes: 'Alle werkvormen',
@@ -166,26 +141,21 @@ export const nl: DeepPartial<typeof en> = {
         minimumSalary: 'Minimumsalaris',
         maximumSalary: 'Maximumsalaris',
         sort: 'Sorteren',
-
         newest: 'Nieuwste',
         salary: 'Salaris',
         titleSort: 'Titel',
-
         skills: 'Vaardigheden',
         loadingSkills: 'Vaardigheden laden...',
         noSkills: 'Geen vaardigheden beschikbaar.',
-
         fullTime: 'Fulltime',
         partTime: 'Parttime',
         contract: 'Contract',
         freelance: 'Freelance',
         internship: 'Stage',
-
         remote: 'Op afstand',
         hybrid: 'Hybride',
         onsite: 'Op locatie',
         flexible: 'Flexibel',
-
         clearFilters: 'Filters wissen',
 
         unableToLoadJobs:
@@ -194,7 +164,6 @@ export const nl: DeepPartial<typeof en> = {
             'Vacatures kunnen niet worden geladen. Probeer het opnieuw.',
         invalidSearch:
             'De zoekopdracht is ongeldig. Controleer je filters.',
-        tryAgain: 'Opnieuw proberen',
         loadingJobs: 'Vacatures laden...',
 
         noJobsFound: 'Geen vacatures gevonden',
@@ -243,7 +212,6 @@ export const nl: DeepPartial<typeof en> = {
             'Sollicitaties kunnen niet worden geladen',
         loadError:
             'Er is iets misgegaan bij het laden van je sollicitaties. Probeer het opnieuw.',
-        tryAgain: 'Opnieuw proberen',
 
         noApplications: 'Nog geen sollicitaties',
         noApplicationsDescription:
@@ -262,8 +230,6 @@ export const nl: DeepPartial<typeof en> = {
         applied: 'Gesolliciteerd',
         coverLetterSubmitted: 'Motivatiebrief ingediend',
         viewApplication: 'Sollicitatie bekijken',
-
-        backToDashboard: 'Terug naar dashboard',
 
         details: {
             loading: 'Sollicitatie laden...',
@@ -321,11 +287,9 @@ export const nl: DeepPartial<typeof en> = {
             'Deze vacature is niet meer beschikbaar of kon niet worden gevonden.',
         loadError:
             'Er is iets misgegaan bij het laden van deze vacature. Probeer het opnieuw.',
-        tryAgain: 'Opnieuw proberen',
         backToJobs: 'Terug naar vacatures',
 
         jobOpportunity: 'Vacature',
-        location: 'Locatie',
         workMode: 'Werkvorm',
         employmentType: 'Dienstverband',
         salary: 'Salaris',
@@ -486,7 +450,6 @@ export const nl: DeepPartial<typeof en> = {
 
     feedback: {
         somethingWentWrong: 'Er is iets misgegaan',
-        tryAgain: 'Opnieuw proberen',
         loading: 'Laden...',
     },
 
@@ -521,7 +484,6 @@ export const nl: DeepPartial<typeof en> = {
 
     profile: {
         title: 'Profiel',
-        backToDashboard: 'Terug naar dashboard',
         account: 'Account',
         accountInformation: 'Accountgegevens',
         firstName: 'Voornaam',
@@ -529,27 +491,22 @@ export const nl: DeepPartial<typeof en> = {
         email: 'E-mail',
         role: 'Rol',
         status: 'Status',
-
         editAccount: 'Account bewerken',
         saveAccount: 'Account opslaan',
-
         candidate: 'Kandidaat',
         candidateProfile: 'Kandidaatprofiel',
         createCandidateProfile: 'Kandidaatprofiel aanmaken',
         editProfile: 'Profiel bewerken',
-
         profileUpdated:
             'Profiel succesvol bijgewerkt.',
         profileCreated:
             'Profiel succesvol aangemaakt.',
         accountUpdated:
             'Accountgegevens zijn succesvol bijgewerkt.',
-
         invalidInformation:
             'Controleer je profielgegevens en probeer het opnieuw.',
         invalidAccountInformation:
             'Controleer je voornaam en achternaam en probeer het opnieuw.',
-
         createError:
             'Je kandidaatprofiel kan niet worden aangemaakt.',
         accountUpdateError:
@@ -678,7 +635,6 @@ export const nl: DeepPartial<typeof en> = {
         selectSkill: 'Selecteer een vaardigheid',
         type: 'Type',
         addRequirement: 'Functie-eis toevoegen',
-        delete: 'Verwijderen',
         unknownSkill: 'Onbekende vaardigheid',
 
         loadingRequirements: 'Functie-eisen laden...',
@@ -697,7 +653,6 @@ export const nl: DeepPartial<typeof en> = {
 
         saving: 'Opslaan...',
         saveChanges: 'Wijzigingen opslaan',
-        cancel: 'Annuleren',
 
         loadSkillsError: 'Vaardigheden kunnen niet worden geladen.',
         loadJobError: 'De vacature kan niet worden geladen.',
@@ -799,7 +754,6 @@ export const nl: DeepPartial<typeof en> = {
             'Deze functie-eisen worden via de Requirements API aangemaakt wanneer je de vacature opslaat.',
         noSkillsFound: 'Geen skills gevonden',
 
-        cancel: 'Annuleren',
         saving: 'Opslaan...',
         saveChanges: 'Wijzigingen opslaan',
         createJob: 'Vacature aanmaken',

@@ -352,8 +352,8 @@ export default function AdminSkillsPage() {
                         <button
                             type="submit"
                             className="admin-skills-search-button"
-                            aria-label={t('adminSkills.search')}
-                            title={t('adminSkills.search')}
+                            aria-label={t('common.search')}
+                            title={t('common.search')}
                         >
                             <svg
                                 viewBox="0 0 24 24"
@@ -390,7 +390,7 @@ export default function AdminSkillsPage() {
                                                 'adminSkills.description',
                                             )}
                                         </th>
-                                        <th>{t('adminSkills.actions')}</th>
+                                        <th>{t('common.actions')}</th>
                                     </tr>
                                 </thead>
 
@@ -413,12 +413,12 @@ export default function AdminSkillsPage() {
                                             <td>
                                                 <ActionMenu
                                                     ariaLabel={`${t(
-                                                        'adminSkills.actions',
+                                                        'common.actions',
                                                     )}: ${skill.name}`}
                                                     actions={[
                                                         {
                                                             label: t(
-                                                                'adminSkills.edit',
+                                                                'common.edit',
                                                             ),
                                                             onClick: () =>
                                                                 startEditing(
@@ -427,7 +427,7 @@ export default function AdminSkillsPage() {
                                                         },
                                                         {
                                                             label: t(
-                                                                'adminSkills.delete',
+                                                                'common.delete',
                                                             ),
                                                             onClick: () =>
                                                                 setSkillToDelete(
@@ -454,7 +454,7 @@ export default function AdminSkillsPage() {
                             ? t('adminSkills.editSkill')
                             : t('adminSkills.createSkill')
                     }
-                    closeLabel={t('adminSkills.cancel')}
+                    closeLabel={t('common.cancel')}
                 >
                     <form
                         onSubmit={(event) => {
@@ -537,7 +537,7 @@ export default function AdminSkillsPage() {
                             >
                                 {isSaving
                                     ? t('adminSkills.saving')
-                                    : t('adminSkills.save')}
+                                    : t('common.save')}
                             </button>
 
                             <button
@@ -545,7 +545,7 @@ export default function AdminSkillsPage() {
                                 onClick={closeDrawer}
                                 disabled={isSaving}
                             >
-                                {t('adminSkills.cancel')}
+                                {t('common.cancel')}
                             </button>
                         </div>
                     </form>
@@ -553,14 +553,14 @@ export default function AdminSkillsPage() {
 
                 <ConfirmDialog
                     open={skillToDelete !== null}
-                    title={t('adminSkills.delete')}
+                    title={t('common.delete')}
                     message={
                         skillToDelete
                             ? `${t('adminSkills.deleteConfirmation')} ${skillToDelete.name}`
                             : ''
                     }
-                    confirmLabel={t('adminSkills.delete')}
-                    cancelLabel={t('adminSkills.cancel')}
+                    confirmLabel={t('common.delete')}
+                    cancelLabel={t('common.cancel')}
                     onConfirm={() => void handleDelete()}
                     onCancel={() => setSkillToDelete(null)}
                     destructive
