@@ -25,7 +25,7 @@ function formatSalary(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (salaryMin === null && salaryMax === null) {
-        return t('candidateJobDetails.notSpecified')
+        return t('common.notSpecified')
     }
 
     const formatAmount = (value: string | number): string => {
@@ -47,10 +47,10 @@ function formatSalary(
     }
 
     if (salaryMin !== null) {
-        return `${t('candidateJobDetails.from')} ${formatAmount(salaryMin)}${currencyLabel}`
+        return `${t('common.from')} ${formatAmount(salaryMin)}${currencyLabel}`
     }
 
-    return `${t('candidateJobDetails.upTo')} ${formatAmount(salaryMax!)}${currencyLabel}`
+    return `${t('common.upTo')} ${formatAmount(salaryMax!)}${currencyLabel}`
 }
 
 function formatDate(
@@ -59,7 +59,7 @@ function formatDate(
     t: (key: import('../i18n').TranslationKey) => string,
 ): string {
     if (!value) {
-        return t('candidateJobDetails.notSpecified')
+        return t('common.notSpecified')
     }
 
     return new Intl.DateTimeFormat(locale, {
@@ -209,7 +209,7 @@ function CandidateJobDetailsPage() {
                                     setRetryCount((current) => current + 1)
                                 }
                             >
-                                {t('candidateJobDetails.tryAgain')}
+                                {t('common.tryAgain')}
                             </button>
                         )}
 
@@ -262,23 +262,23 @@ function CandidateJobDetailsPage() {
                 <div className="candidate-job-details-meta">
                     {job.location && (
                         <div>
-                            <dt>{t('candidateJobDetails.location')}</dt>
+                            <dt>{t('common.location')}</dt>
                             <dd>{job.location}</dd>
                         </div>
                     )}
 
                     <div>
-                        <dt>{t('candidateJobDetails.workMode')}</dt>
+                        <dt>{t('common.workMode')}</dt>
                         <dd>{workModeLabel(job.workMode)}</dd>
                     </div>
 
                     <div>
-                        <dt>{t('candidateJobDetails.employmentType')}</dt>
+                        <dt>{t('common.employmentType')}</dt>
                         <dd>{employmentTypeLabel(job.employmentType)}</dd>
                     </div>
 
                     <div>
-                        <dt>{t('candidateJobDetails.salary')}</dt>
+                        <dt>{t('common.salary')}</dt>
                         <dd>
                             {formatSalary(
                                 job.salaryMin,
@@ -412,7 +412,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        {t('candidateJobDetails.minimumLevel')}:{' '}
+                                        {t('common.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -437,7 +437,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        {t('candidateJobDetails.minimumLevel')}:{' '}
+                                        {t('common.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -451,13 +451,13 @@ function CandidateJobDetailsPage() {
 
                     <dl className="candidate-job-company-details">
                         <div>
-                            <dt>{t('candidateJobDetails.name')}</dt>
+                            <dt>{t('common.name')}</dt>
                             <dd>{job.company.name}</dd>
                         </div>
 
                         {job.company.location && (
                             <div>
-                                <dt>{t('candidateJobDetails.location')}</dt>
+                                <dt>{t('common.location')}</dt>
                                 <dd>{job.company.location}</dd>
                             </div>
                         )}
@@ -486,7 +486,7 @@ function CandidateJobDetailsPage() {
                 <footer className="candidate-job-details-footer">
                     <div>
                         <strong>
-                            {t('candidateJobDetails.published')}
+                            {t('common.published')}
                         </strong>
 
                         <span>

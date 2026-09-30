@@ -27,7 +27,7 @@ function formatSalary(
         return `${currency} ${job.salaryMin}+`
     }
 
-    return `${t('recruiterJobs.upTo')} ${currency} ${job.salaryMax}`
+    return `${t('common.upTo')} ${currency} ${job.salaryMax}`
 }
 
 export default function RecruiterJobsPage() {
@@ -130,7 +130,7 @@ export default function RecruiterJobsPage() {
                             window.location.reload()
                         }
                     >
-                        {t('recruiterJobs.tryAgain')}
+                        {t('common.tryAgain')}
                     </button>
                 </div>
             </div>
@@ -230,7 +230,7 @@ export default function RecruiterJobsPage() {
                                     className="recruiter-jobs-secondary-button"
                                     to={`/recruiter/jobs/${job.id}/edit`}
                                 >
-                                    {t('recruiterJobs.edit')}
+                                    {t('common.edit')}
                                 </Link>
                             </div>
                         </article>

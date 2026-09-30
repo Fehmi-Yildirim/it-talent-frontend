@@ -171,7 +171,7 @@ function ProfileForm({
       </label>
 
       <label>
-        {t('profile.location')}
+        {t('common.location')}
         <input
           value={value.location ?? ''}
           onChange={(event) =>
@@ -396,7 +396,7 @@ function RecruiterProfileForm({
           disabled={submitting}
         >
           {submitting
-            ? t('profile.saving')
+            ? t('common.saving')
             : t('profile.saveProfile')}
         </button>
 
@@ -405,7 +405,7 @@ function RecruiterProfileForm({
           onClick={onCancel}
           disabled={submitting}
         >
-          {t('profile.cancel')}
+          {t('common.cancel')}
         </button>
       </div>
     </form>
@@ -733,7 +733,7 @@ function ProfilePage() {
   </div>
 
     <Link to="/dashboard">
-      {t('profile.backToDashboard')}
+      {t('common.backToDashboard')}
     </Link>
   </div>
 
@@ -821,17 +821,17 @@ function ProfilePage() {
                 </div>
 
                 <div>
-                  <dt>{t('profile.email')}</dt>
+                  <dt>{t('common.email')}</dt>
                   <dd>{user?.email}</dd>
                 </div>
 
                 <div>
-                  <dt>{t('profile.role')}</dt>
+                  <dt>{t('common.role')}</dt>
                   <dd>{user?.role}</dd>
                 </div>
 
                 <div>
-                  <dt>{t('profile.status')}</dt>
+                  <dt>{t('common.status')}</dt>
                   <dd>{user?.status}</dd>
                 </div>
               </dl>
@@ -853,7 +853,7 @@ function ProfilePage() {
                     <dd>
                       {formatNullable(
                         jobTitle || null,
-                        t('profile.notSpecified'),
+                        t('common.notSpecified'),
                       )}
                     </dd>
                   </div>
@@ -930,7 +930,7 @@ function ProfilePage() {
                 disabled={profileSubmitting}
               >
                 {profileSubmitting
-                  ? t('profile.saving')
+                  ? t('common.saving')
                   : t('profile.saveProfile')}
               </button>
 
@@ -939,7 +939,7 @@ function ProfilePage() {
                 onClick={cancelProfileEditing}
                 disabled={profileSubmitting}
               >
-                {t('profile.cancel')}
+                {t('common.cancel')}
               </button>
             </div>
           </form>
@@ -956,17 +956,17 @@ function ProfilePage() {
             </div>
 
             <div>
-              <dt>{t('profile.email')}</dt>
+              <dt>{t('common.email')}</dt>
               <dd>{user?.email}</dd>
             </div>
 
             <div>
-              <dt>{t('profile.role')}</dt>
+              <dt>{t('common.role')}</dt>
               <dd>{user?.role}</dd>
             </div>
 
             <div>
-              <dt>{t('profile.status')}</dt>
+              <dt>{t('common.status')}</dt>
               <dd>{user?.status}</dd>
             </div>
           </dl>
@@ -990,7 +990,7 @@ function ProfilePage() {
         <div className="profile-section-header">
           <div>
             <p className="profile-eyebrow">
-              {t('profile.candidate')}
+              {t('common.candidate')}
             </p>
 
             <h2 id="candidate-heading">
@@ -1034,8 +1034,8 @@ function ProfilePage() {
             value={formValue}
             submitting={submitting}
             submitLabel={t('profile.saveProfile')}
-            savingLabel={t('profile.saving')}
-            cancelLabel={t('profile.cancel')}
+            savingLabel={t('common.saving')}
+            cancelLabel={t('common.cancel')}
             onChange={setFormValue}
             onSubmit={() => void handleSubmit()}
             onCancel={cancelEditing}
@@ -1052,7 +1052,7 @@ function ProfilePage() {
                   <dd>
                     {formatNullable(
                       candidateProfile.headline,
-                      t('profile.notSpecified'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
@@ -1062,32 +1062,32 @@ function ProfilePage() {
                   <dd>
                     {formatNullable(
                       candidateProfile.summary,
-                      t('profile.notSpecified'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
 
                 <div>
-                  <dt>{t('profile.location')}</dt>
+                  <dt>{t('common.location')}</dt>
                   <dd>
                     {formatNullable(
                       candidateProfile.location,
-                      t('profile.notSpecified'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
 
                 <div>
-                  <dt>{t('profile.salary')}</dt>
+                  <dt>{t('common.salary')}</dt>
                   <dd>
                     {formatSalary(
                       candidateProfile.salaryMin,
                       candidateProfile.salaryMax,
                       candidateProfile.currency,
                       language,
-                      t('profile.upTo'),
-                      t('profile.from'),
-                      t('profile.notSpecified'),
+                      t('common.upTo'),
+                      t('common.from'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
@@ -1097,7 +1097,7 @@ function ProfilePage() {
                   <dd>
                     {formatNullable(
                       candidateProfile.remotePreference,
-                      t('profile.notSpecified'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
@@ -1108,7 +1108,7 @@ function ProfilePage() {
                     {formatDate(
                       candidateProfile.availabilityDate,
                       language,
-                      t('profile.notSpecified'),
+                      t('common.notSpecified'),
                     )}
                   </dd>
                 </div>
@@ -1126,8 +1126,8 @@ function ProfilePage() {
               value={formValue}
               submitting={submitting}
               submitLabel={t('profile.createProfile')}
-              savingLabel={t('profile.saving')}
-              cancelLabel={t('profile.cancel')}
+              savingLabel={t('common.saving')}
+              cancelLabel={t('common.cancel')}
               onChange={setFormValue}
               onSubmit={() => void handleSubmit()}
             />

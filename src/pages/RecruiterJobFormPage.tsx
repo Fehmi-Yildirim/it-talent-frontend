@@ -124,8 +124,8 @@ function RequirementRow({
 
                 <span>
                     {requirement.required
-                        ? t('recruiterJobForm.required')
-                        : t('recruiterJobForm.preferred')}
+                        ? t('common.required')
+                        : t('common.preferred')}
                 </span>
             </div>
 
@@ -156,13 +156,13 @@ function RequirementRow({
                     >
                         <option value="required">
                             {t(
-                                'recruiterJobForm.required',
+                                'common.required',
                             )}
                         </option>
 
                         <option value="preferred">
                             {t(
-                                'recruiterJobForm.preferred',
+                                'common.preferred',
                             )}
                         </option>
                     </select>
@@ -171,7 +171,7 @@ function RequirementRow({
                 <label className="requirement-control">
                     <span>
                         {t(
-                            'recruiterJobForm.minimumLevel',
+                            'common.minimumLevel',
                         )}
                     </span>
 
@@ -210,10 +210,10 @@ function RequirementRow({
                     className="button button--danger"
                     disabled={saving}
                     aria-label={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     title={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     onClick={() =>
                         void onDelete(
@@ -252,8 +252,8 @@ function PendingRequirementRow({
 
                 <span>
                     {requirement.required
-                        ? t('recruiterJobForm.required')
-                        : t('recruiterJobForm.preferred')}
+                        ? t('common.required')
+                        : t('common.preferred')}
                 </span>
             </div>
 
@@ -280,13 +280,13 @@ function PendingRequirementRow({
                     >
                         <option value="required">
                             {t(
-                                'recruiterJobForm.required',
+                                'common.required',
                             )}
                         </option>
 
                         <option value="preferred">
                             {t(
-                                'recruiterJobForm.preferred',
+                                'common.preferred',
                             )}
                         </option>
                     </select>
@@ -295,7 +295,7 @@ function PendingRequirementRow({
                 <label className="requirement-control">
                     <span>
                         {t(
-                            'recruiterJobForm.minimumLevel',
+                            'common.minimumLevel',
                         )}
                     </span>
 
@@ -329,10 +329,10 @@ function PendingRequirementRow({
                     type="button"
                     className="button button--danger"
                     aria-label={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     title={t(
-                        'recruiterJobs.delete',
+                        'common.delete',
                     )}
                     onClick={onDelete}
                 >
@@ -1366,7 +1366,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field">
                             <label htmlFor="employmentType">
                                 {t(
-                                    'recruiterJobForm.employmentType',
+                                    'common.employmentType',
                                 )}
                             </label>
 
@@ -1400,7 +1400,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field">
                             <label htmlFor="workMode">
                                 {t(
-                                    'recruiterJobForm.workMode',
+                                    'common.workMode',
                                 )}
                             </label>
 
@@ -1432,7 +1432,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field form-field--full">
                             <label htmlFor="location">
                                 {t(
-                                    'recruiterJobForm.location',
+                                    'common.location',
                                 )}
                             </label>
 
@@ -1613,7 +1613,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field skill-search-field">
                             <label htmlFor="skill-search">
                                 {t(
-                                    'recruiterJobForm.skill',
+                                    'common.skill',
                                 )}
                             </label>
 
@@ -1753,13 +1753,13 @@ export default function RecruiterJobFormPage() {
                             >
                                 <option value="required">
                                     {t(
-                                        'recruiterJobForm.required',
+                                        'common.required',
                                     )}
                                 </option>
 
                                 <option value="preferred">
                                     {t(
-                                        'recruiterJobForm.preferred',
+                                        'common.preferred',
                                     )}
                                 </option>
                             </select>
@@ -1768,7 +1768,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field">
                             <label htmlFor="minimumLevel">
                                 {t(
-                                    'recruiterJobForm.minimumLevel',
+                                    'common.minimumLevel',
                                 )}
                             </label>
 
@@ -1930,7 +1930,7 @@ export default function RecruiterJobFormPage() {
                         className="button button--secondary"
                     >
                         {t(
-                            'recruiterJobForm.cancel',
+                            'common.cancel',
                         )}
                     </Link>
 
@@ -1941,7 +1941,7 @@ export default function RecruiterJobFormPage() {
                     >
                         {saving
                             ? t(
-                                'recruiterJobForm.saving',
+                                'common.saving',
                             )
                             : isEditMode
                                 ? t(

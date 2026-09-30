@@ -58,11 +58,11 @@ function LoginPage() {
 
   return (
     <section className="login-page">
-      <h1>{t('auth.login')}</h1>
+      <h1>{t('common.login')}</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">{t('auth.email')}</label>
+          <label htmlFor="email">{t('common.email')}</label>
           <input
             id="email"
             name="email"
@@ -94,7 +94,7 @@ function LoginPage() {
         )}
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? t('auth.loggingIn') : t('auth.login')}
+          {isLoading ? t('auth.loggingIn') : t('common.login')}
         </button>
       </form>
     </section>

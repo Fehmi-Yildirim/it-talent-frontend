@@ -66,7 +66,7 @@ function formatSalary(
         )}+`
     }
 
-    return `${t('recruiterJobs.upTo')} ${formatSalaryValue(
+    return `${t('common.upTo')} ${formatSalaryValue(
         salaryMax as string | number,
         currencyCode,
     )}`
@@ -100,13 +100,13 @@ function RequirementRow({
 
                 <span>
                     {requirement.required
-                        ? t('recruiterJobs.required')
-                        : t('recruiterJobs.preferred')}
+                        ? t('common.required')
+                        : t('common.preferred')}
                 </span>
             </div>
 
             <span>
-                {t('recruiterJobs.minimumLevel')}:{' '}
+                {t('common.minimumLevel')}:{' '}
                 {requirement.minimumLevel}
             </span>
         </div>
@@ -143,13 +143,13 @@ export default function RecruiterJobDetailsPage() {
     ): string => {
         switch (value) {
             case 'DRAFT':
-                return t('recruiterJobs.draft')
+                return t('common.draft')
             case 'PUBLISHED':
-                return t('recruiterJobs.published')
+                return t('common.published')
             case 'PAUSED':
-                return t('recruiterJobs.paused')
+                return t('common.paused')
             case 'CLOSED':
-                return t('recruiterJobs.closed')
+                return t('common.closed')
             default:
                 return value
         }
@@ -395,7 +395,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                {t('recruiterJobs.edit')}
+                                {t('common.edit')}
                             </Link>
 
                             <button
@@ -417,7 +417,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                {t('recruiterJobs.edit')}
+                                {t('common.edit')}
                             </Link>
 
                             <button
@@ -450,7 +450,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                {t('recruiterJobs.edit')}
+                                {t('common.edit')}
                             </Link>
 
                             <button
@@ -483,7 +483,7 @@ export default function RecruiterJobDetailsPage() {
                                 className="recruiter-job-details-secondary-button"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
-                                {t('recruiterJobs.edit')}
+                                {t('common.edit')}
                             </Link>
 
                             <button
@@ -536,7 +536,7 @@ export default function RecruiterJobDetailsPage() {
 
                     <dl className="recruiter-job-details-list">
                         <div>
-                            <dt>{t('recruiterJobs.employmentType')}</dt>
+                            <dt>{t('common.employmentType')}</dt>
                             <dd>
                                 {formatEmploymentType(
                                     job.employmentType,
@@ -545,7 +545,7 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <div>
-                            <dt>{t('recruiterJobs.workMode')}</dt>
+                            <dt>{t('common.workMode')}</dt>
                             <dd>
                                 {formatWorkMode(job.workMode)}
                             </dd>
@@ -562,7 +562,7 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <div>
-                            <dt>{t('recruiterJobs.salary')}</dt>
+                            <dt>{t('common.salary')}</dt>
                             <dd>
                                 {formatSalary(
                                     job.salaryMin,
@@ -585,7 +585,7 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <div>
-                            <dt>{t('recruiterJobs.published')}</dt>
+                            <dt>{t('common.published')}</dt>
                             <dd>
                                 {formatDate(
                                     job.publishedAt,

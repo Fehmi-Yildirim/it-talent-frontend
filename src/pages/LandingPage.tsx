@@ -35,7 +35,7 @@ function LandingPage() {
                 </Link>
 
                 <Link to="/login" className="landing-secondary-button">
-                  {t('landing.login')}
+                  {t('common.login')}
                 </Link>
               </>
             )}

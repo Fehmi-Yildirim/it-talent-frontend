@@ -78,11 +78,11 @@ function RegisterPage() {
 
   return (
     <div className="register-page">
-      <h1>{t('auth.register')}</h1>
+      <h1>{t('common.register')}</h1>
 
       <form onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email">{t('auth.email')}</label>
+          <label htmlFor="email">{t('common.email')}</label>
           <input
             id="email"
             name="email"
@@ -118,11 +118,11 @@ function RegisterPage() {
             }
           >
             <option value={USER_ROLES.CANDIDATE}>
-              {t('auth.candidate')}
+              {t('common.candidate')}
             </option>
 
             <option value={USER_ROLES.RECRUITER}>
-              {t('auth.recruiter')}
+              {t('common.recruiter')}
             </option>
           </select>
         </div>
@@ -140,7 +140,7 @@ function RegisterPage() {
         >
           {isSubmitting
             ? t('auth.creatingAccount')
-            : t('auth.register')}
+            : t('common.register')}
         </button>
       </form>
     </div>

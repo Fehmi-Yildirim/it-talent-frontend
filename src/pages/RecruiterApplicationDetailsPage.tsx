@@ -29,11 +29,11 @@ function RecruiterApplicationDetailsPage() {
 
     function formatStatus(status: ApplicationStatus): string {
         switch (status) {
-            case APPLICATION_STATUSES.PENDING: return t('candidateApplications.pending')
-            case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
-            case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
-            case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
-            case APPLICATION_STATUSES.WITHDRAWN: return t('candidateApplications.withdrawn')
+            case APPLICATION_STATUSES.PENDING: return t('common.pending')
+            case APPLICATION_STATUSES.REVIEWING: return t('common.reviewing')
+            case APPLICATION_STATUSES.ACCEPTED: return t('common.accepted')
+            case APPLICATION_STATUSES.REJECTED: return t('common.rejected')
+            case APPLICATION_STATUSES.WITHDRAWN: return t('common.withdrawn')
         }
     }
 
@@ -233,14 +233,14 @@ function RecruiterApplicationDetailsPage() {
                 <dl>
                     <dt>
                         {t(
-                            'recruiterApplications.status',
+                            'common.status',
                         )}
                     </dt>
                     <dd>{formatStatus(application.status)}</dd>
 
                     <dt>
                         {t(
-                            'recruiterApplications.details.applied',
+                            'common.applied',
                         )}
                     </dt>
                     <dd>{formatDate(application.createdAt)}</dd>
@@ -265,14 +265,14 @@ function RecruiterApplicationDetailsPage() {
             <section>
                 <h2>
                     {t(
-                        'recruiterApplications.details.candidate',
+                        'common.candidate',
                     )}
                 </h2>
 
                 <dl>
                     <dt>
                         {t(
-                            'recruiterApplications.details.name',
+                            'common.name',
                         )}
                     </dt>
                     <dd>
@@ -316,7 +316,7 @@ function RecruiterApplicationDetailsPage() {
                         }
                     >
                         {t(
-                            'recruiterApplications.pending',
+                            'common.pending',
                         )}
                     </button>
 
@@ -328,7 +328,7 @@ function RecruiterApplicationDetailsPage() {
                         }
                     >
                         {t(
-                            'recruiterApplications.reviewing',
+                            'common.reviewing',
                         )}
                     </button>
 
