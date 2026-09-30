@@ -1,10 +1,9 @@
-import { en } from './locales/en';
-import { nl } from './locales/nl';
 import type {
     EmploymentType,
     WorkMode,
 } from '../types/job';
-
+import { en } from './locales/en';
+import { nl } from './locales/nl';
 
 export const translations = {
     en,
@@ -52,7 +51,6 @@ export const WORK_MODE_TRANSLATION_KEYS = {
     ONSITE: 'common.onsite',
     FLEXIBLE: 'common.flexible',
 } as const satisfies Record<WorkMode, TranslationKey>;
-
 
 export function t(
     language: Language,
