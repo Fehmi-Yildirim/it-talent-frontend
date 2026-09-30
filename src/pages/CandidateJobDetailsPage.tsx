@@ -412,7 +412,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        {t('candidateJobDetails.minimumLevel')}:{' '}
+                                        {t('common.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -437,7 +437,7 @@ function CandidateJobDetailsPage() {
                                     </strong>
 
                                     <span>
-                                        {t('candidateJobDetails.minimumLevel')}:{' '}
+                                        {t('common.minimumLevel')}:{' '}
                                         {requirement.minimumLevel}
                                     </span>
                                 </li>
@@ -486,7 +486,7 @@ function CandidateJobDetailsPage() {
                 <footer className="candidate-job-details-footer">
                     <div>
                         <strong>
-                            {t('candidateJobDetails.published')}
+                            {t('common.published')}
                         </strong>
 
                         <span>

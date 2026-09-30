@@ -333,11 +333,11 @@ function DashboardPage() {
 
               <p>
                 {recruiterDashboard.jobs.published}{' '}
-                {t('dashboard.recruiter.published')} ·{' '}
+                {t('common.published')} ·{' '}
                 {recruiterDashboard.jobs.draft}{' '}
-                {t('dashboard.recruiter.draft')} ·{' '}
+                {t('common.draft')} ·{' '}
                 {recruiterDashboard.jobs.closed}{' '}
-                {t('dashboard.recruiter.closed')}
+                {t('common.closed')}
               </p>
 
               <Link

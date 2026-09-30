@@ -106,7 +106,7 @@ function RequirementRow({
             </div>
 
             <span>
-                {t('recruiterJobs.minimumLevel')}:{' '}
+                {t('common.minimumLevel')}:{' '}
                 {requirement.minimumLevel}
             </span>
         </div>
@@ -143,13 +143,13 @@ export default function RecruiterJobDetailsPage() {
     ): string => {
         switch (value) {
             case 'DRAFT':
-                return t('recruiterJobs.draft')
+                return t('common.draft')
             case 'PUBLISHED':
-                return t('recruiterJobs.published')
+                return t('common.published')
             case 'PAUSED':
-                return t('recruiterJobs.paused')
+                return t('common.paused')
             case 'CLOSED':
-                return t('recruiterJobs.closed')
+                return t('common.closed')
             default:
                 return value
         }
@@ -585,7 +585,7 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <div>
-                            <dt>{t('recruiterJobs.published')}</dt>
+                            <dt>{t('common.published')}</dt>
                             <dd>
                                 {formatDate(
                                     job.publishedAt,

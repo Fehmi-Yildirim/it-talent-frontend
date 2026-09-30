@@ -20,10 +20,10 @@ function formatStatus(
 ): string {
     switch (status) {
         case APPLICATION_STATUSES.PENDING: return t('common.pending')
-        case APPLICATION_STATUSES.REVIEWING: return t('candidateApplications.reviewing')
-        case APPLICATION_STATUSES.ACCEPTED: return t('candidateApplications.accepted')
-        case APPLICATION_STATUSES.REJECTED: return t('candidateApplications.rejected')
-        case APPLICATION_STATUSES.WITHDRAWN: return t('candidateApplications.withdrawn')
+        case APPLICATION_STATUSES.REVIEWING: return t('common.reviewing')
+        case APPLICATION_STATUSES.ACCEPTED: return t('common.accepted')
+        case APPLICATION_STATUSES.REJECTED: return t('common.rejected')
+        case APPLICATION_STATUSES.WITHDRAWN: return t('common.withdrawn')
     }
 }
 
@@ -338,7 +338,7 @@ function CandidateApplicationDetailsPage() {
 
                         <dt>
                             {t(
-                                'candidateApplications.details.applied',
+                                'common.applied',
                             )}
                         </dt>
 

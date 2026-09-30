@@ -39,18 +39,18 @@ type TranslationKeys<
 export type TranslationKey = TranslationKeys<typeof en>;
 
 export const EMPLOYMENT_TYPE_TRANSLATION_KEYS = {
-    FULL_TIME: 'candidateJobs.fullTime',
-    PART_TIME: 'candidateJobs.partTime',
-    CONTRACT: 'candidateJobs.contract',
-    FREELANCE: 'candidateJobs.freelance',
-    INTERNSHIP: 'candidateJobs.internship',
+    FULL_TIME: 'common.fullTime',
+    PART_TIME: 'common.partTime',
+    CONTRACT: 'common.contract',
+    FREELANCE: 'common.freelance',
+    INTERNSHIP: 'common.internship',
 } as const satisfies Record<EmploymentType, TranslationKey>;
 
 export const WORK_MODE_TRANSLATION_KEYS = {
-    REMOTE: 'candidateJobs.remote',
-    HYBRID: 'candidateJobs.hybrid',
-    ONSITE: 'candidateJobs.onsite',
-    FLEXIBLE: 'candidateJobs.flexible',
+    REMOTE: 'common.remote',
+    HYBRID: 'common.hybrid',
+    ONSITE: 'common.onsite',
+    FLEXIBLE: 'common.flexible',
 } as const satisfies Record<WorkMode, TranslationKey>;
 
 

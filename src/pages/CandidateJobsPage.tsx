@@ -1010,7 +1010,7 @@ export function CandidateJobsPage() {
 
                                         <p className="candidate-job-published">
                                             {t(
-                                                'candidateJobs.published',
+                                                'common.published',
                                             )}{' '}
                                             {formatDate(
                                                 job.publishedAt ??

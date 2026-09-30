@@ -171,7 +171,7 @@ function RequirementRow({
                 <label className="requirement-control">
                     <span>
                         {t(
-                            'recruiterJobForm.minimumLevel',
+                            'common.minimumLevel',
                         )}
                     </span>
 
@@ -295,7 +295,7 @@ function PendingRequirementRow({
                 <label className="requirement-control">
                     <span>
                         {t(
-                            'recruiterJobForm.minimumLevel',
+                            'common.minimumLevel',
                         )}
                     </span>
 
@@ -1768,7 +1768,7 @@ export default function RecruiterJobFormPage() {
                         <div className="form-field">
                             <label htmlFor="minimumLevel">
                                 {t(
-                                    'recruiterJobForm.minimumLevel',
+                                    'common.minimumLevel',
                                 )}
                             </label>
 

@@ -16,10 +16,10 @@ function formatStatus(
 ): string {
     switch (status) {
         case APPLICATION_STATUSES.PENDING: return t('common.pending')
-        case APPLICATION_STATUSES.REVIEWING: return t('recruiterApplications.reviewing')
-        case APPLICATION_STATUSES.ACCEPTED: return t('recruiterApplications.accepted')
-        case APPLICATION_STATUSES.REJECTED: return t('recruiterApplications.rejected')
-        case APPLICATION_STATUSES.WITHDRAWN: return t('recruiterApplications.withdrawn')
+        case APPLICATION_STATUSES.REVIEWING: return t('common.reviewing')
+        case APPLICATION_STATUSES.ACCEPTED: return t('common.accepted')
+        case APPLICATION_STATUSES.REJECTED: return t('common.rejected')
+        case APPLICATION_STATUSES.WITHDRAWN: return t('common.withdrawn')
         default: return status
     }
 }
@@ -221,19 +221,19 @@ function RecruiterApplicationsPage() {
                         </option>
 
                         <option value={APPLICATION_STATUSES.REVIEWING}>
-                            {t('recruiterApplications.reviewing')}
+                            {t('common.reviewing')}
                         </option>
 
                         <option value={APPLICATION_STATUSES.ACCEPTED}>
-                            {t('recruiterApplications.accepted')}
+                            {t('common.accepted')}
                         </option>
 
                         <option value={APPLICATION_STATUSES.REJECTED}>
-                            {t('recruiterApplications.rejected')}
+                            {t('common.rejected')}
                         </option>
 
                         <option value={APPLICATION_STATUSES.WITHDRAWN}>
-                            {t('recruiterApplications.withdrawn')}
+                            {t('common.withdrawn')}
                         </option>
                     </select>
                 </label>
@@ -293,7 +293,7 @@ function RecruiterApplicationsPage() {
 
                                 <p>
                                     {t(
-                                        'recruiterApplications.applied',
+                                        'common.applied',
                                     )}
                                     {': '}
                                     {formatDate(
