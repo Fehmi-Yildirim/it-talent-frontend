@@ -392,3 +392,28 @@
         padding: 20px;
     }
 }
+
+.candidate-job-application-section input[type='file'] {
+    display: block;
+    max-width: 100%;
+    margin-bottom: 6px;
+    font: inherit;
+}
+
+.candidate-job-cv-help {
+    margin: 0 0 14px;
+    color: #666;
+    line-height: 1.5;
+}
+
+.candidate-job-cv-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 0 0 16px;
+    line-height: 1.5;
+}
+
+.candidate-job-cv-consent input {
+    margin-top: 5px;
+}

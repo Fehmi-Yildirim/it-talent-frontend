@@ -62,6 +62,8 @@ export interface RecruiterApplicationDetail extends RecruiterApplication {
 
 export interface CreateApplicationRequest {
     coverLetter?: string
+    cv?: File
+    cvRetentionConsent?: boolean
 }
 
 export interface UpdateApplicationStatusRequest {

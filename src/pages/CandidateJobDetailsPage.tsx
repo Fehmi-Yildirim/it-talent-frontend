@@ -78,6 +78,10 @@ function CandidateJobDetailsPage() {
     const [retryCount, setRetryCount] = useState(0)
 
     const [coverLetter, setCoverLetter] = useState('')
+    const [cvFile, setCvFile] = useState<File | null>(null)
+    const [cvInputKey, setCvInputKey] = useState(0)
+    const [cvFileError, setCvFileError] = useState<string | null>(null)
+    const [cvRetentionConsent, setCvRetentionConsent] = useState(false)
     const [isSubmittingApplication, setIsSubmittingApplication] =
         useState(false)
     const [applicationSubmitted, setApplicationSubmitted] = useState(false)
@@ -142,17 +146,27 @@ function CandidateJobDetailsPage() {
             return
         }
 
+        if (cvFileError) return
+
         setIsSubmittingApplication(true)
         setApplicationError(null)
         setApplicationAlreadyExists(false)
 
         try {
             await createApplication(jobId, {
-                coverLetter: coverLetter.trim() || undefined,
+                ...(coverLetter.trim()
+                    ? { coverLetter: coverLetter.trim() }
+                    : {}),
+                ...(cvFile
+                    ? { cv: cvFile, cvRetentionConsent }
+                    : {}),
             })
 
             setApplicationSubmitted(true)
             setCoverLetter('')
+            setCvFile(null)
+            setCvInputKey((key) => key + 1)
+            setCvRetentionConsent(false)
         } catch (caught) {
             if (caught instanceof ApiError && caught.status === 409) {
                 setApplicationAlreadyExists(true)
@@ -372,6 +386,50 @@ function CandidateJobDetailsPage() {
                                 )}
                                 disabled={isSubmittingApplication}
                             />
+
+                            <label
+                                htmlFor="application-cv"
+                                className="candidate-job-application-label"
+                            >
+                                {t('candidateJobDetails.cvUpload')}{' '}
+                                <span>({t('candidateJobDetails.optional')})</span>
+                            </label>
+                            <input
+                                id="application-cv"
+                                key={cvInputKey}
+                                type="file"
+                                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                                disabled={isSubmittingApplication}
+                                aria-describedby="application-cv-help application-cv-error"
+                                onChange={(event) => {
+                                    const file = event.target.files?.[0] ?? null
+                                    const extension = file?.name.split('.').pop()?.toLowerCase()
+                                    const validTypes = ['pdf', 'doc', 'docx']
+                                    if (file && (!extension || !validTypes.includes(extension))) {
+                                        setCvFile(null)
+                                        setCvRetentionConsent(false)
+                                        setCvFileError(t('candidateJobDetails.invalidCvFile'))
+                                        event.target.value = ''
+                                        return
+                                    }
+                                    setCvFile(file)
+                                    setCvRetentionConsent(false)
+                                    setCvFileError(null)
+                                }}
+                            />
+                            <p id="application-cv-help" className="candidate-job-cv-help">
+                                {cvFile ? `${t('candidateJobDetails.selectedCv')}: ${cvFile.name}` : t('candidateJobDetails.cvFileTypes')}
+                            </p>
+                            {cvFileError && <p id="application-cv-error" className="candidate-job-application-error" role="alert">{cvFileError}</p>}
+                            <label className="candidate-job-cv-consent">
+                                <input
+                                    type="checkbox"
+                                    checked={cvRetentionConsent}
+                                    disabled={!cvFile || isSubmittingApplication}
+                                    onChange={(event) => setCvRetentionConsent(event.target.checked)}
+                                />
+                                {t('candidateJobDetails.cvRetentionConsent')}
+                            </label>
 
                             {applicationError && (
                                 <p

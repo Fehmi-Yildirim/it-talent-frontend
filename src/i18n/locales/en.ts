@@ -259,6 +259,11 @@ export const en = {
         submitApplication:
             'Submit your application for this position.',
         coverLetter: 'Cover letter',
+        cvUpload: 'CV / resume',
+        cvFileTypes: 'Accepted formats: PDF, DOC, DOCX.',
+        selectedCv: 'Selected file',
+        invalidCvFile: 'Please select a CV in PDF, DOC, or DOCX format.',
+        cvRetentionConsent: 'I consent to my CV being retained for future job opportunities.',
         optional: 'optional',
         coverLetterPlaceholder:
             'Tell the recruiter why you are a good fit for this role...',

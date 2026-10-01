@@ -326,6 +326,16 @@ export const nl: DeepPartial<typeof en> = {
             'Dien je sollicitatie voor deze functie in.',
         coverLetter:
             'Motivatiebrief',
+        cvUpload:
+            'Cv / resume',
+        cvFileTypes:
+            'Toegestane bestandsformaten: PDF, DOC, DOCX.',
+        selectedCv:
+            'Geselecteerd bestand',
+        invalidCvFile:
+            'Selecteer een cv in PDF-, DOC- of DOCX-formaat.',
+        cvRetentionConsent:
+            'Ik geef toestemming om mijn cv te bewaren voor toekomstige vacatures.',
         optional:
             'optioneel',
         coverLetterPlaceholder:

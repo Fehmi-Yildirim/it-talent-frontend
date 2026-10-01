@@ -12,9 +12,14 @@ export function createApplication(
     jobId: string,
     data: CreateApplicationRequest = {},
 ): Promise<CandidateApplication> {
+    const formData = new FormData()
+    if (data.coverLetter) formData.append('coverLetter', data.coverLetter)
+    if (data.cv) formData.append('cv', data.cv)
+    formData.append('cvRetentionConsent', String(Boolean(data.cv && data.cvRetentionConsent)))
+
     return apiClient.post<CandidateApplication>(
         `/jobs/${jobId}/applications`,
-        data,
+        formData,
     )
 }
 
