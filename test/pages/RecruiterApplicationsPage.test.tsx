@@ -29,6 +29,7 @@ const applications: RecruiterApplication[] = [
         job: {
             id: 'job-1',
             title: 'Senior React Developer',
+            description: null,
             location: 'Amsterdam',
             workMode: 'HYBRID',
             employmentType: 'FULL_TIME',
@@ -54,6 +55,7 @@ const applications: RecruiterApplication[] = [
         job: {
             id: 'job-2',
             title: 'Frontend Developer',
+            description: null,
             location: 'Rotterdam',
             workMode: 'REMOTE',
             employmentType: 'FULL_TIME',

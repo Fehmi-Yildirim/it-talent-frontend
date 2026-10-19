@@ -12,6 +12,7 @@ export type ApplicationStatus =
 export interface ApplicationJob {
     id: string
     title: string
+    description: string | null
     location: string | null
     workMode: string
     employmentType: string

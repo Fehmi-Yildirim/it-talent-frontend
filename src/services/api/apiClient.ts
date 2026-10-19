@@ -3,7 +3,11 @@ import type { ApiErrorDetails } from '../../types/api'
 import { ApiError } from './apiError'
 import { authToken } from './authToken'
 
-async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
+async function request<T>(
+  endpoint: string,
+  options?: RequestInit,
+  responseType: 'json' | 'blob' = 'json',
+): Promise<T> {
   const token = authToken.get()
   const isFormData =
     typeof FormData !== 'undefined' && options?.body instanceof FormData
@@ -48,12 +52,18 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     throw new ApiError(response.status, message, details)
   }
 
-  return response.json() as Promise<T>
+  return responseType === 'blob'
+    ? (response.blob() as Promise<T>)
+    : (response.json() as Promise<T>)
 }
 
 export const apiClient = {
   get<T>(endpoint: string) {
     return request<T>(endpoint)
+  },
+
+  getBlob(endpoint: string): Promise<Blob> {
+    return request<Blob>(endpoint, undefined, 'blob')
   },
 
   post<T>(endpoint: string, body?: unknown) {
