@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import DOMPurify from 'dompurify'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { createApplication } from '../features/applications/applications.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
 import {
@@ -77,20 +76,6 @@ function CandidateJobDetailsPage() {
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
 
-    const [coverLetter, setCoverLetter] = useState('')
-    const [cvFile, setCvFile] = useState<File | null>(null)
-    const [cvInputKey, setCvInputKey] = useState(0)
-    const [cvFileError, setCvFileError] = useState<string | null>(null)
-    const [cvRetentionConsent, setCvRetentionConsent] = useState(false)
-    const [isSubmittingApplication, setIsSubmittingApplication] =
-        useState(false)
-    const [applicationSubmitted, setApplicationSubmitted] = useState(false)
-    const [applicationAlreadyExists, setApplicationAlreadyExists] =
-        useState(false)
-    const [applicationError, setApplicationError] = useState<string | null>(
-        null,
-    )
-
     const locale = LOCALES[language]
 
     const employmentTypeLabel = (value: EmploymentType) =>
@@ -140,49 +125,6 @@ function CandidateJobDetailsPage() {
             cancelled = true
         }
     }, [jobId, retryCount])
-
-    async function handleApply() {
-        if (!jobId || isSubmittingApplication || applicationSubmitted) {
-            return
-        }
-
-        if (cvFileError) return
-
-        setIsSubmittingApplication(true)
-        setApplicationError(null)
-        setApplicationAlreadyExists(false)
-
-        try {
-            await createApplication(jobId, {
-                ...(coverLetter.trim()
-                    ? { coverLetter: coverLetter.trim() }
-                    : {}),
-                ...(cvFile
-                    ? { cv: cvFile, cvRetentionConsent }
-                    : {}),
-            })
-
-            setApplicationSubmitted(true)
-            setCoverLetter('')
-            setCvFile(null)
-            setCvInputKey((key) => key + 1)
-            setCvRetentionConsent(false)
-        } catch (caught) {
-            if (caught instanceof ApiError && caught.status === 409) {
-                setApplicationAlreadyExists(true)
-            } else if (caught instanceof ApiError) {
-                setApplicationError(
-                    t('candidateJobDetails.submitError'),
-                )
-            } else {
-                setApplicationError(
-                    t('candidateJobDetails.submitUnexpectedError'),
-                )
-            }
-        } finally {
-            setIsSubmittingApplication(false)
-        }
-    }
 
     if (loading) {
         return (
@@ -271,6 +213,13 @@ function CandidateJobDetailsPage() {
                             {job.company.name}
                         </p>
                     </div>
+
+                    <Link
+                        to={`/jobs/${jobId}/apply`}
+                        className="candidate-job-application-button"
+                    >
+                        {t('candidateJobDetails.applyForThisJob')}
+                    </Link>
                 </header>
 
                 <div className="candidate-job-details-meta">
@@ -316,152 +265,10 @@ function CandidateJobDetailsPage() {
                     />
                 </section>
 
-                <section className="candidate-job-details-section candidate-job-application-section">
-                    <h2>{t('candidateJobDetails.applyForThisJob')}</h2>
+                {requiredSkills.length > 0 && (
+                    <section className="candidate-job-details-section">
+                        <h2>{t('candidateJobDetails.requiredSkills')}</h2>
 
-                    {applicationSubmitted ? (
-                        <div
-                            className="candidate-job-application-success"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <strong>
-                                {t('candidateJobDetails.applicationSubmitted')}
-                            </strong>
-
-                            <p>
-                                {t('candidateJobDetails.applicationSuccess')}
-                            </p>
-
-                            <Link to="/applications">
-                                {t('candidateJobDetails.viewMyApplications')}
-                            </Link>
-                        </div>
-                    ) : applicationAlreadyExists ? (
-                        <div
-                            className="candidate-job-application-success"
-                            role="status"
-                            aria-live="polite"
-                        >
-                            <strong>
-                                {t('candidateJobDetails.alreadyApplied')}
-                            </strong>
-
-                            <p>
-                                {t(
-                                    'candidateJobDetails.alreadyAppliedDescription',
-                                )}
-                            </p>
-
-                            <Link to="/applications">
-                                {t('candidateJobDetails.viewMyApplications')}
-                            </Link>
-                        </div>
-                    ) : (
-                        <>
-                            <p>
-                                {t('candidateJobDetails.submitApplication')}
-                            </p>
-
-                            <label
-                                htmlFor="cover-letter"
-                                className="candidate-job-application-label"
-                            >
-                                {t('candidateJobDetails.coverLetter')}{' '}
-                                <span>
-                                    ({t('candidateJobDetails.optional')})
-                                </span>
-                            </label>
-
-                            <textarea
-                                id="cover-letter"
-                                value={coverLetter}
-                                onChange={(event) =>
-                                    setCoverLetter(event.target.value)
-                                }
-                                maxLength={2000}
-                                rows={8}
-                                placeholder={t(
-                                    'candidateJobDetails.coverLetterPlaceholder',
-                                )}
-                                disabled={isSubmittingApplication}
-                            />
-
-                            <label
-                                htmlFor="application-cv"
-                                className="candidate-job-application-label"
-                            >
-                                {t('candidateJobDetails.cvUpload')}{' '}
-                                <span>({t('candidateJobDetails.optional')})</span>
-                            </label>
-                            <input
-                                id="application-cv"
-                                key={cvInputKey}
-                                type="file"
-                                accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                                disabled={isSubmittingApplication}
-                                aria-describedby="application-cv-help application-cv-error"
-                                onChange={(event) => {
-                                    const file = event.target.files?.[0] ?? null
-                                    const extension = file?.name.split('.').pop()?.toLowerCase()
-                                    const validTypes = ['pdf', 'doc', 'docx']
-                                    if (file && (!extension || !validTypes.includes(extension))) {
-                                        setCvFile(null)
-                                        setCvRetentionConsent(false)
-                                        setCvFileError(t('candidateJobDetails.invalidCvFile'))
-                                        event.target.value = ''
-                                        return
-                                    }
-                                    setCvFile(file)
-                                    setCvRetentionConsent(false)
-                                    setCvFileError(null)
-                                }}
-                            />
-                            <p id="application-cv-help" className="candidate-job-cv-help">
-                                {cvFile ? `${t('candidateJobDetails.selectedCv')}: ${cvFile.name}` : t('candidateJobDetails.cvFileTypes')}
-                            </p>
-                            {cvFileError && <p id="application-cv-error" className="candidate-job-application-error" role="alert">{cvFileError}</p>}
-                            <label className="candidate-job-cv-consent">
-                                <input
-                                    type="checkbox"
-                                    checked={cvRetentionConsent}
-                                    disabled={!cvFile || isSubmittingApplication}
-                                    onChange={(event) => setCvRetentionConsent(event.target.checked)}
-                                />
-                                {t('candidateJobDetails.cvRetentionConsent')}
-                            </label>
-
-                            {applicationError && (
-                                <p
-                                    className="candidate-job-application-error"
-                                    role="alert"
-                                >
-                                    {applicationError}
-                                </p>
-                            )}
-
-                            <button
-                                type="button"
-                                className="candidate-job-application-button"
-                                onClick={() => void handleApply()}
-                                disabled={isSubmittingApplication}
-                            >
-                                {isSubmittingApplication
-                                    ? t('candidateJobDetails.submitting')
-                                    : t('candidateJobDetails.applyNow')}
-                            </button>
-                        </>
-                    )}
-                </section>
-
-                <section className="candidate-job-details-section">
-                    <h2>{t('candidateJobDetails.requiredSkills')}</h2>
-
-                    {requiredSkills.length === 0 ? (
-                        <p>
-                            {t('candidateJobDetails.noRequiredSkills')}
-                        </p>
-                    ) : (
                         <ul className="candidate-job-skill-list">
                             {requiredSkills.map((requirement) => (
                                 <li key={requirement.id}>
@@ -476,17 +283,13 @@ function CandidateJobDetailsPage() {
                                 </li>
                             ))}
                         </ul>
-                    )}
-                </section>
+                    </section>
+                )}
 
-                <section className="candidate-job-details-section">
-                    <h2>{t('candidateJobDetails.preferredSkills')}</h2>
+                {preferredSkills.length > 0 && (
+                    <section className="candidate-job-details-section">
+                        <h2>{t('candidateJobDetails.preferredSkills')}</h2>
 
-                    {preferredSkills.length === 0 ? (
-                        <p>
-                            {t('candidateJobDetails.noPreferredSkills')}
-                        </p>
-                    ) : (
                         <ul className="candidate-job-skill-list">
                             {preferredSkills.map((requirement) => (
                                 <li key={requirement.id}>
@@ -501,10 +304,21 @@ function CandidateJobDetailsPage() {
                                 </li>
                             ))}
                         </ul>
-                    )}
+                    </section>
+                )}
+
+                <section className="candidate-job-details-section candidate-job-application-section">
+                    <h2>{t('candidateJobDetails.applyForThisJob')}</h2>
+
+                    <Link
+                        to={`/jobs/${jobId}/apply`}
+                        className="candidate-job-application-button"
+                    >
+                        {t('candidateJobDetails.applyNow')}
+                    </Link>
                 </section>
 
-                <section className="candidate-job-details-section">
+                <section className="candidate-job-details-section candidate-job-company-section">
                     <h2>{t('candidateJobDetails.company')}</h2>
 
                     <dl className="candidate-job-company-details">

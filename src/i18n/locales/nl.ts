@@ -294,74 +294,115 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     candidateJobDetails: {
-        loading:
-            'Vacature laden...',
-        jobNotFound:
-            'Vacature niet gevonden',
-        unableToLoad:
-            'Vacature kan niet worden geladen',
+        loading: 'Vacature laden...',
+        jobIdMissing: 'Vacature-ID ontbreekt.',
+        jobNotFound: 'Vacature niet gevonden',
+        unableToLoad: 'Vacature kan niet worden geladen',
         jobUnavailable:
             'Deze vacature is niet meer beschikbaar of kon niet worden gevonden.',
         loadError:
             'Er is iets misgegaan bij het laden van deze vacature. Probeer het opnieuw.',
-        backToJobs:
-            'Terug naar vacatures',
-        jobOpportunity:
-            'Vacature',
-        aboutTheJob:
-            'Over de vacature',
-        applyForThisJob:
-            'Solliciteer op deze vacature',
-        applicationSubmitted:
-            'Sollicitatie ingediend',
+
+        backToJobs: 'Terug naar vacatures',
+        jobOpportunity: 'Vacature',
+        aboutTheJob: 'Over de vacature',
+
+        applyForThisJob: 'Solliciteer op deze vacature',
+        applicationSubmitted: 'Sollicitatie ingediend',
         applicationSuccess:
             'Je hebt succesvol gesolliciteerd op deze vacature.',
-        alreadyApplied:
-            'Al gesolliciteerd',
+        alreadyApplied: 'Al gesolliciteerd',
         alreadyAppliedDescription:
             'Je hebt al gesolliciteerd op deze vacature.',
-        viewMyApplications:
-            'Mijn sollicitaties bekijken',
-        submitApplication:
-            'Dien je sollicitatie voor deze functie in.',
-        coverLetter:
-            'Motivatiebrief',
-        cvUpload:
-            'Cv / resume',
+        viewMyApplications: 'Mijn sollicitaties bekijken',
+
+        coverLetter: 'Motivatiebrief',
+        cvUpload: 'Cv / cv-bestand',
         cvFileTypes:
-            'Toegestane bestandsformaten: PDF, DOC, DOCX.',
-        selectedCv:
-            'Geselecteerd bestand',
-        invalidCvFile:
-            'Selecteer een cv in PDF-, DOC- of DOCX-formaat.',
+            'Toegestane bestandsformaten: PDF, DOC, DOCX. Als de server conversie ondersteunt, worden DOC- en DOCX-bestanden naar PDF omgezet.',
+        selectedCv: 'Geselecteerd bestand',
+        removeSelectedCv: 'Geselecteerd bestand verwijderen',
+
+        existingCv: 'Huidig cv',
+        viewCv: 'Cv bekijken',
+        replaceCv: 'Cv vervangen',
+        replacingCv: 'Cv wordt vervangen',
+        cancelCvReplacement: 'Cv vervangen annuleren',
+
+        cvSettings: 'Cv-instellingen',
+        uploadYourCv: 'Upload je cv',
+        chooseFile: 'Bestand kiezen',
+        cvUploaded: 'Geüpload',
+        cvSavedAsPdf: "Je cv is opgeslagen als PDF.",
+        cvUploading: 'Cv uploaden...',
+        cvConverting: 'Cv uploaden en omzetten naar PDF...',
+        cvUploadConsentPrompt:
+            'Geef toestemming om het cv te uploaden en naar PDF om te zetten.',
+        cvUploadError: 'Je cv kon niet worden geüpload. Probeer het opnieuw.',
+        cvReadyToUpload: 'Klaar om te uploaden',
+        cvLoading: 'Cv laden...',
+        cvPreviewError:
+            'De cv-preview kan niet worden geladen.',
+        cvPdfPreviewOnly:
+            'Alleen PDF-bestanden kunnen hier worden bekeken. Het geüploade bestand blijft hierboven beschikbaar.',
+        deleteCv: 'Cv verwijderen',
+        deletingCv: 'Cv verwijderen...',
+        deleteCvError:
+            'Je cv kon niet worden verwijderd. Probeer het opnieuw.',
+        deleteCvConfirmation:
+            'Weet je zeker dat je je huidige cv wilt verwijderen? Het cv wordt uit deze sollicitatie verwijderd.',
+
+        invalidCvFile: 'Selecteer een cv in PDF-, DOC- of DOCX-formaat.',
         cvRetentionConsent:
-            'Ik geef toestemming om mijn cv te bewaren voor toekomstige vacatures.',
-        optional:
-            'optioneel',
+            'Ik geef toestemming om mijn cv veilig te bewaren en te gebruiken voor toekomstige vacatures.',
+
+        optional: 'optioneel',
         coverLetterPlaceholder:
             'Vertel de recruiter waarom jij goed bij deze functie past...',
-        submitting:
-            'Indienen...',
-        applyNow:
-            'Nu solliciteren',
+
+        submitting: 'Indienen...',
+        applyNow: 'Nu solliciteren',
+        continue: 'Doorgaan',
+
         submitError:
             'Je sollicitatie kon niet worden ingediend. Probeer het opnieuw.',
         submitUnexpectedError:
             'Er is iets misgegaan bij het indienen van je sollicitatie.',
-        requiredSkills:
-            'Vereiste vaardigheden',
+
+        requiredSkills: 'Vereiste vaardigheden',
         noRequiredSkills:
             'Geen vereiste vaardigheden opgegeven.',
-        preferredSkills:
-            'Gewenste vaardigheden',
+        preferredSkills: 'Gewenste vaardigheden',
         noPreferredSkills:
             'Geen gewenste vaardigheden opgegeven.',
-        company:
-            'Bedrijf',
-        website:
-            'Website',
-        expires:
-            'Verloopt',
+        company: 'Bedrijf',
+        website: 'Website',
+        expires: 'Verloopt',
+
+        applicationStep: 'Stap 1 van 2',
+        applicationFormTitle: 'Je sollicitatie',
+        applicationFormDescription:
+            'Vul je sollicitatie in door je motivatiebrief en cv toe te voegen.',
+        reviewStep: 'Stap 2 van 2',
+        reviewApplication: 'Controleer je sollicitatie',
+        reviewApplicationDescription:
+            'Controleer je gegevens zorgvuldig voordat je je sollicitatie indient. Je kunt teruggaan en indien nodig wijzigingen maken.',
+        reviewJob: 'Vacature',
+        reviewCoverLetter: 'Motivatiebrief',
+        reviewCv: 'Cv',
+        reviewConsent: 'Toestemming voor het bewaren van het cv',
+        noCoverLetter: 'Geen motivatiebrief toegevoegd.',
+        noCv: 'Geen cv toegevoegd.',
+        cvRetentionConsentGiven:
+            'Toestemming voor het bewaren van het cv: gegeven',
+        editApplication: 'Terug naar bewerken',
+        submitApplication: 'Sollicitatie indienen',
+        coverLetterRequired:
+            'Vul een motivatiebrief in voordat je doorgaat.',
+        cvRequired:
+            'Selecteer een cv voordat je doorgaat.',
+        cvRetentionConsentRequired:
+            'Geef toestemming om je cv te bewaren voordat je doorgaat.',
     },
 
     dashboard: {

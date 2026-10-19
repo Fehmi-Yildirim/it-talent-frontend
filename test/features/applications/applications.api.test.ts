@@ -11,32 +11,27 @@ import { createApplication } from '../../../src/features/applications/applicatio
 describe('createApplication', () => {
     beforeEach(() => post.mockReset())
 
-    it('sends cover letter and CV as multipart fields with consent enabled', async () => {
+    it('sends the cover letter as JSON', async () => {
         post.mockResolvedValue({ id: 'application-1' })
-        const cv = new File(['resume'], 'resume.pdf', { type: 'application/pdf' })
 
         await createApplication('job-1', {
             coverLetter: 'Hello',
-            cv,
-            cvRetentionConsent: true,
         })
 
-        const body = post.mock.calls[0][1] as FormData
-        expect(post).toHaveBeenCalledWith('/jobs/job-1/applications', body)
-        expect(body).toBeInstanceOf(FormData)
-        expect(body.get('coverLetter')).toBe('Hello')
-        expect(body.get('cv')).toBe(cv)
-        expect(body.get('cvRetentionConsent')).toBe('true')
+        expect(post).toHaveBeenCalledWith('/jobs/job-1/applications', {
+            coverLetter: 'Hello',
+        })
     })
 
-    it('sends false consent and does not include a CV when none is selected', async () => {
+    it('sends an empty cover letter when provided', async () => {
         post.mockResolvedValue({ id: 'application-2' })
 
-        await createApplication('job-2', { coverLetter: 'Hello' })
+        await createApplication('job-2', {
+            coverLetter: '',
+        })
 
-        const body = post.mock.calls[0][1] as FormData
-        expect(body.get('coverLetter')).toBe('Hello')
-        expect(body.get('cv')).toBeNull()
-        expect(body.get('cvRetentionConsent')).toBe('false')
+        expect(post).toHaveBeenCalledWith('/jobs/job-2/applications', {
+            coverLetter: '',
+        })
     })
 })
