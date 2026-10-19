@@ -5,6 +5,8 @@ import { authToken } from './authToken'
 
 async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
   const token = authToken.get()
+  const isFormData =
+    typeof FormData !== 'undefined' && options?.body instanceof FormData
 
   let response: Response
 
@@ -12,7 +14,7 @@ async function request<T>(endpoint: string, options?: RequestInit): Promise<T> {
     response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
       ...options,
       headers: {
-        'Content-Type': 'application/json',
+        ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
         ...(token
           ? {
               Authorization: `Bearer ${token}`,
@@ -55,11 +57,14 @@ export const apiClient = {
   },
 
   post<T>(endpoint: string, body?: unknown) {
+    const isFormData =
+      typeof FormData !== 'undefined' && body instanceof FormData
+
     return request<T>(endpoint, {
       method: 'POST',
       ...(body !== undefined
         ? {
-            body: JSON.stringify(body),
+            body: isFormData ? body : JSON.stringify(body),
           }
         : {}),
     })

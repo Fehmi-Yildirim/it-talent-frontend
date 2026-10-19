@@ -61,7 +61,7 @@ export interface RecruiterApplicationDetail extends RecruiterApplication {
 }
 
 export interface CreateApplicationRequest {
-    coverLetter?: string
+    coverLetter: string
 }
 
 export interface UpdateApplicationStatusRequest {

@@ -12,6 +12,7 @@ export const en = {
         close: 'Close',
         closed: 'Closed',
         confirmDeleteTitle: 'Confirm deletion',
+        continue: 'Continue',
         contract: 'Contract',
         created: 'Created',
         currency: 'Currency',
@@ -239,15 +240,18 @@ export const en = {
 
     candidateJobDetails: {
         loading: 'Loading job...',
+        jobIdMissing: 'Job ID is missing.',
         jobNotFound: 'Job not found',
         unableToLoad: 'Unable to load job',
         jobUnavailable:
             'This job is no longer available or could not be found.',
         loadError:
             'Something went wrong while loading this job. Please try again.',
+
         backToJobs: 'Back to jobs',
         jobOpportunity: 'Job opportunity',
         aboutTheJob: 'About the job',
+
         applyForThisJob: 'Apply for this job',
         applicationSubmitted: 'Application submitted',
         applicationSuccess:
@@ -256,18 +260,59 @@ export const en = {
         alreadyAppliedDescription:
             'You have already applied for this job.',
         viewMyApplications: 'View my applications',
-        submitApplication:
-            'Submit your application for this position.',
+
         coverLetter: 'Cover letter',
+        cvUpload: 'CV / resume',
+        cvFileTypes:
+            'Accepted formats: PDF, DOC, DOCX. The server converts DOC and DOCX files to PDF when conversion is available.',
+        selectedCv: 'Selected file',
+        removeSelectedCv: 'Remove selected file',
+
+        existingCv: 'Current CV',
+        viewCv: 'View CV',
+        replaceCv: 'Replace CV',
+        replacingCv: 'Replacing CV',
+        cancelCvReplacement: 'Cancel CV replacement',
+
+        cvSettings: 'CV settings',
+        uploadYourCv: 'Upload your CV',
+        chooseFile: 'Choose file',
+        cvUploaded: 'Uploaded',
+        cvSavedAsPdf: "Your CV is saved as a PDF.",
+        cvUploading: 'Uploading CV...',
+        cvConverting: 'Uploading CV and converting to PDF...',
+        cvUploadConsentPrompt:
+            'Give consent to upload the CV and convert it to PDF.',
+        cvUploadError: 'Your CV could not be uploaded. Please try again.',
+        cvReadyToUpload: 'Ready to upload',
+        cvLoading: 'Loading CV...',
+        cvPreviewError: 'Unable to load the CV preview.',
+        cvPdfPreviewOnly:
+            'Only PDF files can be previewed here. Your uploaded file is still available above.',
+        deleteCv: 'Delete CV',
+        deletingCv: 'Deleting CV...',
+        deleteCvError:
+            'Your CV could not be deleted. Please try again.',
+        deleteCvConfirmation:
+            'Are you sure you want to delete your current CV? This will remove the CV from this application.',
+
+        "invalidCvFile": "Please select a valid PDF, DOC, or DOCX file.",
+        cvRetentionConsent:
+            'I agree that my CV can be securely stored and considered for future job opportunities.',
+
         optional: 'optional',
         coverLetterPlaceholder:
             'Tell the recruiter why you are a good fit for this role...',
+
         submitting: 'Submitting...',
         applyNow: 'Apply now',
+        continue: 'Continue',
+
         submitError:
             'Unable to submit your application. Please try again.',
         submitUnexpectedError:
             'Something went wrong while submitting your application.',
+
         requiredSkills: 'Required skills',
         noRequiredSkills: 'No required skills specified.',
         preferredSkills: 'Preferred skills',
@@ -275,10 +320,36 @@ export const en = {
         company: 'Company',
         website: 'Website',
         expires: 'Expires',
+
+        applicationStep: 'Step 1 of 2',
+        applicationFormTitle: 'Your application',
+        applicationFormDescription:
+            'Complete your application by providing your cover letter and CV.',
+        reviewStep: 'Step 2 of 2',
+        reviewApplication: 'Review your application',
+        reviewApplicationDescription:
+            'Please check your application details before submitting. You can go back and make changes if needed.',
+        reviewJob: 'Job',
+        reviewCoverLetter: 'Cover letter',
+        reviewCv: 'CV / resume',
+        reviewConsent: 'CV retention consent',
+        noCoverLetter: 'No cover letter provided.',
+        noCv: 'No CV / resume selected.',
+        cvRetentionConsentGiven:
+            'CV retention consent: given',
+        editApplication: 'Back and edit',
+        submitApplication: 'Submit application',
+        coverLetterRequired:
+            'Please enter a cover letter before continuing.',
+        cvRequired:
+            'Please select a CV / resume before continuing.',
+        cvRetentionConsentRequired:
+            'Please give consent to retain your CV before continuing.',
     },
 
     dashboard: {
         loading: 'Loading dashboard...',
+        jobIdMissing: 'Job ID is missing.',
         unavailable: 'Dashboard unavailable',
         loadError: 'Unable to load the dashboard. Please try again.',
         retry: 'Retry',

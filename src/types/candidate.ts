@@ -9,6 +9,13 @@ export interface CandidateProfile {
   currency: string | null
   availabilityDate: string | null
   remotePreference: string | null
+  cvOriginalName: string | null
+  cvMimeType: string | null
+  cvSize: number | null
+  cvExpiresAt: string | null
+  cvRetentionConsent: boolean
+  cvConsentAt: string | null
+  cvUrl: string | null
   createdAt: string
   updatedAt: string
 }

@@ -12,6 +12,7 @@ import {
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
   CandidateJobsPage,
+  CandidateJobApplicationPage,
   CompanyManagement,
   DashboardPage,
   ProfilePage,
@@ -66,6 +67,14 @@ export const router = createBrowserRouter([
                 element: (
                   <LazyPage>
                     <CandidateJobDetailsPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'jobs/:jobId/apply',
+                element: (
+                  <LazyPage>
+                    <CandidateJobApplicationPage />
                   </LazyPage>
                 ),
               },

@@ -24,6 +24,21 @@ export function updateCandidateProfile(
   return apiClient.patch<CandidateProfile>('/candidates/me', input)
 }
 
+export function uploadCandidateCv(
+  file: File,
+  retentionConsent: boolean,
+): Promise<CandidateProfile> {
+  const formData = new FormData()
+  formData.append('cv', file)
+  formData.append('cvRetentionConsent', String(retentionConsent))
+
+  return apiClient.post<CandidateProfile>('/candidates/me/cv', formData)
+}
+
+export function deleteCandidateCv(): Promise<CandidateProfile> {
+  return apiClient.delete<CandidateProfile>('/candidates/me/cv')
+}
+
 export function getCandidateSkills(): Promise<CandidateSkill[]> {
   return apiClient.get<CandidateSkill[]>('/candidates/me/skills')
 }

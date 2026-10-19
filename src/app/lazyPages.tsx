@@ -12,6 +12,10 @@ export const CandidateJobDetailsPage = lazy(
     () => import('../pages/CandidateJobDetailsPage'),
 )
 
+export const CandidateJobApplicationPage = lazy(
+    () => import('../pages/CandidateJobApplicationPage'),
+)
+
 export const CandidateApplicationsPage = lazy(
     () => import('../pages/CandidateApplicationsPage'),
 )

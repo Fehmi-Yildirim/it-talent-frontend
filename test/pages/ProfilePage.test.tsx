@@ -64,6 +64,13 @@ const candidateProfile = {
   currency: 'EUR',
   availabilityDate: '2026-02-01',
   remotePreference: 'HYBRID',
+  cvOriginalName: null,
+  cvMimeType: null,
+  cvSize: null,
+  cvExpiresAt: null,
+  cvRetentionConsent: false,
+  cvConsentAt: null,
+  cvUrl: null,
   createdAt: '2026-01-01',
   updatedAt: '2026-01-01',
 }

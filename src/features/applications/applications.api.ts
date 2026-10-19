@@ -10,7 +10,7 @@ import type {
 
 export function createApplication(
     jobId: string,
-    data: CreateApplicationRequest = {},
+    data: CreateApplicationRequest,
 ): Promise<CandidateApplication> {
     return apiClient.post<CandidateApplication>(
         `/jobs/${jobId}/applications`,
@@ -59,4 +59,16 @@ export function updateApplicationStatus(
         `/recruiter/applications/${applicationId}/status`,
         data,
     )
+}
+
+export function deleteApplicationCv(
+    applicationId: string,
+): Promise<CandidateApplication> {
+    return apiClient.delete<CandidateApplication>(
+        `/applications/${applicationId}/cv`,
+    )
+}
+
+export function getApplicationCv(applicationId: string): Promise<Blob> {
+    return apiClient.getBlob(`/applications/${applicationId}/cv`)
 }
