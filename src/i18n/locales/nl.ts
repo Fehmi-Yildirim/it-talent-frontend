@@ -270,6 +270,10 @@ export const nl: DeepPartial<typeof en> = {
                 'Sollicitatie van kandidaat',
             jobDetails:
                 'Vacaturegegevens',
+            jobDescription:
+                'Vacatureomschrijving',
+            noJobDescription:
+                'Er is geen vacatureomschrijving beschikbaar.',
             applicationDetails:
                 'Sollicitatiegegevens',
             lastUpdated:

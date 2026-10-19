@@ -33,6 +33,7 @@ const baseApplication: RecruiterApplicationDetail = {
     job: {
         id: 'job-1',
         title: 'Senior React Developer',
+        description: null,
         location: 'Amsterdam',
         workMode: 'HYBRID',
         employmentType: 'FULL_TIME',

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import DOMPurify from 'dompurify'
 import { Link, useParams } from 'react-router-dom'
 import {
     getMyApplication,
@@ -368,6 +369,27 @@ function CandidateApplicationDetailsPage() {
                     </dl>
                 </section>
             </div>
+
+            <section className="candidate-application-details-card">
+                <h2>
+                    {t('candidateApplications.details.jobDescription')}
+                </h2>
+
+                {application.job.description?.trim() ? (
+                    <div
+                        className="candidate-application-details-job-description"
+                        dangerouslySetInnerHTML={{
+                            __html: DOMPurify.sanitize(
+                                application.job.description,
+                            ),
+                        }}
+                    />
+                ) : (
+                    <p>
+                        {t('candidateApplications.details.noJobDescription')}
+                    </p>
+                )}
+            </section>
 
             {application.coverLetter && (
                 <section className="candidate-application-details-card">

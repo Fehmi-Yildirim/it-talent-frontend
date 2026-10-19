@@ -30,13 +30,6 @@ const baseApplication: CandidateApplicationDetail = {
     coverLetter: 'I am very interested in this position.',
     createdAt: '2026-09-01T10:00:00.000Z',
     updatedAt: '2026-09-02T10:00:00.000Z',
-    cvOriginalName: null,
-    cvMimeType: null,
-    cvSize: null,
-    cvExpiresAt: null,
-    cvRetentionConsent: false,
-    cvConsentAt: null,
-    cvUrl: null,
     candidate: {
         id: 'candidate-1',
         firstName: 'John',
@@ -45,6 +38,7 @@ const baseApplication: CandidateApplicationDetail = {
     job: {
         id: 'job-1',
         title: 'Senior React Developer',
+        description: null,
         location: 'Amsterdam',
         employmentType: 'FULL_TIME',
         workMode: 'HYBRID',
