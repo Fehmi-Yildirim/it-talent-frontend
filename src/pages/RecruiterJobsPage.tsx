@@ -30,8 +30,12 @@ function formatSalary(
     return `${t('common.upTo')} ${currency} ${job.salaryMax}`
 }
 
+function formatDate(date: string, language: string): string {
+    return new Date(date).toLocaleDateString(language)
+}
+
 export default function RecruiterJobsPage() {
-    const { t } = useTranslation()
+    const { t, language } = useTranslation()
 
     const [jobs, setJobs] = useState<Job[]>([])
     const [loading, setLoading] = useState(true)
@@ -44,7 +48,7 @@ export default function RecruiterJobsPage() {
         t(WORK_MODE_TRANSLATION_KEYS[value])
 
     const statusLabel = (value: Job['status']) =>
-        t(`recruiterJobs.${value.toLowerCase()}` as import('../i18n').TranslationKey)
+        t(`common.${value.toLowerCase()}` as import('../i18n').TranslationKey)
 
     useEffect(() => {
         let active = true
@@ -184,8 +188,16 @@ export default function RecruiterJobsPage() {
                             key={job.id}
                         >
                             <div className="recruiter-job-card-main">
+
                                 <div className="recruiter-job-card-title">
-                                    <h2>{job.title}</h2>
+                                    <h2>
+                                        <Link
+                                            className="recruiter-job-title-link"
+                                            to={`/recruiter/jobs/${job.id}`}
+                                        >
+                                            {job.title}
+                                        </Link>
+                                    </h2>
 
                                     <span
                                         className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
@@ -193,6 +205,7 @@ export default function RecruiterJobsPage() {
                                         {statusLabel(job.status)}
                                     </span>
                                 </div>
+
 
                                 <p className="recruiter-job-location">
                                     {job.location ??
@@ -215,17 +228,16 @@ export default function RecruiterJobsPage() {
                                     <span>
                                         {formatSalary(job, t)}
                                     </span>
+                                    <span>
+                                        {t('recruiterJobs.expirationDate')}:{' '}
+                                        {job.expiresAt
+                                            ? formatDate(job.expiresAt, language)
+                                            : t('common.notSpecified')}
+                                    </span>
                                 </div>
                             </div>
 
                             <div className="recruiter-job-card-actions">
-                                <Link
-                                    className="recruiter-jobs-secondary-button"
-                                    to={`/recruiter/jobs/${job.id}`}
-                                >
-                                    {t('recruiterJobs.view')}
-                                </Link>
-
                                 <Link
                                     className="recruiter-jobs-secondary-button"
                                     to={`/recruiter/jobs/${job.id}/edit`}
