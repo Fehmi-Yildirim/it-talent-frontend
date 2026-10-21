@@ -25,6 +25,10 @@ const applications: RecruiterApplication[] = [
             id: 'candidate-1',
             firstName: 'John',
             lastName: 'Doe',
+            email: 'john.doe@example.com',
+            headline: 'Senior engineer',
+            summary: 'Experienced frontend engineer.',
+            location: 'Amsterdam',
         },
         job: {
             id: 'job-1',
@@ -51,6 +55,10 @@ const applications: RecruiterApplication[] = [
             id: 'candidate-2',
             firstName: 'Jane',
             lastName: 'Smith',
+            email: 'jane.smith@example.com',
+            headline: null,
+            summary: null,
+            location: 'Rotterdam',
         },
         job: {
             id: 'job-2',
@@ -105,7 +113,7 @@ describe('RecruiterApplicationsPage', () => {
 
         expect(
             screen.getByRole('link', {
-                name: 'Senior React Developer',
+                name: 'John Doe',
             }),
         ).toHaveAttribute(
             'href',
@@ -114,7 +122,7 @@ describe('RecruiterApplicationsPage', () => {
 
         expect(
             screen.getByRole('link', {
-                name: 'Frontend Developer',
+                name: 'Jane Smith',
             }),
         ).toHaveAttribute(
             'href',
@@ -123,11 +131,14 @@ describe('RecruiterApplicationsPage', () => {
 
         expect(screen.getByText('John Doe')).toBeInTheDocument()
         expect(screen.getByText('Jane Smith')).toBeInTheDocument()
+        expect(screen.getByText(/john\.doe@example\.com/)).toBeInTheDocument()
+        expect(screen.getByText('Senior engineer')).toBeInTheDocument()
+        expect(screen.getByText(/john\.doe@example\.com · Amsterdam/)).toBeInTheDocument()
         expect(screen.getByText('Pending', { selector: 'span' })).toBeInTheDocument()
         expect(screen.getByText('Accepted', { selector: 'span' })).toBeInTheDocument()
         expect(
-            screen.getByText('Cover letter included'),
-        ).toBeInTheDocument()
+            screen.getAllByText('Cover letter included'),
+        ).toHaveLength(2)
     })
 
     it('shows empty state when there are no applications', async () => {

@@ -5,14 +5,17 @@ import RecruiterApplicationDetailsPage from '../../src/pages/RecruiterApplicatio
 import type { RecruiterApplicationDetail } from '../../src/types/application'
 
 const {
+    getApplicationCvMock,
     getRecruiterApplicationMock,
     updateApplicationStatusMock,
 } = vi.hoisted(() => ({
+    getApplicationCvMock: vi.fn(),
     getRecruiterApplicationMock: vi.fn(),
     updateApplicationStatusMock: vi.fn(),
 }))
 
 vi.mock('../../src/features/applications/applications.api', () => ({
+    getApplicationCv: getApplicationCvMock,
     getRecruiterApplication: getRecruiterApplicationMock,
     updateApplicationStatus: updateApplicationStatusMock,
 }))
@@ -29,6 +32,10 @@ const baseApplication: RecruiterApplicationDetail = {
         id: 'candidate-1',
         firstName: 'John',
         lastName: 'Doe',
+        email: 'john.doe@example.com',
+        headline: 'Senior engineer',
+        summary: 'Experienced frontend engineer.',
+        location: 'Amsterdam',
     },
     job: {
         id: 'job-1',
@@ -46,6 +53,7 @@ const baseApplication: RecruiterApplicationDetail = {
         id: 'company-1',
         name: 'Tech Company',
     },
+    cvUrl: null,
 }
 
 function renderPage(applicationId = 'application-1') {
@@ -96,6 +104,13 @@ describe('RecruiterApplicationDetailsPage', () => {
         ).toBeInTheDocument()
 
         expect(screen.getAllByText('John Doe')).toHaveLength(2)
+        expect(screen.getByRole('link', { name: 'john.doe@example.com' })).toHaveAttribute(
+            'href',
+            'mailto:john.doe@example.com',
+        )
+        expect(screen.getByText('Senior engineer')).toBeInTheDocument()
+        expect(screen.getByText('Experienced frontend engineer.')).toBeInTheDocument()
+        expect(screen.getByText('Amsterdam')).toBeInTheDocument()
         expect(screen.getByRole('button', { name: 'Pending' })).toBeInTheDocument()
 
         expect(
@@ -117,6 +132,21 @@ describe('RecruiterApplicationDetailsPage', () => {
         ).toBeInTheDocument()
     })
 
+    it('shows the CV action when a CV is available', async () => {
+        getRecruiterApplicationMock.mockResolvedValue({
+            ...baseApplication,
+            cvUrl: '/api/v1/applications/application-1/cv',
+        })
+
+        renderPage()
+
+        expect(
+            await screen.findByRole('button', {
+                name: 'View CV',
+            }),
+        ).toBeInTheDocument()
+    })
+
     it('updates the application status', async () => {
         getRecruiterApplicationMock.mockResolvedValue(
             baseApplication,
@@ -125,6 +155,8 @@ describe('RecruiterApplicationDetailsPage', () => {
         const updatedApplication: RecruiterApplicationDetail = {
             ...baseApplication,
             status: 'ACCEPTED',
+            candidate: undefined as unknown as RecruiterApplicationDetail['candidate'],
+            job: undefined as unknown as RecruiterApplicationDetail['job'],
         }
 
         updateApplicationStatusMock.mockResolvedValue(
@@ -148,8 +180,10 @@ describe('RecruiterApplicationDetailsPage', () => {
         })
 
         expect(
-            await screen.findByText('Accepted'),
-        ).toBeInTheDocument()
+            await screen.findAllByText('Accepted'),
+        ).toHaveLength(2)
+        expect(screen.getAllByText('John Doe')).toHaveLength(2)
+        expect(screen.getByText('Experienced frontend engineer.')).toBeInTheDocument()
     })
 
     it('shows an API error when loading fails', async () => {

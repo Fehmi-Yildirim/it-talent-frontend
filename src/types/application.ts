@@ -30,6 +30,16 @@ export interface ApplicationCandidate {
     lastName: string
 }
 
+export interface RecruiterApplicationCandidate {
+    id: string
+    firstName: string
+    lastName: string
+    email: string
+    headline?: string | null
+    summary?: string | null
+    location?: string | null
+}
+
 export interface CandidateApplication {
     id: string
     jobId: string
@@ -53,8 +63,9 @@ export interface RecruiterApplication {
     status: ApplicationStatus
     createdAt: string
     updatedAt: string
+    cvUrl?: string | null
     job: ApplicationJob
-    candidate: ApplicationCandidate
+    candidate: RecruiterApplicationCandidate
 }
 
 export interface RecruiterApplicationDetail extends RecruiterApplication {
