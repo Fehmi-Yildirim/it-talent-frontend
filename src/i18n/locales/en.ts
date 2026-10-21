@@ -775,6 +775,7 @@ export const en = {
             'No applications match the selected filters.',
 
         coverLetterIncluded: 'Cover letter included',
+        viewDetails: 'View details',
 
         details: {
             loading: 'Loading application...',
@@ -793,6 +794,10 @@ export const en = {
             application: 'Application',
             lastUpdated: 'Last updated',
             coverLetter: 'Cover letter',
+            cv: 'Candidate CV',
+            cvUnavailable: 'No CV is available for this application.',
+            loadingCv: 'Loading CV...',
+            cvLoadError: 'Unable to load the candidate CV.',
             updateStatus: 'Update status',
             accept: 'Accept',
             reject: 'Reject',

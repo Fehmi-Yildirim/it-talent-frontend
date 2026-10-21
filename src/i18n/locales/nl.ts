@@ -1037,6 +1037,8 @@ export const nl: DeepPartial<typeof en> = {
 
         coverLetterIncluded:
             'Motivatiebrief toegevoegd',
+        viewDetails:
+            'Bekijk details',
 
         details: {
             loading:
@@ -1064,6 +1066,14 @@ export const nl: DeepPartial<typeof en> = {
                 'Laatst bijgewerkt',
             coverLetter:
                 'Motivatiebrief',
+            cv:
+                'Cv van kandidaat',
+            cvUnavailable:
+                'Er is geen cv beschikbaar voor deze sollicitatie.',
+            loadingCv:
+                'Cv laden...',
+            cvLoadError:
+                'Het cv van de kandidaat kan niet worden geladen.',
             updateStatus:
                 'Status bijwerken',
             accept:
