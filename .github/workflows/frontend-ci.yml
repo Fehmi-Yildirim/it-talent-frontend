@@ -1,4 +1,5 @@
-﻿name: Frontend CI
+﻿
+name: Frontend CI
 
 on:
   push:
@@ -11,6 +12,9 @@ jobs:
   frontend-checks:
     name: Lint, test and build
     runs-on: ubuntu-latest
+
+    env:
+      VITE_API_BASE_URL: http://localhost:3000/api/v1
 
     steps:
       - name: Checkout repository
