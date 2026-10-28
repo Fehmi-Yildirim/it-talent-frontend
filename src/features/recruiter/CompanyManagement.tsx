@@ -336,7 +336,9 @@ function CompanyManagement() {
                         <p>
                             {new Date(
                                 company.createdAt,
-                            ).toLocaleDateString()}
+                            ).toLocaleDateString('en-GB', {
+                                timeZone: 'UTC',
+                            })}
                         </p>
                     </div>
                 )}
