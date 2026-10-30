@@ -10,6 +10,7 @@ import {
     type JobDiscoveryQuery,
     type WorkMode,
 } from '../types/job'
+import Pagination from '../components/Pagination/Pagination'
 import './CandidateJobsPage.css'
 import {
     LOCALES,
@@ -18,7 +19,7 @@ import {
 } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 10
 
 export function CandidateJobsPage() {
     const { language, t } = useTranslation()
@@ -340,7 +341,6 @@ export function CandidateJobsPage() {
 
     const items = response?.items ?? []
     const total = response?.total ?? 0
-    const totalPages = response?.totalPages ?? 0
 
     const selectedWorkModeLabel =
         selectedWorkModes.length === 0
@@ -422,17 +422,11 @@ export function CandidateJobsPage() {
                                 <button
                                     type="button"
                                     className="candidate-jobs-work-mode-trigger"
-                                    aria-label={t(
-                                        'common.workMode',
-                                    )}
+                                    aria-label={t('common.workMode')}
                                     aria-haspopup="true"
-                                    aria-expanded={
-                                        workModeDropdownOpen
-                                    }
+                                    aria-expanded={workModeDropdownOpen}
                                     onClick={() => {
-                                        if (
-                                            workModeDropdownOpen
-                                        ) {
+                                        if (workModeDropdownOpen) {
                                             closeWorkModeDropdown()
                                         } else {
                                             openWorkModeDropdown()
@@ -440,14 +434,11 @@ export function CandidateJobsPage() {
                                     }}
                                 >
                                     <div className="work-mode-label">
-                                        {selectedWorkModes.length >
-                                            0 && (
-                                                <span className="work-mode-count">
-                                                    {
-                                                        selectedWorkModes.length
-                                                    }
-                                                </span>
-                                            )}
+                                        {selectedWorkModes.length > 0 && (
+                                            <span className="work-mode-count">
+                                                {selectedWorkModes.length}
+                                            </span>
+                                        )}
 
                                         <span>
                                             {selectedWorkModeLabel}
@@ -458,9 +449,7 @@ export function CandidateJobsPage() {
                                         aria-hidden="true"
                                         className="candidate-jobs-work-mode-arrow"
                                     >
-                                        {workModeDropdownOpen
-                                            ? '▲'
-                                            : '▼'}
+                                        {workModeDropdownOpen ? '▲' : '▼'}
                                     </span>
                                 </button>
 
@@ -468,57 +457,41 @@ export function CandidateJobsPage() {
                                     <div className="candidate-jobs-work-mode-options">
                                         <fieldset>
                                             <legend className="sr-only">
-                                                {t(
-                                                    'common.workMode',
-                                                )}
+                                                {t('common.workMode')}
                                             </legend>
 
-                                            {WORK_MODES.map(
-                                                (option) => (
-                                                    <label
-                                                        key={option}
-                                                        className="candidate-jobs-work-mode-option"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={pendingWorkModes.includes(
-                                                                option,
-                                                            )}
-                                                            onChange={() =>
-                                                                toggleWorkMode(
-                                                                    option,
-                                                                )
-                                                            }
-                                                        />
+                                            {WORK_MODES.map((option) => (
+                                                <label
+                                                    key={option}
+                                                    className="candidate-jobs-work-mode-option"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={pendingWorkModes.includes(option)}
+                                                        onChange={() =>
+                                                            toggleWorkMode(option)
+                                                        }
+                                                    />
 
-                                                        <span>
-                                                            {workModeLabel(
-                                                                option,
-                                                            )}
-                                                        </span>
-                                                    </label>
-                                                ),
-                                            )}
+                                                    <span>
+                                                        {workModeLabel(option)}
+                                                    </span>
+                                                </label>
+                                            ))}
                                         </fieldset>
 
                                         <div className="candidate-jobs-work-mode-actions">
                                             <button
                                                 type="button"
                                                 className="candidate-jobs-secondary-button"
-                                                onClick={
-                                                    clearWorkModes
-                                                }
+                                                onClick={clearWorkModes}
                                             >
-                                                {t(
-                                                    'common.clearFilters',
-                                                )}
+                                                {t('common.clearFilters')}
                                             </button>
 
                                             <button
                                                 type="button"
-                                                onClick={
-                                                    applyWorkModes
-                                                }
+                                                onClick={applyWorkModes}
                                             >
                                                 {t('common.search')}
                                             </button>
@@ -537,17 +510,11 @@ export function CandidateJobsPage() {
                                 <button
                                     type="button"
                                     className="candidate-jobs-work-mode-trigger"
-                                    aria-label={t(
-                                        'common.employmentType',
-                                    )}
+                                    aria-label={t('common.employmentType')}
                                     aria-haspopup="true"
-                                    aria-expanded={
-                                        employmentTypeDropdownOpen
-                                    }
+                                    aria-expanded={employmentTypeDropdownOpen}
                                     onClick={() => {
-                                        if (
-                                            employmentTypeDropdownOpen
-                                        ) {
+                                        if (employmentTypeDropdownOpen) {
                                             closeEmploymentTypeDropdown()
                                         } else {
                                             openEmploymentTypeDropdown()
@@ -555,14 +522,11 @@ export function CandidateJobsPage() {
                                     }}
                                 >
                                     <div className="work-mode-label">
-                                        {selectedEmploymentTypes.length >
-                                            0 && (
-                                                <span className="work-mode-count">
-                                                    {
-                                                        selectedEmploymentTypes.length
-                                                    }
-                                                </span>
-                                            )}
+                                        {selectedEmploymentTypes.length > 0 && (
+                                            <span className="work-mode-count">
+                                                {selectedEmploymentTypes.length}
+                                            </span>
+                                        )}
 
                                         <span>
                                             {selectedEmploymentTypeLabel}
@@ -573,9 +537,7 @@ export function CandidateJobsPage() {
                                         aria-hidden="true"
                                         className="candidate-jobs-work-mode-arrow"
                                     >
-                                        {employmentTypeDropdownOpen
-                                            ? '▲'
-                                            : '▼'}
+                                        {employmentTypeDropdownOpen ? '▲' : '▼'}
                                     </span>
                                 </button>
 
@@ -583,57 +545,41 @@ export function CandidateJobsPage() {
                                     <div className="candidate-jobs-work-mode-options">
                                         <fieldset>
                                             <legend className="sr-only">
-                                                {t(
-                                                    'common.employmentType',
-                                                )}
+                                                {t('common.employmentType')}
                                             </legend>
 
-                                            {EMPLOYMENT_TYPES.map(
-                                                (option) => (
-                                                    <label
-                                                        key={option}
-                                                        className="candidate-jobs-work-mode-option"
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            checked={pendingEmploymentTypes.includes(
-                                                                option,
-                                                            )}
-                                                            onChange={() =>
-                                                                toggleEmploymentType(
-                                                                    option,
-                                                                )
-                                                            }
-                                                        />
+                                            {EMPLOYMENT_TYPES.map((option) => (
+                                                <label
+                                                    key={option}
+                                                    className="candidate-jobs-work-mode-option"
+                                                >
+                                                    <input
+                                                        type="checkbox"
+                                                        checked={pendingEmploymentTypes.includes(option)}
+                                                        onChange={() =>
+                                                            toggleEmploymentType(option)
+                                                        }
+                                                    />
 
-                                                        <span>
-                                                            {employmentTypeLabel(
-                                                                option,
-                                                            )}
-                                                        </span>
-                                                    </label>
-                                                ),
-                                            )}
+                                                    <span>
+                                                        {employmentTypeLabel(option)}
+                                                    </span>
+                                                </label>
+                                            ))}
                                         </fieldset>
 
                                         <div className="candidate-jobs-work-mode-actions">
                                             <button
                                                 type="button"
                                                 className="candidate-jobs-secondary-button"
-                                                onClick={
-                                                    clearEmploymentTypes
-                                                }
+                                                onClick={clearEmploymentTypes}
                                             >
-                                                {t(
-                                                    'common.clearFilters',
-                                                )}
+                                                {t('common.clearFilters')}
                                             </button>
 
                                             <button
                                                 type="button"
-                                                onClick={
-                                                    applyEmploymentTypes
-                                                }
+                                                onClick={applyEmploymentTypes}
                                             >
                                                 {t('common.search')}
                                             </button>
@@ -652,9 +598,7 @@ export function CandidateJobsPage() {
                                 <button
                                     type="button"
                                     className="candidate-jobs-work-mode-trigger"
-                                    aria-label={t(
-                                        'candidateJobs.skills',
-                                    )}
+                                    aria-label={t('candidateJobs.skills')}
                                     aria-haspopup="true"
                                     aria-expanded={skillsDropdownOpen}
                                     onClick={() => {
@@ -685,9 +629,7 @@ export function CandidateJobsPage() {
                                         aria-hidden="true"
                                         className="candidate-jobs-work-mode-arrow"
                                     >
-                                        {skillsDropdownOpen
-                                            ? '▲'
-                                            : '▼'}
+                                        {skillsDropdownOpen ? '▲' : '▼'}
                                     </span>
                                 </button>
 
@@ -703,35 +645,26 @@ export function CandidateJobsPage() {
                                                 'candidateJobs.searchSkillsPlaceholder',
                                             )}
                                             onChange={(event) =>
-                                                setSkillSearch(
-                                                    event.target.value,
-                                                )
+                                                setSkillSearch(event.target.value)
                                             }
                                         />
 
                                         <fieldset>
                                             <legend className="sr-only">
-                                                {t(
-                                                    'candidateJobs.skills',
-                                                )}
+                                                {t('candidateJobs.skills')}
                                             </legend>
 
                                             {skillsLoading && (
                                                 <p role="status">
-                                                    {t(
-                                                        'candidateJobs.loadingSkills',
-                                                    )}
+                                                    {t('candidateJobs.loadingSkills')}
                                                 </p>
                                             )}
 
-                                            {!skillsLoading &&
-                                                skills.length === 0 && (
-                                                    <p>
-                                                        {t(
-                                                            'candidateJobs.noSkillsFound',
-                                                        )}
-                                                    </p>
-                                                )}
+                                            {!skillsLoading && skills.length === 0 && (
+                                                <p>
+                                                    {t('candidateJobs.noSkillsFound')}
+                                                </p>
+                                            )}
 
                                             {!skillsLoading &&
                                                 skills.map((skill) => (
@@ -741,19 +674,13 @@ export function CandidateJobsPage() {
                                                     >
                                                         <input
                                                             type="checkbox"
-                                                            checked={pendingSkills.includes(
-                                                                skill.id,
-                                                            )}
+                                                            checked={pendingSkills.includes(skill.id)}
                                                             onChange={() =>
-                                                                toggleSkill(
-                                                                    skill.id,
-                                                                )
+                                                                toggleSkill(skill.id)
                                                             }
                                                         />
 
-                                                        <span>
-                                                            {skill.name}
-                                                        </span>
+                                                        <span>{skill.name}</span>
                                                     </label>
                                                 ))}
                                         </fieldset>
@@ -764,9 +691,7 @@ export function CandidateJobsPage() {
                                                 className="candidate-jobs-secondary-button"
                                                 onClick={clearSkills}
                                             >
-                                                {t(
-                                                    'common.clearFilters',
-                                                )}
+                                                {t('common.clearFilters')}
                                             </button>
 
                                             <button
@@ -790,9 +715,7 @@ export function CandidateJobsPage() {
                                 placeholder="0"
                                 value={salaryMin}
                                 onChange={(event) => {
-                                    setSalaryMin(
-                                        event.target.value,
-                                    )
+                                    setSalaryMin(event.target.value)
                                     setPage(1)
                                 }}
                             />
@@ -807,9 +730,7 @@ export function CandidateJobsPage() {
                                 placeholder="100000"
                                 value={salaryMax}
                                 onChange={(event) => {
-                                    setSalaryMax(
-                                        event.target.value,
-                                    )
+                                    setSalaryMax(event.target.value)
                                     setPage(1)
                                 }}
                             />
@@ -863,18 +784,14 @@ export function CandidateJobsPage() {
                     className="candidate-jobs-state candidate-jobs-state-error"
                     role="alert"
                 >
-                    <h2>
-                        {t('candidateJobs.unableToLoadJobs')}
-                    </h2>
+                    <h2>{t('candidateJobs.unableToLoadJobs')}</h2>
 
                     <p>{error}</p>
 
                     <button
                         type="button"
                         onClick={() =>
-                            setRetryCount(
-                                (current) => current + 1,
-                            )
+                            setRetryCount((current) => current + 1)
                         }
                     >
                         {t('common.tryAgain')}
@@ -898,9 +815,7 @@ export function CandidateJobsPage() {
                         {total} {t('candidateJobs.jobsFound')}
                     </h2>
 
-                    <p>
-                        {t('candidateJobs.noJobsMatch')}
-                    </p>
+                    <p>{t('candidateJobs.noJobsMatch')}</p>
 
                     <button
                         type="button"
@@ -946,9 +861,7 @@ export function CandidateJobsPage() {
                                 >
                                     <div className="candidate-job-card-main">
                                         <h2>
-                                            <Link
-                                                to={`/jobs/${job.id}`}
-                                            >
+                                            <Link to={`/jobs/${job.id}`}>
                                                 {job.title}
                                             </Link>
                                         </h2>
@@ -959,62 +872,40 @@ export function CandidateJobsPage() {
 
                                         <div className="candidate-job-meta">
                                             {job.location && (
-                                                <span>
-                                                    {job.location}
-                                                </span>
+                                                <span>{job.location}</span>
                                             )}
 
                                             <span>
-                                                {workModeLabel(
-                                                    job.workMode,
-                                                )}
+                                                {workModeLabel(job.workMode)}
                                             </span>
 
                                             <span>
-                                                {employmentTypeLabel(
-                                                    job.employmentType,
-                                                )}
+                                                {employmentTypeLabel(job.employmentType)}
                                             </span>
 
-                                            {salary && (
-                                                <span>
-                                                    {salary}
-                                                </span>
-                                            )}
+                                            {salary && <span>{salary}</span>}
                                         </div>
 
                                         {job.requirements &&
-                                            job.requirements.length >
-                                            0 && (
+                                            job.requirements.length > 0 && (
                                                 <div className="candidate-job-skills">
-                                                    {job.requirements.map(
-                                                        (
-                                                            requirement,
-                                                        ) => (
-                                                            <span
-                                                                key={
-                                                                    requirement.id ??
-                                                                    requirement.skillId
-                                                                }
-                                                            >
-                                                                {
-                                                                    requirement
-                                                                        .skill
-                                                                        .name
-                                                                }
-                                                            </span>
-                                                        ),
-                                                    )}
+                                                    {job.requirements.map((requirement) => (
+                                                        <span
+                                                            key={
+                                                                requirement.id ??
+                                                                requirement.skillId
+                                                            }
+                                                        >
+                                                            {requirement.skill.name}
+                                                        </span>
+                                                    ))}
                                                 </div>
                                             )}
 
                                         <p className="candidate-job-published">
-                                            {t(
-                                                'common.published',
-                                            )}{' '}
+                                            {t('common.published')}{' '}
                                             {formatDate(
-                                                job.publishedAt ??
-                                                job.createdAt,
+                                                job.publishedAt ?? job.createdAt,
                                             )}
                                         </p>
                                     </div>
@@ -1030,50 +921,12 @@ export function CandidateJobsPage() {
                         })}
                     </div>
 
-                    {totalPages > 1 && (
-                        <nav
-                            className="candidate-jobs-pagination"
-                            aria-label={t(
-                                'candidateJobs.pagination',
-                            )}
-                        >
-                            <button
-                                type="button"
-                                disabled={
-                                    page <= 1 || loading
-                                }
-                                onClick={() =>
-                                    setPage(
-                                        (current) =>
-                                            current - 1,
-                                    )
-                                }
-                            >
-                                {t('common.previous')}
-                            </button>
-
-                            <span>
-                                {t('common.page')} {page}{' '}
-                                {t('common.of')} {totalPages}
-                            </span>
-
-                            <button
-                                type="button"
-                                disabled={
-                                    page >= totalPages ||
-                                    loading
-                                }
-                                onClick={() =>
-                                    setPage(
-                                        (current) =>
-                                            current + 1,
-                                    )
-                                }
-                            >
-                                {t('common.next')}
-                            </button>
-                        </nav>
-                    )}
+                    <Pagination
+                        currentPage={page}
+                        totalItems={total}
+                        itemsPerPage={PAGE_SIZE}
+                        onPageChange={setPage}
+                    />
                 </>
             )}
         </section>

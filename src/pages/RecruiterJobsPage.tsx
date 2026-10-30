@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import Pagination from '../components/Pagination/Pagination'
 import { getJobs } from '../features/jobs/jobs.api'
 import {
     EMPLOYMENT_TYPE_TRANSLATION_KEYS,
@@ -8,6 +9,8 @@ import {
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job } from '../types/job'
 import './RecruiterJobsPage.css'
+
+const PAGE_SIZE = 10
 
 function formatSalary(
     job: Job,
@@ -40,6 +43,12 @@ export default function RecruiterJobsPage() {
     const [jobs, setJobs] = useState<Job[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const [currentPage, setCurrentPage] = useState(1)
+
+    const paginatedJobs = jobs.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+    )
 
     const employmentTypeLabel = (value: Job['employmentType']) =>
         t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
@@ -178,76 +187,84 @@ export default function RecruiterJobsPage() {
                     </Link>
                 </section>
             ) : (
-                <section
-                    className="recruiter-jobs-list"
-                    aria-label={t('recruiterJobs.yourJobs')}
-                >
-                    {jobs.map((job) => (
-                        <article
-                            className="recruiter-job-card"
-                            key={job.id}
-                        >
-                            <div className="recruiter-job-card-main">
+                <>
+                    <section
+                        className="recruiter-jobs-list"
+                        aria-label={t('recruiterJobs.yourJobs')}
+                    >
+                        {paginatedJobs.map((job) => (
+                            <article
+                                className="recruiter-job-card"
+                                key={job.id}
+                            >
+                                <div className="recruiter-job-card-main">
 
-                                <div className="recruiter-job-card-title">
-                                    <h2>
-                                        <Link
-                                            className="recruiter-job-title-link"
-                                            to={`/recruiter/jobs/${job.id}`}
+                                    <div className="recruiter-job-card-title">
+                                        <h2>
+                                            <Link
+                                                className="recruiter-job-title-link"
+                                                to={`/recruiter/jobs/${job.id}`}
+                                            >
+                                                {job.title}
+                                            </Link>
+                                        </h2>
+
+                                        <span
+                                            className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
                                         >
-                                            {job.title}
-                                        </Link>
-                                    </h2>
+                                            {statusLabel(job.status)}
+                                        </span>
+                                    </div>
 
-                                    <span
-                                        className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
+
+                                    <p className="recruiter-job-location">
+                                        {job.location ??
+                                            t(
+                                                'recruiterJobs.locationNotSpecified',
+                                            )}
+                                    </p>
+
+                                    <div className="recruiter-job-meta">
+                                        <span>
+                                            {employmentTypeLabel(
+                                                job.employmentType,
+                                            )}
+                                        </span>
+
+                                        <span>
+                                            {workModeLabel(job.workMode)}
+                                        </span>
+
+                                        <span>
+                                            {formatSalary(job, t)}
+                                        </span>
+                                        <span>
+                                            {t('recruiterJobs.expirationDate')}:{' '}
+                                            {job.expiresAt
+                                                ? formatDate(job.expiresAt, language)
+                                                : t('common.notSpecified')}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <div className="recruiter-job-card-actions">
+                                    <Link
+                                        className="recruiter-jobs-secondary-button"
+                                        to={`/recruiter/jobs/${job.id}/edit`}
                                     >
-                                        {statusLabel(job.status)}
-                                    </span>
+                                        {t('common.edit')}
+                                    </Link>
                                 </div>
-
-
-                                <p className="recruiter-job-location">
-                                    {job.location ??
-                                        t(
-                                            'recruiterJobs.locationNotSpecified',
-                                        )}
-                                </p>
-
-                                <div className="recruiter-job-meta">
-                                    <span>
-                                        {employmentTypeLabel(
-                                            job.employmentType,
-                                        )}
-                                    </span>
-
-                                    <span>
-                                        {workModeLabel(job.workMode)}
-                                    </span>
-
-                                    <span>
-                                        {formatSalary(job, t)}
-                                    </span>
-                                    <span>
-                                        {t('recruiterJobs.expirationDate')}:{' '}
-                                        {job.expiresAt
-                                            ? formatDate(job.expiresAt, language)
-                                            : t('common.notSpecified')}
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="recruiter-job-card-actions">
-                                <Link
-                                    className="recruiter-jobs-secondary-button"
-                                    to={`/recruiter/jobs/${job.id}/edit`}
-                                >
-                                    {t('common.edit')}
-                                </Link>
-                            </div>
-                        </article>
-                    ))}
-                </section>
+                            </article>
+                        ))}
+                    </section>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={jobs.length}
+                        itemsPerPage={PAGE_SIZE}
+                        onPageChange={setCurrentPage}
+                    />
+                </>
             )}
         </div>
     )

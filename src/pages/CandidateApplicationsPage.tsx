@@ -10,6 +10,9 @@ import type {
     CandidateApplication,
 } from '../types/application'
 import './CandidateApplicationsPage.css'
+import Pagination from '../components/Pagination/Pagination'
+
+const PAGE_SIZE = 10
 
 function formatStatus(
     status: ApplicationStatus,
@@ -39,6 +42,7 @@ function CandidateApplicationsPage() {
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+    const [currentPage, setCurrentPage] = useState(1)
 
     const locale = LOCALES[language]
 
@@ -210,6 +214,11 @@ function CandidateApplicationsPage() {
 
     const items = applications ?? []
 
+    const paginatedItems = items.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+    )
+
     return (
         <section className="candidate-applications-page">
             <header className="candidate-applications-header">
@@ -265,7 +274,7 @@ function CandidateApplicationsPage() {
                     </div>
 
                     <div className="candidate-applications-list">
-                        {items.map((application) => (
+                        {paginatedItems.map((application) => (
                             <article
                                 className="candidate-application-card"
                                 key={application.id}
@@ -360,6 +369,12 @@ function CandidateApplicationsPage() {
                             </article>
                         ))}
                     </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={items.length}
+                        itemsPerPage={PAGE_SIZE}
+                        onPageChange={setCurrentPage}
+                    />
                 </>
             )}
         </section>

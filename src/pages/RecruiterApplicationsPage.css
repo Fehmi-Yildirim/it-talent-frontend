@@ -134,6 +134,12 @@
     gap: 1rem;
 }
 
+.recruiter-applications-page .pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 1.5rem;
+}
+
 .recruiter-application-card {
     overflow: hidden;
     border: 1px solid var(--recruiter-applications-border);
