@@ -42,6 +42,7 @@ export const en = {
         of: 'of',
         onsite: 'On-site',
         page: 'Page',
+        pagination: 'Pagination',
         partTime: 'Part-time',
         paused: 'Paused',
         pending: 'Pending',

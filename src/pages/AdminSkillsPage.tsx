@@ -1,8 +1,4 @@
-import {
-    useCallback,
-    useEffect,
-    useState,
-} from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
     ApiRequestError,
@@ -17,6 +13,7 @@ import { useTranslation } from '../i18n/useTranslation'
 import Drawer from '../components/Drawer/Drawer'
 import ActionMenu from '../components/ActionMenu/ActionMenu'
 import ConfirmDialog from '../components/ConfirmDialog/ConfirmDialog'
+import Pagination from '../components/Pagination/Pagination'
 import './AdminSkillsPage.css'
 
 interface SkillForm {
@@ -24,6 +21,8 @@ interface SkillForm {
     category: SkillCategory | ''
     description: string
 }
+
+const ITEMS_PER_PAGE = 10
 
 const INITIAL_FORM: SkillForm = {
     name: '',
@@ -92,6 +91,7 @@ export default function AdminSkillsPage() {
     const { t } = useTranslation()
 
     const [skills, setSkills] = useState<Skill[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -105,6 +105,30 @@ export default function AdminSkillsPage() {
 
     const [form, setForm] = useState<SkillForm>(INITIAL_FORM)
 
+    const totalPages = Math.ceil(
+        skills.length / ITEMS_PER_PAGE,
+    )
+
+    const safeCurrentPage = Math.min(
+        Math.max(1, currentPage),
+        Math.max(totalPages, 1),
+    )
+
+    const paginatedSkills = skills.slice(
+        (safeCurrentPage - 1) * ITEMS_PER_PAGE,
+        safeCurrentPage * ITEMS_PER_PAGE,
+    )
+
+    // Keep the current page valid when skills are deleted.
+    useEffect(() => {
+        const lastPage = Math.max(
+            1,
+            Math.ceil(skills.length / ITEMS_PER_PAGE),
+        )
+
+        setCurrentPage((page) => Math.min(page, lastPage))
+    }, [skills.length])
+
     const loadSkills = useCallback(
         async (searchTerm: string) => {
             setIsLoading(true)
@@ -113,6 +137,7 @@ export default function AdminSkillsPage() {
             try {
                 const data = await getSkills(searchTerm)
                 setSkills(data)
+                setCurrentPage(1)
             } catch {
                 setError(t('adminSkills.loadError'))
             } finally {
@@ -221,6 +246,8 @@ export default function AdminSkillsPage() {
                     createdSkill,
                     ...currentSkills,
                 ])
+
+                setCurrentPage(1)
             }
 
             setIsDrawerOpen(false)
@@ -261,7 +288,8 @@ export default function AdminSkillsPage() {
 
             setSkills((currentSkills) =>
                 currentSkills.filter(
-                    (currentSkill) => currentSkill.id !== skill.id,
+                    (currentSkill) =>
+                        currentSkill.id !== skill.id,
                 ),
             )
 
@@ -301,6 +329,7 @@ export default function AdminSkillsPage() {
             >
                 ← {t('common.backToDashboard')}
             </Link>
+
             <div>
                 <h1>{t('adminSkills.title')}</h1>
 
@@ -379,70 +408,83 @@ export default function AdminSkillsPage() {
                                 : t('adminSkills.noSkills')}
                         </p>
                     ) : (
-                        <div>
-                            <table className="admin-skills-table">
-                                <thead>
-                                    <tr>
-                                        <th>{t('common.name')}</th>
-                                        <th>{t('adminSkills.category')}</th>
-                                        <th>
-                                            {t(
-                                                'adminSkills.description',
-                                            )}
-                                        </th>
-                                        <th>{t('common.actions')}</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-                                    {skills.map((skill) => (
-                                        <tr key={skill.id}>
-                                            <td>{skill.name}</td>
-
-                                            <td>
-                                                {formatCategory(
-                                                    skill.category,
-                                                    t,
+                        <>
+                            <div className="admin-skills-table-wrapper">
+                                <table className="admin-skills-table">
+                                    <thead>
+                                        <tr>
+                                            <th>{t('common.name')}</th>
+                                            <th>
+                                                {t('adminSkills.category')}
+                                            </th>
+                                            <th>
+                                                {t(
+                                                    'adminSkills.description',
                                                 )}
-                                            </td>
-
-                                            <td>
-                                                {skill.description ?? '—'}
-                                            </td>
-
-                                            <td>
-                                                <ActionMenu
-                                                    ariaLabel={`${t(
-                                                        'common.actions',
-                                                    )}: ${skill.name}`}
-                                                    actions={[
-                                                        {
-                                                            label: t(
-                                                                'common.edit',
-                                                            ),
-                                                            onClick: () =>
-                                                                startEditing(
-                                                                    skill,
-                                                                ),
-                                                        },
-                                                        {
-                                                            label: t(
-                                                                'common.delete',
-                                                            ),
-                                                            onClick: () =>
-                                                                setSkillToDelete(
-                                                                    skill,
-                                                                ),
-                                                            destructive: true,
-                                                        },
-                                                    ]}
-                                                />
-                                            </td>
+                                            </th>
+                                            <th>
+                                                {t('common.actions')}
+                                            </th>
                                         </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                                    </thead>
+
+                                    <tbody>
+                                        {paginatedSkills.map((skill) => (
+                                            <tr key={skill.id}>
+                                                <td>{skill.name}</td>
+
+                                                <td>
+                                                    {formatCategory(
+                                                        skill.category,
+                                                        t,
+                                                    )}
+                                                </td>
+
+                                                <td>
+                                                    {skill.description ?? '—'}
+                                                </td>
+
+                                                <td>
+                                                    <ActionMenu
+                                                        ariaLabel={`${t(
+                                                            'common.actions',
+                                                        )}: ${skill.name}`}
+                                                        actions={[
+                                                            {
+                                                                label: t(
+                                                                    'common.edit',
+                                                                ),
+                                                                onClick: () =>
+                                                                    startEditing(
+                                                                        skill,
+                                                                    ),
+                                                            },
+                                                            {
+                                                                label: t(
+                                                                    'common.delete',
+                                                                ),
+                                                                onClick: () =>
+                                                                    setSkillToDelete(
+                                                                        skill,
+                                                                    ),
+                                                                destructive: true,
+                                                            },
+                                                        ]}
+                                                    />
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <Pagination
+                                currentPage={safeCurrentPage}
+                                totalItems={skills.length}
+                                itemsPerPage={ITEMS_PER_PAGE}
+                                onPageChange={setCurrentPage}
+                            />
+                        </>
                     )}
                 </section>
 
@@ -569,4 +611,3 @@ export default function AdminSkillsPage() {
         </>
     )
 }
-

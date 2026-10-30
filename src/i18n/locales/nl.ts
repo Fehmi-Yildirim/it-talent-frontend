@@ -49,6 +49,7 @@ export const nl: DeepPartial<typeof en> = {
         of: 'van',
         onsite: 'Op locatie',
         page: 'Pagina',
+        pagination: 'Paginering',
         partTime: 'Parttime',
         paused: 'Gepauzeerd',
         pending: 'In behandeling',
