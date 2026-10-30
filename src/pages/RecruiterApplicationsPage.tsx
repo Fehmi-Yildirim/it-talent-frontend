@@ -10,6 +10,9 @@ import {
     type RecruiterApplication,
 } from '../types/application'
 import './RecruiterApplicationsPage.css'
+import Pagination from '../components/Pagination/Pagination'
+
+const PAGE_SIZE = 10
 
 function formatStatus(
     status: ApplicationStatus,
@@ -64,6 +67,7 @@ function RecruiterApplicationsPage() {
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const locale = LOCALES[language]
+    const [currentPage, setCurrentPage] = useState(1)
 
     useEffect(() => {
         let cancelled = false
@@ -121,11 +125,21 @@ function RecruiterApplicationsPage() {
         [applications, selectedJob, selectedStatus],
     )
 
+    const paginatedApplications = useMemo(() => {
+        const startIndex = (currentPage - 1) * PAGE_SIZE
+
+        return filteredApplications.slice(
+            startIndex,
+            startIndex + PAGE_SIZE,
+        )
+    }, [filteredApplications, currentPage])
+
     const hasActiveFilters = selectedJob !== '' || selectedStatus !== ''
 
     function resetFilters() {
         setSelectedJob('')
         setSelectedStatus('')
+        setCurrentPage(1)
     }
 
     if (loading) {
@@ -211,11 +225,12 @@ function RecruiterApplicationsPage() {
                     <span>{t('common.status')}</span>
                     <select
                         value={selectedStatus}
-                        onChange={(event) =>
+                        onChange={(event) => {
                             setSelectedStatus(
                                 event.target.value as ApplicationStatus | '',
                             )
-                        }
+                            setCurrentPage(1)
+                        }}
                     >
                         <option value="">
                             {t('recruiterApplications.allStatuses')}
@@ -267,81 +282,88 @@ function RecruiterApplicationsPage() {
                     )}
                 </section>
             ) : (
-                <div className="recruiter-applications-list">
-                    {filteredApplications.map((application) => {
-                        const candidateName = getCandidateName(application)
-                        const initials = candidateName
-                            .split(/\s+/)
-                            .filter(Boolean)
-                            .slice(0, 2)
-                            .map((part) => part.charAt(0).toLocaleUpperCase(locale))
-                            .join('')
+                <>
+                    <div className="recruiter-applications-list">
+                        {paginatedApplications.map((application) => {
+                            const candidateName = getCandidateName(application)
+                            const initials = candidateName
+                                .split(/\s+/)
+                                .filter(Boolean)
+                                .slice(0, 2)
+                                .map((part) => part.charAt(0).toLocaleUpperCase(locale))
+                                .join('')
 
-                        return (
-                            <article
-                                key={application.id}
-                                className="recruiter-application-card"
-                            >
-                                <div className="recruiter-application-main">
-                                    <div
-                                        className="recruiter-application-avatar"
-                                        aria-hidden="true"
-                                    >
-                                        <span>{initials || '?'}</span>
+                            return (
+                                <article
+                                    key={application.id}
+                                    className="recruiter-application-card"
+                                >
+                                    <div className="recruiter-application-main">
+                                        <div
+                                            className="recruiter-application-avatar"
+                                            aria-hidden="true"
+                                        >
+                                            <span>{initials || '?'}</span>
+                                        </div>
+
+                                        <div className="recruiter-application-info">
+                                            <Link
+                                                to={`/recruiter/applications/${application.id}`}
+                                                className="recruiter-application-title"
+                                            >
+                                                {candidateName}
+                                            </Link>
+                                            <p className="recruiter-application-job">
+                                                {application.job.title}
+                                            </p>
+                                            {application.candidate.headline && (
+                                                <p className="recruiter-application-candidate-meta">
+                                                    {application.candidate.headline}
+                                                </p>
+                                            )}
+                                            <p className="recruiter-application-candidate-meta">
+                                                {application.candidate.email}
+                                                {application.candidate.location && (
+                                                    <> · {application.candidate.location}</>
+                                                )}
+                                            </p>
+                                            <p className="recruiter-application-date">
+                                                {formatDate(application.createdAt, locale)}
+                                            </p>
+                                        </div>
+
+                                        <span
+                                            className={`recruiter-application-status recruiter-application-status--${application.status.toLowerCase()}`}
+                                        >
+                                            {formatStatus(application.status, t)}
+                                        </span>
                                     </div>
 
-                                    <div className="recruiter-application-info">
+                                    <div className="recruiter-application-footer">
+                                        <span className="recruiter-application-cover-letter">
+                                            <span aria-hidden="true">
+                                                {application.coverLetter ? '✓' : '—'}
+                                            </span>
+                                            {t('recruiterApplications.coverLetterIncluded')}
+                                        </span>
                                         <Link
                                             to={`/recruiter/applications/${application.id}`}
-                                            className="recruiter-application-title"
+                                            className="recruiter-application-view-link"
                                         >
-                                            {candidateName}
+                                            {t('recruiterApplications.viewDetails')}
+                                            <span aria-hidden="true"> →</span>
                                         </Link>
-                                        <p className="recruiter-application-job">
-                                            {application.job.title}
-                                        </p>
-                                        {application.candidate.headline && (
-                                            <p className="recruiter-application-candidate-meta">
-                                                {application.candidate.headline}
-                                            </p>
-                                        )}
-                                        <p className="recruiter-application-candidate-meta">
-                                            {application.candidate.email}
-                                            {application.candidate.location && (
-                                                <> · {application.candidate.location}</>
-                                            )}
-                                        </p>
-                                        <p className="recruiter-application-date">
-                                            {formatDate(application.createdAt, locale)}
-                                        </p>
                                     </div>
-
-                                    <span
-                                        className={`recruiter-application-status recruiter-application-status--${application.status.toLowerCase()}`}
-                                    >
-                                        {formatStatus(application.status, t)}
-                                    </span>
-                                </div>
-
-                                <div className="recruiter-application-footer">
-                                    <span className="recruiter-application-cover-letter">
-                                        <span aria-hidden="true">
-                                            {application.coverLetter ? '✓' : '—'}
-                                        </span>
-                                        {t('recruiterApplications.coverLetterIncluded')}
-                                    </span>
-                                    <Link
-                                        to={`/recruiter/applications/${application.id}`}
-                                        className="recruiter-application-view-link"
-                                    >
-                                        {t('recruiterApplications.viewDetails')}
-                                        <span aria-hidden="true"> →</span>
-                                    </Link>
-                                </div>
-                            </article>
-                        )
-                    })}
-                </div>
+                                </article>
+                            )
+                        })}
+                    </div>
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={filteredApplications.length}
+                        itemsPerPage={PAGE_SIZE}
+                        onPageChange={setCurrentPage}
+                    /></>
             )}
         </section>
     )
