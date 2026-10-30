@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ActionMenu from '../components/ActionMenu/ActionMenu'
 import ConfirmDialog from '../components/ConfirmDialog/ConfirmDialog'
+import Pagination from '../components/Pagination/Pagination'
 import {
     deleteUser,
     getUsers,
@@ -18,10 +19,13 @@ import {
 } from '../types/user'
 import './AdminUsersPage.css'
 
+const ITEMS_PER_PAGE = 10
+
 function AdminUsersPage() {
     const { language, t } = useTranslation()
 
     const [users, setUsers] = useState<User[]>([])
+    const [currentPage, setCurrentPage] = useState(1)
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
     const [userToDelete, setUserToDelete] = useState<User | null>(null)
@@ -31,13 +35,31 @@ function AdminUsersPage() {
         field: 'role' | 'status'
     } | null>(null)
 
+    const paginatedUsers = users.slice(
+        (currentPage - 1) * ITEMS_PER_PAGE,
+        currentPage * ITEMS_PER_PAGE,
+    )
+
+    // Keep the current page valid when users are deleted or reloaded.
+    useEffect(() => {
+        const lastPage = Math.max(
+            1,
+            Math.ceil(users.length / ITEMS_PER_PAGE),
+        )
+
+        if (currentPage > lastPage) {
+            setCurrentPage(lastPage)
+        }
+    }, [currentPage, users.length])
+
     const loadUsers = useCallback(async () => {
         setIsLoading(true)
         setError(null)
 
         try {
-            const users = await getUsers()
-            setUsers(users)
+            const loadedUsers = await getUsers()
+            setUsers(loadedUsers)
+            setCurrentPage(1)
         } catch {
             setError(t('adminUsers.loadError'))
         } finally {
@@ -186,134 +208,137 @@ function AdminUsersPage() {
             {users.length === 0 ? (
                 <p>{t('adminUsers.noUsers')}</p>
             ) : (
-                <div className="admin-users-table-wrapper">
-                    <table className="admin-users-table">
-                        <thead>
-                            <tr>
-                                <th>{t('common.email')}</th>
-                                <th>{t('common.role')}</th>
-                                <th>{t('common.status')}</th>
-                                <th>{t('common.created')}</th>
-                                <th>{t('common.actions')}</th>
-                            </tr>
-                        </thead>
-
-                        <tbody>
-                            {users.map((user) => (
-                                <tr key={user.id}>
-                                    <td>{user.email}</td>
-
-                                    <td>
-                                        <span className="admin-users-select-wrapper">
-                                            <select
-                                                value={user.role}
-                                                disabled={
-                                                    updatingUserId === user.id
-                                                }
-                                                onChange={(event) =>
-                                                    void handleRoleChange(
-                                                        user,
-                                                        event.target
-                                                            .value as UserRole,
-                                                    )
-                                                }
-                                            >
-                                                <option value={USER_ROLES.CANDIDATE}>
-                                                    {t('common.candidate')}
-                                                </option>
-                                                <option value={USER_ROLES.RECRUITER}>
-                                                    {t('common.recruiter')}
-                                                </option>
-                                                <option value={USER_ROLES.ADMIN}>
-                                                    {t('common.admin')}
-                                                </option>
-                                            </select>
-
-                                            {updatedField?.userId ===
-                                                user.id &&
-                                                updatedField.field ===
-                                                'role' && (
-                                                    <span
-                                                        className="admin-users-update-success"
-                                                        aria-label="Update successful"
-                                                        title="Update successful"
-                                                    >
-                                                        ✓
-                                                    </span>
-                                                )}
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        <span className="admin-users-select-wrapper">
-                                            <select
-                                                value={user.status}
-                                                disabled={
-                                                    updatingUserId === user.id
-                                                }
-                                                onChange={(event) =>
-                                                    void handleStatusChange(
-                                                        user,
-                                                        event.target
-                                                            .value as UserStatus,
-                                                    )
-                                                }
-                                            >
-                                                <option value={USER_STATUSES.ACTIVE}>
-                                                    {t('common.active')}
-                                                </option>
-                                                <option value={USER_STATUSES.PENDING}>
-                                                    {t('common.pending')}
-                                                </option>
-                                                <option value={USER_STATUSES.SUSPENDED}>
-                                                    {t('common.suspended')}
-                                                </option>
-                                                <option value={USER_STATUSES.DELETED}>
-                                                    {t('common.deleted')}
-                                                </option>
-                                            </select>
-
-                                            {updatedField?.userId ===
-                                                user.id &&
-                                                updatedField.field ===
-                                                'status' && (
-                                                    <span
-                                                        className="admin-users-update-success"
-                                                        aria-label="Update successful"
-                                                        title="Update successful"
-                                                    >
-                                                        ✓
-                                                    </span>
-                                                )}
-                                        </span>
-                                    </td>
-
-                                    <td>
-                                        {new Date(
-                                            user.createdAt,
-                                        ).toLocaleDateString(locale)}
-                                    </td>
-
-                                    <td>
-                                        <ActionMenu
-                                            ariaLabel={`${t('common.actions')} - ${user.email}`}
-                                            actions={[
-                                                {
-                                                    label: t('common.delete'),
-                                                    onClick: () =>
-                                                        openDeleteConfirmation(
-                                                            user,
-                                                        ),
-                                                    destructive: true,
-                                                },
-                                            ]}
-                                        />
-                                    </td>
+                <>
+                    <div className="admin-users-table-wrapper">
+                        <table className="admin-users-table">
+                            <thead>
+                                <tr>
+                                    <th>{t('common.email')}</th>
+                                    <th>{t('common.role')}</th>
+                                    <th>{t('common.status')}</th>
+                                    <th>{t('common.created')}</th>
+                                    <th>{t('common.actions')}</th>
                                 </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+
+                            <tbody>
+                                {paginatedUsers.map((user) => (
+                                    <tr key={user.id}>
+                                        <td>{user.email}</td>
+
+                                        <td>
+                                            <span className="admin-users-select-wrapper">
+                                                <select
+                                                    value={user.role}
+                                                    disabled={
+                                                        updatingUserId === user.id
+                                                    }
+                                                    onChange={(event) =>
+                                                        void handleRoleChange(
+                                                            user,
+                                                            event.target.value as UserRole,
+                                                        )
+                                                    }
+                                                >
+                                                    <option value={USER_ROLES.CANDIDATE}>
+                                                        {t('common.candidate')}
+                                                    </option>
+                                                    <option value={USER_ROLES.RECRUITER}>
+                                                        {t('common.recruiter')}
+                                                    </option>
+                                                    <option value={USER_ROLES.ADMIN}>
+                                                        {t('common.admin')}
+                                                    </option>
+                                                </select>
+
+                                                {updatedField?.userId === user.id &&
+                                                    updatedField.field === 'role' && (
+                                                        <span
+                                                            className="admin-users-update-success"
+                                                            aria-label="Update successful"
+                                                            title="Update successful"
+                                                        >
+                                                            ✓
+                                                        </span>
+                                                    )}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            <span className="admin-users-select-wrapper">
+                                                <select
+                                                    value={user.status}
+                                                    disabled={
+                                                        updatingUserId === user.id
+                                                    }
+                                                    onChange={(event) =>
+                                                        void handleStatusChange(
+                                                            user,
+                                                            event.target.value as UserStatus,
+                                                        )
+                                                    }
+                                                >
+                                                    <option value={USER_STATUSES.ACTIVE}>
+                                                        {t('common.active')}
+                                                    </option>
+                                                    <option value={USER_STATUSES.PENDING}>
+                                                        {t('common.pending')}
+                                                    </option>
+                                                    <option value={USER_STATUSES.SUSPENDED}>
+                                                        {t('common.suspended')}
+                                                    </option>
+                                                    <option value={USER_STATUSES.DELETED}>
+                                                        {t('common.deleted')}
+                                                    </option>
+                                                </select>
+
+                                                {updatedField?.userId === user.id &&
+                                                    updatedField.field === 'status' && (
+                                                        <span
+                                                            className="admin-users-update-success"
+                                                            aria-label="Update successful"
+                                                            title="Update successful"
+                                                        >
+                                                            ✓
+                                                        </span>
+                                                    )}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {new Date(
+                                                user.createdAt,
+                                            ).toLocaleDateString(locale)}
+                                        </td>
+
+                                        <td>
+                                            <ActionMenu
+                                                ariaLabel={`${t('common.actions')} - ${user.email}`}
+                                                actions={[
+                                                    {
+                                                        label: t('common.delete'),
+                                                        onClick: () =>
+                                                            openDeleteConfirmation(
+                                                                user,
+                                                            ),
+                                                        destructive: true,
+                                                    },
+                                                ]}
+                                            />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <Pagination
+                        currentPage={currentPage}
+                        totalItems={users.length}
+                        itemsPerPage={ITEMS_PER_PAGE}
+                        onPageChange={setCurrentPage}
+                    />
+                </>
             )}
 
             <ConfirmDialog
@@ -335,5 +360,3 @@ function AdminUsersPage() {
 }
 
 export default AdminUsersPage
-
-

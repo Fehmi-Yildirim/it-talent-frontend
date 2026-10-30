@@ -1,3 +1,9 @@
+.admin-users-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .admin-users-table {
     width: 100%;
     border-collapse: collapse;
@@ -12,6 +18,11 @@
 
 .admin-users-table th {
     font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-users-table td {
+    vertical-align: middle;
 }
 
 .admin-users-select-wrapper {
@@ -20,8 +31,48 @@
     gap: 6px;
 }
 
+.admin-users-select-wrapper select {
+    max-width: 100%;
+    padding: 6px 8px;
+    border: 1px solid #d1d5db;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #1f2937;
+    font: inherit;
+}
+
+.admin-users-select-wrapper select:focus-visible {
+    outline: 2px solid #2563eb;
+    outline-offset: 2px;
+}
+
 .admin-users-update-success {
     color: green;
     font-weight: 700;
     font-size: 1.1rem;
+}
+
+/* Tablet and mobile */
+@media (max-width: 768px) {
+
+    .admin-users-table th,
+    .admin-users-table td {
+        padding: 10px 12px;
+    }
+
+    .admin-users-table {
+        min-width: 650px;
+    }
+}
+
+@media (max-width: 480px) {
+
+    .admin-users-table th,
+    .admin-users-table td {
+        padding: 8px 10px;
+    }
+
+    .admin-users-table {
+        min-width: 600px;
+    }
 }
