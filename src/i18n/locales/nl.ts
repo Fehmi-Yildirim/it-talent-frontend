@@ -873,6 +873,7 @@ export const nl: DeepPartial<typeof en> = {
             'De vacature kan niet worden bijgewerkt.',
         createJobError:
             'De vacature kan niet worden aangemaakt.',
+        changeStatus: 'Status wijzigen',
     },
 
     recruiterJobDetails: {
