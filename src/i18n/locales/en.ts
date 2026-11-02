@@ -644,6 +644,7 @@ export const en = {
             'The job was created, but one or more requirements could not be saved.',
         updateJobError: 'Unable to update the job.',
         createJobError: 'Unable to create the job.',
+        changeStatus: 'Change status',
     },
 
     recruiterJobDetails: {
