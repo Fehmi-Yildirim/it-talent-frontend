@@ -806,7 +806,7 @@ export default function CandidateJobApplicationPage() {
                     <div className="candidate-job-application-review-actions">
                         <button
                             type="button"
-                            className="candidate-job-application-button candidate-job-application-review-back-button"
+                            className="btn btn-secondary"
                             onClick={handleBackToEdit}
                             disabled={isSubmitting}
                         >
@@ -814,7 +814,7 @@ export default function CandidateJobApplicationPage() {
                         </button>
                         <button
                             type="button"
-                            className="candidate-job-application-button candidate-job-application-submit"
+                            className="btn btn-primary btn-block"
                             onClick={() => void handleSubmitApplication()}
                             disabled={isSubmitting}
                         >
@@ -906,7 +906,7 @@ export default function CandidateJobApplicationPage() {
                                 {showExistingCv && (
                                     <button
                                         type="button"
-                                        className="candidate-job-cv-view-button"
+                                        className="btn btn-secondary"
                                         onClick={() =>
                                             setIsExistingCvPreviewOpen((previous) => !previous)
                                         }
@@ -1078,7 +1078,7 @@ export default function CandidateJobApplicationPage() {
                             {isReplacingCv && (
                                 <button
                                     type="button"
-                                    className="candidate-job-cv-cancel-button"
+                                    className="btn btn-secondary"
                                     onClick={cancelReplaceCv}
                                     disabled={
                                         isSubmitting || isUploadingCv
@@ -1167,7 +1167,7 @@ export default function CandidateJobApplicationPage() {
 
                         <button
                             type="submit"
-                            className="candidate-job-application-button candidate-job-application-submit"
+                            className="btn btn-primary btn-block"
                             disabled={
                                 isSubmitting ||
                                 isUploadingCv ||
