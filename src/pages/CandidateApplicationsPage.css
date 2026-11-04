@@ -1,77 +1,92 @@
 .candidate-applications-page {
-    max-width: 1120px;
+    width: min(1120px, calc(100% - 48px));
     margin: 0 auto;
-    padding: 32px 24px 56px;
+    padding: 40px 0 64px;
 }
 
 .candidate-applications-header {
     display: flex;
     justify-content: space-between;
     gap: 24px;
-    margin-bottom: 32px;
+    margin-bottom: 36px;
 }
 
 .candidate-applications-eyebrow {
-    margin: 0 0 8px;
+    margin: 0 0 10px;
+    color: var(--color-primary);
     font-size: 0.8rem;
     font-weight: 700;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    opacity: 0.7;
 }
 
 .candidate-applications-header h1 {
-    margin: 0 0 10px;
-    font-size: 2rem;
+    margin: 0 0 12px;
+    color: var(--color-text);
+    font-size: clamp(1.8rem, 4vw, 2.4rem);
+    letter-spacing: -0.035em;
 }
 
 .candidate-applications-header p:last-child {
-    margin: 0;
     max-width: 680px;
-    line-height: 1.6;
+    margin: 0;
+    color: var(--color-text-muted);
+    line-height: 1.7;
 }
 
 .candidate-applications-loading {
-    padding: 32px 0;
+    padding: 40px 0;
+    color: var(--color-text-muted);
     text-align: center;
 }
 
 .candidate-applications-state {
-    padding: 40px 24px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
+    padding: 48px 24px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
     text-align: center;
 }
 
 .candidate-applications-state h2 {
-    margin: 0 0 10px;
+    margin: 0 0 12px;
+    color: var(--color-text);
 }
 
 .candidate-applications-state p {
-    margin: 0 0 20px;
+    margin: 0 0 24px;
+    color: var(--color-text-muted);
     line-height: 1.6;
 }
 
 .candidate-applications-state-error {
-    border-color: #e2b8b8;
+    border-color: var(--color-danger);
 }
 
 .candidate-applications-state button,
-.candidate-applications-state a {
-    display: inline-block;
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-weight: 600;
-}
-
-.candidate-applications-state button {
-    border: 1px solid #ccc;
-    background: #fff;
-    cursor: pointer;
-}
-
+.candidate-applications-state a,
 .candidate-applications-primary-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--button-height);
+    padding: 9px var(--button-padding-x);
+    border: 1px solid var(--color-primary);
+    border-radius: var(--button-radius);
+    background: var(--color-primary);
+    color: #fff;
+    cursor: pointer;
+    font: inherit;
+    font-weight: 600;
     text-decoration: none;
+    transition: background 160ms ease;
+}
+
+.candidate-applications-state button:hover,
+.candidate-applications-state a:hover,
+.candidate-applications-primary-link:hover {
+    border-color: var(--color-primary-dark);
+    background: var(--color-primary-dark);
 }
 
 .candidate-applications-results-header {
@@ -80,6 +95,8 @@
 
 .candidate-applications-results-header p {
     margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
     font-weight: 600;
 }
 
@@ -90,109 +107,184 @@
 
 .candidate-application-card {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    justify-content: space-between;
     gap: 24px;
     padding: 24px;
-    border: 1px solid #ddd;
-    border-radius: 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.candidate-application-card:hover {
+    border-color: var(--color-primary);
+    box-shadow: 0 6px 20px rgb(0 0 0 / 5%);
 }
 
 .candidate-application-card-main {
-    min-width: 0;
     flex: 1;
+    min-width: 0;
 }
 
 .candidate-application-card-header {
     display: flex;
-    justify-content: space-between;
     align-items: flex-start;
+    justify-content: space-between;
     gap: 16px;
 }
 
 .candidate-application-card-header h2 {
-    margin: 0 0 6px;
-    font-size: 1.2rem;
+    margin: 0 0 7px;
+    font-size: 1.15rem;
+    line-height: 1.4;
 }
 
 .candidate-application-card-header h2 a {
+    color: var(--color-text);
     text-decoration: none;
+}
+
+.candidate-application-card-header h2 a:hover {
+    color: var(--color-primary);
 }
 
 .candidate-application-company {
     margin: 0;
+    color: var(--color-text-muted);
     font-weight: 600;
 }
 
 .candidate-application-status {
     flex-shrink: 0;
-    padding: 6px 10px;
+    padding: 6px 12px;
+    border: 1px solid var(--color-border);
     border-radius: 999px;
-    font-size: 0.8rem;
+    background: var(--color-background);
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
     font-weight: 700;
 }
 
 .candidate-application-status-pending {
-    background: #f1f1f1;
+    background: var(--color-background);
 }
 
 .candidate-application-status-reviewing {
-    background: #e8eef8;
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
 }
 
 .candidate-application-status-accepted {
-    background: #e6f4ea;
+    color: var(--color-success);
 }
 
 .candidate-application-status-rejected {
-    background: #fce8e6;
+    color: var(--color-danger);
 }
 
 .candidate-application-status-withdrawn {
-    background: #eeeeee;
+    color: var(--color-text-muted);
 }
 
 .candidate-application-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 16px;
+    gap: 8px 18px;
     margin-top: 16px;
-    font-size: 0.9rem;
-    opacity: 0.75;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
 }
 
 .candidate-application-cover-letter {
     margin: 14px 0 0;
-    font-size: 0.9rem;
+    color: var(--color-text-muted);
+    font-size: 0.85rem;
     font-weight: 600;
 }
 
 .candidate-application-view-link {
     flex-shrink: 0;
-    font-weight: 600;
+    color: var(--color-primary);
+    font-weight: 700;
     text-decoration: none;
 }
 
-.candidate-application-view-link:hover,
-.candidate-application-card-header h2 a:hover {
+.candidate-application-view-link:hover {
     text-decoration: underline;
+    text-underline-offset: 4px;
+}
+
+.candidate-applications-page button:focus-visible,
+.candidate-applications-page a:focus-visible {
+    outline: 3px solid var(--color-primary-soft);
+    outline-offset: 3px;
 }
 
 @media (max-width: 700px) {
     .candidate-applications-page {
-        padding: 24px 16px 40px;
+        width: calc(100% - 32px);
+        padding: 28px 0 44px;
+    }
+
+    .candidate-applications-header {
+        margin-bottom: 24px;
     }
 
     .candidate-application-card {
-        flex-direction: column;
         align-items: stretch;
+        flex-direction: column;
+        gap: 18px;
+        padding: 20px;
     }
 
     .candidate-application-card-header {
+        align-items: flex-start;
         flex-direction: column;
+        gap: 12px;
     }
 
     .candidate-application-view-link {
         align-self: flex-start;
     }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .candidate-application-card,
+    .candidate-applications-page button,
+    .candidate-applications-page a {
+        transition: none;
+    }
+}
+
+.candidate-application-status-pending {
+    background: #fff7e6;
+    border-color: #f5d58a;
+    color: #9a6700;
+}
+
+.candidate-application-status-reviewing {
+    background: #eaf2ff;
+    border-color: #b6d0ff;
+    color: #2457a6;
+}
+
+.candidate-application-status-accepted {
+    background: #e8f7ed;
+    border-color: #a8dfb8;
+    color: #18743a;
+}
+
+.candidate-application-status-rejected {
+    background: #fff0f0;
+    border-color: #f2b8b8;
+    color: #b42318;
+}
+
+.candidate-application-status-withdrawn {
+    background: #f1f3f5;
+    border-color: #d5dbe1;
+    color: #596579;
 }
