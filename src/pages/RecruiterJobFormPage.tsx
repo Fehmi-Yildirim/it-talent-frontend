@@ -207,7 +207,7 @@ function RequirementRow({
 
                 <button
                     type="button"
-                    className="button button--danger"
+                    className="btn btn-danger"
                     disabled={saving}
                     aria-label={t(
                         'common.delete',
@@ -327,7 +327,7 @@ function PendingRequirementRow({
 
                 <button
                     type="button"
-                    className="button button--danger"
+                    className="btn btn-danger"
                     aria-label={t(
                         'common.delete',
                     )}
@@ -1194,7 +1194,6 @@ export default function RecruiterJobFormPage() {
                     to="/recruiter/jobs"
                     className="back-link"
                 >
-                    ←{' '}
                     {t(
                         'recruiterJobForm.backToJobs',
                     )}
@@ -1796,7 +1795,7 @@ export default function RecruiterJobFormPage() {
 
                         <button
                             type="button"
-                            className="button button--secondary"
+                            className="btn btn-secondary"
                             disabled={
                                 requirementSaving ||
                                 skillsLoading ||
@@ -1927,7 +1926,7 @@ export default function RecruiterJobFormPage() {
                 <div className="form-actions">
                     <Link
                         to="/recruiter/jobs"
-                        className="button button--secondary"
+                        className="btn btn-secondary"
                     >
                         {t(
                             'common.cancel',
@@ -1936,7 +1935,7 @@ export default function RecruiterJobFormPage() {
 
                     <button
                         type="submit"
-                        className="button button--primary"
+                        className="btn btn-primary"
                         disabled={saving}
                     >
                         {saving
