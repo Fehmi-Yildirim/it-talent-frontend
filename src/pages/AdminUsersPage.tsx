@@ -189,21 +189,14 @@ function AdminUsersPage() {
         <>
             <Link
                 to="/dashboard"
-                className="back-to-dashboard"
+                className="back-link"
             >
-                ← {t('common.backToDashboard')}
+                {t('common.backToDashboard')}
             </Link>
 
             <h1>{t('adminUsers.title')}</h1>
 
             {error && <p role="alert">{error}</p>}
-
-            <button
-                type="button"
-                onClick={() => void loadUsers()}
-            >
-                {t('common.refresh')}
-            </button>
 
             {users.length === 0 ? (
                 <p>{t('adminUsers.noUsers')}</p>
