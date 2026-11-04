@@ -330,6 +330,7 @@ export const nl: DeepPartial<typeof en> = {
 
         existingCv: 'Huidig cv',
         viewCv: 'Cv bekijken',
+        hideCv: 'Cv Verbergen',
         replaceCv: 'Cv vervangen',
         replacingCv: 'Cv wordt vervangen',
         cancelCvReplacement: 'Cv vervangen annuleren',

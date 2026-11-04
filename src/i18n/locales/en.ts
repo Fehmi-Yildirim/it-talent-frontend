@@ -273,6 +273,7 @@ export const en = {
 
         existingCv: 'Current CV',
         viewCv: 'View CV',
+        hideCv: 'Hide CV',
         replaceCv: 'Replace CV',
         replacingCv: 'Replacing CV',
         cancelCvReplacement: 'Cancel CV replacement',
