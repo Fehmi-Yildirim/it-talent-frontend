@@ -356,12 +356,6 @@ export default function RecruiterJobDetailsPage() {
         <div className="recruiter-job-details-page">
             <header className="recruiter-job-details-header">
                 <div>
-                    <Link
-                        to="/recruiter/jobs"
-                        className="back-link"
-                    >
-                        {t('recruiterJobs.backToJobs')}
-                    </Link>
 
                     <h1>{job.title}</h1>
 
@@ -389,6 +383,13 @@ export default function RecruiterJobDetailsPage() {
                 </div>
 
                 <div className="recruiter-job-details-actions">
+                    <Link
+                        to="/recruiter/jobs"
+                        className="recruiter-job-details-secondary-button"
+                    >
+                        ← {t('recruiterJobs.backToJobs')}
+                    </Link>
+
                     {job.status === 'DRAFT' && (
                         <>
                             <Link
