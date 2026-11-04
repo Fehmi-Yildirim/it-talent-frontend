@@ -690,7 +690,7 @@ export default function CandidateJobApplicationPage() {
             <div className="candidate-job-application-page">
                 <Link
                     to={`/jobs/${job.id}`}
-                    className="candidate-job-application-back"
+                    className="back-link"
                 >
                     ← {t('candidateJobDetails.backToJobs')}
                 </Link>
@@ -844,7 +844,7 @@ export default function CandidateJobApplicationPage() {
         <div className="candidate-job-application-page">
             <Link
                 to={`/jobs/${job.id}`}
-                className="candidate-job-application-back"
+                className="back-link"
             >
                 ← {t('candidateJobDetails.backToJobs')}
             </Link>
@@ -1151,7 +1151,7 @@ export default function CandidateJobApplicationPage() {
                     <div className="candidate-job-application-form-actions">
                         <Link
                             to={`/jobs/${job.id}`}
-                            className="candidate-job-application-secondary-button"
+                            className="back-link"
                         >
                             {t('candidateJobDetails.backToJobs')}
                         </Link>

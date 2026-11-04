@@ -171,6 +171,7 @@ function CandidateJobDetailsPage() {
 
                         <button
                             type="button"
+                            className="back-link"
                             onClick={() => navigate('/jobs')}
                         >
                             {t('candidateJobDetails.backToJobs')}
@@ -195,9 +196,9 @@ function CandidateJobDetailsPage() {
         <section className="candidate-job-details-page">
             <Link
                 to="/jobs"
-                className="candidate-job-details-back"
+                className="back-link"
             >
-                ← {t('candidateJobDetails.backToJobs')}
+                {t('candidateJobDetails.backToJobs')}
             </Link>
 
             <article className="candidate-job-details">

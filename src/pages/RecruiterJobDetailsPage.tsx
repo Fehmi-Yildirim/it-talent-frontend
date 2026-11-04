@@ -322,8 +322,8 @@ export default function RecruiterJobDetailsPage() {
                     <p>{error}</p>
 
                     <Link
-                        className="recruiter-job-details-secondary-button"
                         to="/recruiter/jobs"
+                        className="back-link"
                     >
                         {t('recruiterJobs.backToJobs')}
                     </Link>
@@ -357,10 +357,10 @@ export default function RecruiterJobDetailsPage() {
             <header className="recruiter-job-details-header">
                 <div>
                     <Link
-                        className="recruiter-job-details-back"
                         to="/recruiter/jobs"
+                        className="back-link"
                     >
-                        ← {t('recruiterJobs.backToJobs')}
+                        {t('recruiterJobs.backToJobs')}
                     </Link>
 
                     <h1>{job.title}</h1>
@@ -669,8 +669,8 @@ export default function RecruiterJobDetailsPage() {
 
             <footer className="recruiter-job-details-footer">
                 <button
-                    className="recruiter-job-details-secondary-button"
                     type="button"
+                    className="back-link"
                     onClick={() => navigate('/recruiter/jobs')}
                 >
                     {t('recruiterJobs.backToJobs')}
