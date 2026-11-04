@@ -540,8 +540,9 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     errors: {
-        pageNotFound:
-            'Pagina niet gevonden',
+        "pageNotFound": 'Pagina niet gevonden',
+        "pageNotFoundDescription": "De pagina die je zoekt bestaat niet of is verplaatst.",
+        "backToHome": "Terug naar voorpagina",
     },
 
     feedback: {

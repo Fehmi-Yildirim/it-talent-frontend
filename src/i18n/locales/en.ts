@@ -429,6 +429,8 @@ export const en = {
 
     errors: {
         pageNotFound: 'Page not found',
+        "pageNotFoundDescription": "The page you're looking for doesn't exist or has been moved.",
+        "backToHome": "Back to home",
     },
 
     feedback: {
