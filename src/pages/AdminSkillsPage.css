@@ -1,158 +1,168 @@
-/* Table */
-
-.admin-skills-table-wrapper {
-    width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-}
-
-.admin-skills-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.admin-skills-table th,
-.admin-skills-table td {
-    padding: 12px 16px;
-    text-align: left;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.admin-skills-table th {
+.back-to-dashboard {
+    display: inline-flex;
+    align-items: center;
+    min-height: var(--button-height);
+    margin-bottom: 20px;
+    padding: 9px var(--button-padding-x);
+    border: 1px solid var(--color-border);
+    border-radius: var(--button-radius);
+    background: var(--color-surface);
+    color: var(--color-text);
     font-weight: 600;
-    white-space: nowrap;
+    text-decoration: none;
+    transition: 160ms ease;
 }
 
-.admin-skills-table td {
-    vertical-align: middle;
+.back-to-dashboard:hover {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
 }
-
-.admin-skills-table tbody tr:hover {
-    background: #f9fafb;
-}
-
-/* Toolbar */
 
 .admin-skills-toolbar {
     display: flex;
-    flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
     gap: 12px;
-    margin-bottom: 20px;
+    margin: 20px 0;
 }
-
-.admin-skills-toolbar button {
-    cursor: pointer;
-}
-
-/* Search */
 
 .admin-skills-search {
-    display: flex !important;
-    flex-direction: row !important;
+    display: flex;
     align-items: center;
-    justify-content: flex-start;
-    gap: 8px;
+    gap: 10px;
     width: 100%;
     margin: 0 0 24px;
 }
 
 .admin-skills-search input {
-    display: block;
-    flex: 0 1 360px;
-    width: 360px;
+    flex: 1;
+    width: 100%;
+    max-width: 420px;
     min-width: 0;
-    height: 40px;
-    box-sizing: border-box;
-    padding: 10px 12px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    font-size: 14px;
+    min-height: 42px;
+    padding: 10px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .admin-skills-search input:focus {
+    border-color: var(--color-primary);
     outline: none;
-    border-color: #2563eb;
-    box-shadow: 0 0 0 2px rgb(37 99 235 / 10%);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 .admin-skills-search-button {
-    display: inline-flex !important;
-    flex: 0 0 40px;
-    flex-direction: row;
+    display: inline-flex;
+    width: 42px;
+    min-width: 42px;
+    height: 42px;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    min-width: 40px;
-    height: 40px;
-    margin: 0;
     padding: 0;
-    box-sizing: border-box;
-    border: 1px solid #d1d5db;
-    border-radius: 6px;
-    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
     cursor: pointer;
+    transition: 160ms ease;
 }
 
 .admin-skills-search-button:hover {
-    background: #f3f4f6;
-}
-
-.admin-skills-search-button:focus-visible {
-    outline: 2px solid #2563eb;
-    outline-offset: 2px;
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
 }
 
 .admin-skills-search-button svg {
-    display: block;
     width: 18px;
     height: 18px;
 }
 
-/* Form actions */
+.admin-skills-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
+    -webkit-overflow-scrolling: touch;
+}
+
+.admin-skills-table {
+    width: 100%;
+    min-width: 650px;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-skills-table th,
+.admin-skills-table td {
+    padding: 15px 18px;
+    border-bottom: 1px solid var(--color-border);
+    text-align: left;
+}
+
+.admin-skills-table th {
+    background: var(--color-background);
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-skills-table td {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.admin-skills-table tbody tr {
+    transition: background-color 150ms ease;
+}
+
+.admin-skills-table tbody tr:hover {
+    background: var(--color-primary-soft);
+}
+
+.admin-skills-table tbody tr:last-child td {
+    border-bottom: 0;
+}
 
 .admin-skills-form-actions {
     display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
     align-items: center;
+    justify-content: flex-end;
     flex-wrap: wrap;
     gap: 10px;
     margin-top: 24px;
 }
 
-/* Tablet */
-
-@media (max-width: 768px) {
-    .admin-skills-table {
-        min-width: 650px;
-    }
-
-    .admin-skills-table th,
-    .admin-skills-table td {
-        padding: 10px 12px;
-    }
-}
-
-/* Mobile */
-
-@media (max-width: 480px) {
-    .admin-skills-table {
-        min-width: 600px;
-    }
-
-    .admin-skills-table th,
-    .admin-skills-table td {
-        padding: 8px 10px;
+@media (max-width: 640px) {
+    .admin-skills-toolbar {
+        gap: 8px;
     }
 
     .admin-skills-search input {
-        flex: 1 1 auto;
-        width: auto;
+        max-width: none;
     }
 
-    .admin-skills-toolbar {
-        gap: 8px;
+    .admin-skills-table th,
+    .admin-skills-table td {
+        padding: 12px;
+    }
+
+    .admin-skills-form-actions {
+        justify-content: stretch;
+    }
+
+    .admin-skills-form-actions button {
+        flex: 1;
     }
 }

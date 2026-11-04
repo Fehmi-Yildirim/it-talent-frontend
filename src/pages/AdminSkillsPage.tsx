@@ -325,9 +325,9 @@ export default function AdminSkillsPage() {
         <>
             <Link
                 to="/dashboard"
-                className="back-to-dashboard"
+                className="back-link"
             >
-                ← {t('common.backToDashboard')}
+                {t('common.backToDashboard')}
             </Link>
 
             <div>
@@ -342,6 +342,7 @@ export default function AdminSkillsPage() {
                 <section className="admin-skills-toolbar">
                     <button
                         type="button"
+                        className='btn btn-primary'
                         onClick={openCreateDrawer}
                     >
                         {t('adminSkills.createSkill')}
@@ -349,6 +350,7 @@ export default function AdminSkillsPage() {
 
                     <button
                         type="button"
+                        className='btn btn-secondary'
                         onClick={() => {
                             setSearch('')
                             void loadSkills('')
@@ -575,6 +577,7 @@ export default function AdminSkillsPage() {
                         <div className="admin-skills-form-actions">
                             <button
                                 type="submit"
+                                className='btn btn-primary'
                                 disabled={isSaving}
                             >
                                 {isSaving
@@ -584,6 +587,7 @@ export default function AdminSkillsPage() {
 
                             <button
                                 type="button"
+                                className="btn btn-secondary"
                                 onClick={closeDrawer}
                                 disabled={isSaving}
                             >
