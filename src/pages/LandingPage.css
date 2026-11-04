@@ -1,133 +1,144 @@
-css .landing-page {
+.landing-page {
   min-height: 100vh;
-  background: #ffffff;
-  color: #111827;
+  color: var(--color-text);
+  background: var(--color-background);
 }
 
 .landing-hero {
   width: min(1120px, calc(100% - 40px));
   margin: 0 auto;
-  padding: 96px 0 80px;
+  padding: 104px 0 88px;
 }
 
 .landing-hero-content {
-  max-width: 760px;
+  max-width: 780px;
 }
 
 .landing-eyebrow,
 .landing-card-label {
-  color: #6b7280;
-  font-size: 0.875rem;
+  color: var(--color-primary);
+  font-size: 0.8rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
 }
 
 .landing-hero h1 {
-  margin: 16px 0 8px;
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  margin: 18px 0 12px;
+  font-size: clamp(2.8rem, 6vw, 4.8rem);
   line-height: 1.05;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.045em;
 }
 
 .landing-hero h2 {
-  max-width: 760px;
+  max-width: 720px;
   margin: 0 0 24px;
-  font-size: clamp(1.75rem, 4vw, 3rem);
-  line-height: 1.15;
+  font-size: clamp(1.7rem, 3.5vw, 2.7rem);
+  line-height: 1.2;
   letter-spacing: -0.03em;
 }
 
 .landing-hero-description {
   max-width: 640px;
   margin: 0;
-  color: #4b5563;
-  font-size: 1.2rem;
-  line-height: 1.7;
+  color: var(--color-text-muted);
+  font-size: 1.15rem;
+  line-height: 1.8;
 }
 
 .landing-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-top: 32px;
+  gap: 14px;
+  margin-top: 36px;
 }
 
 .landing-primary-button,
 .landing-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 48px;
-  padding: 0 22px;
-  border-radius: 8px;
+  padding: 0 24px;
+  border: 1px solid transparent;
+  border-radius: var(--button-radius);
   font-weight: 600;
   text-decoration: none;
+  transition: background 160ms ease, border-color 160ms ease,
+    color 160ms ease, transform 160ms ease;
 }
 
 .landing-primary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #111827;
-  color: #ffffff;
-  transition:
-    background-color 0.2s ease,
-    transform 0.2s ease;
+  background: var(--color-primary);
+  color: #fff;
 }
 
-.landing-primary-button:hover,
-.landing-primary-button:focus-visible {
-  background: #374151;
-  transform: translateY(-1px);
+.landing-primary-button:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
 }
 
 .landing-secondary-button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid #d1d5db;
-  color: #374151;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
 }
 
-.landing-secondary-button:hover,
-.landing-secondary-button:focus-visible {
-  background: #f9fafb;
+.landing-secondary-button:hover {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.landing-primary-button:focus-visible,
+.landing-secondary-button:focus-visible,
+.landing-card a:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 .landing-audience {
-  width: min(1120px, calc(100% - 40px));
-  margin: 0 auto;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 24px;
-  padding-bottom: 80px;
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto;
+  padding-bottom: 88px;
 }
 
 .landing-card {
-  padding: 32px;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  background: #ffffff;
+  padding: 36px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.landing-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
 }
 
 .landing-card h2 {
-  margin: 12px 0;
-  font-size: 1.5rem;
+  margin: 14px 0;
+  font-size: 1.55rem;
   line-height: 1.3;
 }
 
 .landing-card p {
-  margin: 0 0 20px;
-  color: #6b7280;
-  line-height: 1.7;
+  margin: 0 0 24px;
+  color: var(--color-text-muted);
+  line-height: 1.75;
 }
 
 .landing-card a {
-  color: #111827;
+  color: var(--color-primary);
   font-weight: 600;
   text-decoration: none;
 }
 
-.landing-card a:hover,
-.landing-card a:focus-visible {
+.landing-card a:hover {
   text-decoration: underline;
 }
 
@@ -135,19 +146,19 @@ css .landing-page {
   width: min(1120px, calc(100% - 40px));
   margin: 0 auto;
   padding: 24px 0 32px;
-  border-top: 1px solid #e5e7eb;
-  color: #9ca3af;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
   font-size: 0.875rem;
 }
 
 @media (max-width: 640px) {
   .landing-hero {
-    width: min(100% - 24px, 1120px);
+    width: calc(100% - 32px);
     padding: 64px 0 56px;
   }
 
   .landing-hero h1 {
-    font-size: 2.75rem;
+    font-size: 2.7rem;
   }
 
   .landing-hero-description {
@@ -164,8 +175,9 @@ css .landing-page {
   }
 
   .landing-audience {
-    width: min(100% - 24px, 1120px);
+    width: calc(100% - 32px);
     grid-template-columns: 1fr;
+    gap: 16px;
     padding-bottom: 56px;
   }
 
@@ -174,6 +186,20 @@ css .landing-page {
   }
 
   .landing-footer {
-    width: min(100% - 24px, 1120px);
+    width: calc(100% - 32px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .landing-card,
+  .landing-primary-button,
+  .landing-secondary-button {
+    transition: none;
+  }
+
+  .landing-card:hover,
+  .landing-primary-button:hover {
+    transform: none;
   }
 }
