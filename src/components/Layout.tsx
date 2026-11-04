@@ -1,19 +1,168 @@
+
+import { useState, useEffect } from 'react'
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
 import './Layout.css'
+
+type Translation = ReturnType<typeof useTranslation>
+type AuthUser = ReturnType<typeof useAuth>['user']
+
+type LanguageSwitcherProps = {
+  language: Translation['language']
+  setLanguage: Translation['setLanguage']
+  t: Translation['t']
+}
+
+function LanguageSwitcher({
+  language,
+  setLanguage,
+  t,
+}: LanguageSwitcherProps) {
+  return (
+    <div className="language-switcher">
+      <select
+        id="language-select"
+        value={language}
+        onChange={(event) =>
+          setLanguage(event.target.value as typeof language)
+        }
+        aria-label={t('common.language')}
+      >
+        <option value="en">EN</option>
+        <option value="nl">NL</option>
+      </select>
+    </div>
+  )
+}
+
+type UserActionsProps = {
+  user: AuthUser
+  onLogout: () => void
+  logoutLabel: string
+}
+
+function UserActions({
+  user,
+  onLogout,
+  logoutLabel,
+}: UserActionsProps) {
+  return (
+    <div className="main-nav__user-actions">
+      <span className="main-nav__user">
+        <span aria-hidden="true">👤</span>
+        {user?.firstName} {user?.lastName}
+      </span>
+
+      <button
+        className="main-nav__logout"
+        type="button"
+        onClick={onLogout}
+      >
+        {logoutLabel}
+      </button>
+    </div>
+  )
+}
 
 function Layout() {
   const { language, setLanguage, t } = useTranslation()
   const navigate = useNavigate()
   const { user, isAuthenticated, logout } = useAuth()
 
+  const [isAdminNavOpen, setIsAdminNavOpen] = useState(false)
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const [isMobileViewport, setIsMobileViewport] = useState(
+    () => window.innerWidth <= 820
+  )
+
+  const isAdmin = user?.role === 'ADMIN'
+  const isCandidate = user?.role === 'CANDIDATE'
+  const isRecruiter = user?.role === 'RECRUITER'
+
+  // Lock body scrolling while a mobile navigation drawer is open.
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow
+    const shouldLockScroll = isMobileNavOpen || isAdminNavOpen
+
+    if (shouldLockScroll) {
+      document.body.style.overflow = 'hidden'
+    }
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isMobileNavOpen, isAdminNavOpen])
+
+  // Close navigation drawers when switching to desktop.
+  useEffect(() => {
+    function handleResize() {
+      const isMobile = window.innerWidth <= 820
+
+      setIsMobileViewport(isMobile)
+
+      if (!isMobile) {
+        setIsMobileNavOpen(false)
+        setIsAdminNavOpen(false)
+      }
+    }
+
+    window.addEventListener('resize', handleResize)
+
+    return () => {
+      window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
+  // Close navigation drawers with the Escape key.
+  useEffect(() => {
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsMobileNavOpen(false)
+        setIsAdminNavOpen(false)
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [])
+
   function handleLogout() {
     logout()
+    setIsMobileNavOpen(false)
+    setIsAdminNavOpen(false)
     navigate('/login', { replace: true })
   }
 
-  const isCandidate = user?.role === 'CANDIDATE'
+  function closeAdminNav() {
+    setIsAdminNavOpen(false)
+  }
+
+  function closeMobileNav() {
+    setIsMobileNavOpen(false)
+  }
+
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `main-nav__link${isActive ? ' active' : ''}`
+
+  const languageSwitcher = (
+    <LanguageSwitcher
+      language={language}
+      setLanguage={setLanguage}
+      t={t}
+    />
+  )
+
+  const userActions = (
+    <UserActions
+      user={user}
+      onLogout={handleLogout}
+      logoutLabel={t('common.logout')}
+    />
+  )
 
   return (
     <>
@@ -21,93 +170,243 @@ function Layout() {
         {t('accessibility.skipToMainContent')}
       </a>
 
-      <header className="site-header">
-        <nav
-          className="main-nav"
-          aria-label={t('accessibility.mainNavigation')}
-        >
-          <Link className="main-nav__brand" to="/">
-            IT Talent
-          </Link>
+      {isAuthenticated && isAdmin ? (
+        <div className="app-shell app-shell--admin">
+          <aside
+            className={`admin-sidebar${isAdminNavOpen ? ' is-open' : ''}`}
+            id="admin-navigation"
+            inert={isMobileViewport && !isAdminNavOpen}
+          >
+            <Link
+              className="admin-sidebar__brand"
+              to="/admin/users"
+              onClick={closeAdminNav}
+            >
+              <span className="admin-sidebar__brand-mark">IT</span>
+              <span>IT Talent</span>
+            </Link>
 
-          {isAuthenticated ? (
-            <>
-              <div className="main-nav__links">
-                <NavLink to="/dashboard">
-                  {t('common.dashboard')}
+            <div className="admin-sidebar__section">
+              <span className="admin-sidebar__label">
+                {t('dashboard.admin.administration')}
+              </span>
+
+              <nav
+                className="admin-sidebar__nav"
+                aria-label={t('accessibility.mainNavigation')}
+              >
+                <NavLink
+                  to="/admin/users"
+                  className={navLinkClass}
+                  onClick={closeAdminNav}
+                >
+                  <span aria-hidden="true">👥</span>
+                  {t('dashboard.admin.manageUsers')}
                 </NavLink>
 
-                {isCandidate && (
-                  <NavLink to="/jobs">
-                    {t('common.findJobs')}
-                  </NavLink>
-                )}
-
-                <NavLink to="/profile">
-                  {t('common.profile')}
+                <NavLink
+                  to="/admin/skills"
+                  className={navLinkClass}
+                  onClick={closeAdminNav}
+                >
+                  <span aria-hidden="true">✦</span>
+                  {t('dashboard.admin.manageSkills')}
                 </NavLink>
-
-                <div className="language-switcher">
-                  <select
-                    id="language-select"
-                    value={language}
-                    onChange={(event) =>
-                      setLanguage(event.target.value as typeof language)
-                    }
-                    aria-label="Language"
-                  >
-                    <option value="en">EN</option>
-                    <option value="nl">NL</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="main-nav__user-actions">
-                <span className="main-nav__user">
-                  <span aria-hidden="true">👤</span>
-                  {user?.firstName} {user?.lastName}
-                </span>
-
-                <button
-                  className="main-nav__logout"
-                  type="button"
-                  onClick={handleLogout}
-                >
-                  {t('common.logout')}
-                </button>
-              </div>
-            </>
-          ) : (
-            <div className="main-nav__links">
-              <NavLink to="/login">
-                {t('common.login')}
-              </NavLink>
-
-              <NavLink to="/register">
-                {t('common.register')}
-              </NavLink>
-
-              <div className="language-switcher">
-                <select
-                  id="language-select"
-                  value={language}
-                  onChange={(event) =>
-                    setLanguage(event.target.value as typeof language)
-                  }
-                  aria-label="Language"
-                >
-                  <option value="en">EN</option>
-                  <option value="nl">NL</option>
-                </select>
-              </div>
+              </nav>
             </div>
-          )}
-        </nav>
-      </header>
 
-      <main id="main-content">
-        <Outlet />
-      </main>
+            <div className="admin-sidebar__footer">
+              <NavLink
+                to="/profile"
+                className={navLinkClass}
+                onClick={closeAdminNav}
+              >
+                <span aria-hidden="true">⚙</span>
+                {t('common.profile')}
+              </NavLink>
+            </div>
+
+            <div className="admin-sidebar__mobile-actions">
+              {languageSwitcher}
+              {userActions}
+            </div>
+          </aside>
+
+          {isAdminNavOpen && (
+            <button
+              className="admin-sidebar__overlay"
+              type="button"
+              aria-label="Close navigation"
+              onClick={closeAdminNav}
+            />
+          )}
+
+          <div className="admin-main">
+            <header className="admin-topbar">
+              <button
+                className="admin-topbar__menu"
+                type="button"
+                aria-label="Toggle navigation"
+                aria-expanded={isAdminNavOpen}
+                aria-controls="admin-navigation"
+                onClick={() =>
+                  setIsAdminNavOpen((isOpen) => !isOpen)
+                }
+              >
+                <span aria-hidden="true">☰</span>
+              </button>
+
+              <div className="admin-topbar__right">
+                {languageSwitcher}
+                {userActions}
+              </div>
+            </header>
+
+            <main id="main-content" className="app-content">
+              <Outlet />
+            </main>
+          </div>
+        </div>
+      ) : (
+        <div className="app-shell">
+          <header className="site-header">
+            <nav
+              className="main-nav"
+              aria-label={t('accessibility.mainNavigation')}
+            >
+              <Link
+                className="main-nav__brand"
+                to="/"
+                onClick={closeMobileNav}
+              >
+                IT Talent
+              </Link>
+
+              <button
+                className="main-nav__mobile-toggle"
+                type="button"
+                aria-label={
+                  isMobileNavOpen ? 'Close navigation' : 'Open navigation'
+                }
+                aria-expanded={isMobileNavOpen}
+                aria-controls="main-mobile-navigation"
+                onClick={() =>
+                  setIsMobileNavOpen((isOpen) => !isOpen)
+                }
+              >
+                <span aria-hidden="true">
+                  {isMobileNavOpen ? '×' : '☰'}
+                </span>
+              </button>
+
+              <div
+                className={`main-nav__mobile-panel${isMobileNavOpen ? ' is-open' : ''
+                  }`}
+                id="main-mobile-navigation"
+              >
+                {isAuthenticated ? (
+                  <>
+                    <div className="main-nav__links">
+                      <NavLink
+                        to="/dashboard"
+                        className={navLinkClass}
+                        onClick={closeMobileNav}
+                      >
+                        {t('common.dashboard')}
+                      </NavLink>
+
+                      {isCandidate && (
+                        <>
+                          <NavLink
+                            to="/jobs"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('common.findJobs')}
+                          </NavLink>
+
+                          <NavLink
+                            to="/applications"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('candidateApplications.applications')}
+                          </NavLink>
+                        </>
+                      )}
+
+                      {isRecruiter && (
+                        <>
+                          <NavLink
+                            to="/recruiter/company"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('dashboard.recruiter.company')}
+                          </NavLink>
+
+                          <NavLink
+                            to="/recruiter/jobs"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('dashboard.recruiter.jobs')}
+                          </NavLink>
+
+                          <NavLink
+                            to="/recruiter/applications"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('dashboard.recruiter.applications')}
+                          </NavLink>
+                        </>
+                      )}
+
+                      <NavLink
+                        to="/profile"
+                        className={navLinkClass}
+                        onClick={closeMobileNav}
+                      >
+                        {t('common.profile')}
+                      </NavLink>
+                    </div>
+
+                    <div className="main-nav__actions">
+                      {languageSwitcher}
+                      {userActions}
+                    </div>
+                  </>
+                ) : (
+                  <div className="main-nav__links">
+                    <NavLink
+                      to="/login"
+                      className={navLinkClass}
+                      onClick={closeMobileNav}
+                    >
+                      {t('common.login')}
+                    </NavLink>
+
+                    <NavLink
+                      to="/register"
+                      className={navLinkClass}
+                      onClick={closeMobileNav}
+                    >
+                      {t('common.register')}
+                    </NavLink>
+
+                    {languageSwitcher}
+                  </div>
+                )}
+              </div>
+            </nav>
+          </header>
+
+          <main id="main-content" className="app-content">
+            <Outlet />
+          </main>
+        </div>
+      )}
     </>
   )
 }
