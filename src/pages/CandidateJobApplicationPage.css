@@ -1,20 +1,14 @@
 .candidate-job-application-page {
-    width: min(960px, calc(100% - 32px));
+    width: min(960px, calc(100% - 48px));
     margin: 0 auto;
-    padding: 32px 0 64px;
+    padding: 40px 0 64px;
+    color: var(--color-text);
 }
 
-.candidate-job-application-back {
-    display: inline-flex;
-    align-items: center;
-    margin-bottom: 28px;
-    color: inherit;
-    text-decoration: none;
-    font-size: 0.95rem;
-}
-
-.candidate-job-application-back:hover {
-    text-decoration: underline;
+.candidate-job-application-page>p[role='status'] {
+    padding: 32px;
+    color: var(--color-text-muted);
+    text-align: center;
 }
 
 .candidate-job-application-intro {
@@ -23,27 +17,29 @@
 
 .candidate-job-application-intro h1 {
     margin: 0 0 10px;
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-size: clamp(1.8rem, 4vw, 2.5rem);
+    letter-spacing: -0.035em;
     line-height: 1.15;
 }
 
 .candidate-job-application-meta {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
     align-items: center;
-    color: #666;
+    gap: 8px;
+    color: var(--color-text-muted);
     font-size: 0.95rem;
 }
 
 .candidate-job-application-card {
-    width: 100%;
     box-sizing: border-box;
+    width: 100%;
     padding: 28px;
     margin-bottom: 20px;
-    border: 1px solid #e2e2e2;
-    border-radius: 14px;
-    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: var(--shadow-sm);
 }
 
 /* CV */
@@ -69,17 +65,19 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    min-width: 0;
 }
 
 .candidate-job-cv-file-icon {
     display: inline-flex;
+    flex: 0 0 42px;
     align-items: center;
     justify-content: center;
     width: 42px;
     height: 42px;
-    flex: 0 0 42px;
-    border-radius: 8px;
-    background: #f4f4f4;
+    border-radius: var(--radius-md);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
     font-size: 1.2rem;
 }
 
@@ -98,7 +96,7 @@
 }
 
 .candidate-job-cv-file span:last-child {
-    color: #777;
+    color: var(--color-text-muted);
     font-size: 0.85rem;
 }
 
@@ -106,54 +104,55 @@
 
 .candidate-job-cv-settings {
     display: inline-flex;
+    flex: 0 0 40px;
     align-items: center;
     justify-content: center;
-    width: 38px;
-    height: 38px;
-    flex: 0 0 38px;
+    width: 40px;
+    height: 40px;
     padding: 0;
-    border: 1px solid #ddd;
-    border-radius: 50%;
-    background: #fff;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
     cursor: pointer;
     font-size: 1rem;
+    transition: background 160ms ease, border-color 160ms ease;
 }
 
 .candidate-job-cv-settings:hover {
-    background: #f5f5f5;
-}
-
-.candidate-job-cv-settings:focus-visible {
-    outline: 2px solid #222;
-    outline-offset: 2px;
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
 }
 
 .candidate-job-cv-settings-panel {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 10px;
     margin: -6px 0 20px;
-    padding: 12px;
-    border: 1px solid #e2e2e2;
-    border-radius: 10px;
-    background: #fafafa;
+    padding: 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
 }
 
 .candidate-job-cv-settings-action {
-    min-height: 38px;
-    padding: 0 14px;
-    border: 1px solid #ccc;
-    border-radius: 7px;
-    background: #fff;
-    color: #222;
+    min-height: var(--button-height);
+    padding: 8px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--button-radius);
+    background: var(--color-surface);
+    color: var(--color-text);
     cursor: pointer;
     font: inherit;
     font-size: 0.9rem;
     font-weight: 600;
+    transition: background 160ms ease, border-color 160ms ease;
 }
 
 .candidate-job-cv-settings-action:hover:not(:disabled) {
-    background: #f3f3f3;
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
 }
 
 .candidate-job-cv-settings-action:disabled {
@@ -162,18 +161,12 @@
 }
 
 .candidate-job-cv-delete-button {
-    border-color: #d8b0b0;
-    color: #a12626;
+    border-color: var(--color-danger);
+    color: var(--color-danger);
 }
 
 .candidate-job-cv-delete-button:hover:not(:disabled) {
-    background: #fff4f4;
-}
-
-.candidate-job-cv-delete-button:focus-visible,
-.candidate-job-cv-settings-action:focus-visible {
-    outline: 2px solid #222;
-    outline-offset: 2px;
+    background: var(--color-danger-soft);
 }
 
 /* CV preview */
@@ -182,9 +175,9 @@
     width: 100%;
     min-height: 620px;
     overflow: hidden;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background: #f5f5f5;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
 }
 
 .candidate-job-cv-preview-frame {
@@ -192,44 +185,45 @@
     width: 100%;
     height: 620px;
     border: 0;
-    background: #fff;
+    background: var(--color-surface);
 }
 
 .candidate-job-cv-preview-state {
-    min-height: 620px;
-    padding: 32px;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
     gap: 10px;
+    min-height: 620px;
+    padding: 32px;
+    color: var(--color-text-muted);
     text-align: center;
-    color: #666;
 }
 
 .candidate-job-cv-preview-error {
-    color: #a12626;
+    color: var(--color-danger);
 }
 
 /* CV upload */
 
 .candidate-job-cv-upload {
-    min-height: 260px;
     box-sizing: border-box;
-    padding: 32px;
-    border: 1px dashed #cfcfcf;
-    border-radius: 12px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-height: 260px;
+    padding: 32px;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
     text-align: center;
-    background: #fafafa;
 }
 
 .candidate-job-cv-upload-icon {
     margin-bottom: 12px;
+    color: var(--color-primary);
     font-size: 2rem;
 }
 
@@ -241,41 +235,39 @@
 .candidate-job-cv-upload p {
     max-width: 680px;
     margin: 0 0 20px;
-    color: #777;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .candidate-job-cv-upload-actions {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-wrap: wrap;
     gap: 10px;
 }
 
 .candidate-job-cv-upload-button {
+    box-sizing: border-box;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 42px;
-    padding: 0 18px;
-    box-sizing: border-box;
-    border: 1px solid #222;
-    border-radius: 7px;
-    background: #222;
+    min-height: var(--button-height);
+    padding: 8px 18px;
+    border: 1px solid var(--color-primary);
+    border-radius: var(--button-radius);
+    background: var(--color-primary);
     color: #fff;
     cursor: pointer;
     font-size: 0.95rem;
     font-weight: 600;
+    transition: background 160ms ease;
 }
 
 .candidate-job-cv-upload-button:hover {
-    opacity: 0.9;
-}
-
-.candidate-job-cv-upload-button:focus-within {
-    outline: 2px solid #222;
-    outline-offset: 2px;
+    border-color: var(--color-primary-dark);
+    background: var(--color-primary-dark);
 }
 
 .candidate-job-cv-upload-button input {
@@ -285,32 +277,6 @@
     overflow: hidden;
     opacity: 0;
     pointer-events: none;
-}
-
-.candidate-job-cv-cancel-button {
-    min-height: 42px;
-    padding: 0 18px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    background: #fff;
-    color: #222;
-    cursor: pointer;
-    font: inherit;
-    font-weight: 600;
-}
-
-.candidate-job-cv-cancel-button:hover:not(:disabled) {
-    background: #f5f5f5;
-}
-
-.candidate-job-cv-cancel-button:focus-visible {
-    outline: 2px solid #222;
-    outline-offset: 2px;
-}
-
-.candidate-job-cv-cancel-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
 }
 
 /* Application form */
@@ -337,25 +303,30 @@
 }
 
 .candidate-job-application-field label span {
-    color: #777;
-    font-weight: 400;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
+    font-weight: 400;
 }
 
 .candidate-job-application-field textarea {
+    box-sizing: border-box;
     width: 100%;
     min-height: 180px;
-    box-sizing: border-box;
     padding: 12px 14px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
     resize: vertical;
     font: inherit;
+    line-height: 1.6;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
 }
 
 .candidate-job-application-field textarea:focus {
-    outline: 2px solid #222;
-    outline-offset: 1px;
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
 /* Retention consent */
@@ -365,87 +336,34 @@
     align-items: flex-start;
     gap: 14px;
     margin-top: 18px;
-    color: #555;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
-    line-height: 1.5;
+    line-height: 1.6;
 }
 
 .candidate-job-application-consent input {
-    margin-top: 4px;
     flex: 0 0 auto;
-}
-
-.candidate-job-application-consent input:focus-visible {
-    outline: 2px solid #222;
-    outline-offset: 2px;
+    margin-top: 4px;
+    accent-color: var(--color-primary);
 }
 
 /* Errors */
 
 .candidate-job-application-error {
     margin: 0;
-    color: #a12626;
+    color: var(--color-danger);
     font-size: 0.9rem;
-    line-height: 1.45;
-}
-
-/* Buttons */
-
-.candidate-job-application-button {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 44px;
-    padding: 0 20px;
-    border: 1px solid #222;
-    border-radius: 7px;
-    background: #222;
-    color: #fff;
-    cursor: pointer;
-    text-decoration: none;
-    font: inherit;
-    font-weight: 600;
-}
-
-.candidate-job-application-button:hover:not(:disabled) {
-    opacity: 0.9;
-}
-
-.candidate-job-application-button:disabled {
-    cursor: not-allowed;
-    opacity: 0.55;
-}
-
-.candidate-job-application-submit {
-    width: 100%;
-}
-
-.candidate-job-application-secondary-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    min-height: 44px;
-    box-sizing: border-box;
-    padding: 0 20px;
-    border: 1px solid #ddd;
-    border-radius: 7px;
-    background: #fff;
-    color: #222;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.candidate-job-application-secondary-button:hover {
-    background: #f5f5f5;
+    line-height: 1.5;
 }
 
 /* Form actions */
 
 .candidate-job-application-form-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
 }
 
 /* Review */
@@ -462,11 +380,11 @@
 
 .candidate-job-application-review-step {
     margin: 0 0 6px;
-    color: #777;
+    color: var(--color-primary);
     font-size: 0.85rem;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: 0.06em;
 }
 
 .candidate-job-application-review-header h2 {
@@ -476,18 +394,18 @@
 
 .candidate-job-application-review-header p:last-child {
     margin: 0;
-    color: #666;
-    line-height: 1.5;
+    color: var(--color-text-muted);
+    line-height: 1.6;
 }
 
 .candidate-job-application-review-section {
     padding: 20px 0;
-    border-top: 1px solid #e5e5e5;
+    border-top: 1px solid var(--color-border);
 }
 
 .candidate-job-application-review-section:first-of-type {
-    border-top: 0;
     padding-top: 0;
+    border-top: 0;
 }
 
 .candidate-job-application-review-section h3 {
@@ -499,32 +417,33 @@
     display: flex;
     flex-direction: column;
     gap: 4px;
-    color: #555;
-    line-height: 1.45;
+    color: var(--color-text-muted);
+    line-height: 1.5;
 }
 
 .candidate-job-application-review-value strong {
-    color: #222;
+    color: var(--color-text);
 }
 
 .candidate-job-application-review-text {
     padding: 14px;
-    border: 1px solid #e2e2e2;
-    border-radius: 8px;
-    background: #fafafa;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    color: var(--color-text);
     white-space: pre-wrap;
-    line-height: 1.55;
+    line-height: 1.6;
 }
 
 .candidate-job-application-review-muted {
     margin: 0;
-    color: #777;
+    color: var(--color-text-muted);
 }
 
 .candidate-job-application-review-consent {
     margin: 0;
-    color: #333;
-    line-height: 1.5;
+    color: var(--color-text);
+    line-height: 1.6;
 }
 
 .candidate-job-application-review-actions {
@@ -533,17 +452,7 @@
     gap: 12px;
     margin-top: 28px;
     padding-top: 24px;
-    border-top: 1px solid #e5e5e5;
-}
-
-.candidate-job-application-review-back-button {
-    background: #fff;
-    color: #222;
-    border-color: #ddd;
-}
-
-.candidate-job-application-review-back-button:hover:not(:disabled) {
-    background: #f5f5f5;
+    border-top: 1px solid var(--color-border);
 }
 
 /* Loading / error / success */
@@ -569,21 +478,38 @@
 .candidate-job-application-success a {
     display: inline-flex;
     margin-top: 12px;
-    color: inherit;
+    color: var(--color-primary);
     font-weight: 600;
+    text-underline-offset: 3px;
+}
+
+/* Loading spinner */
+
+.candidate-job-cv-loading-spinner {
+    flex: 0 0 auto;
+}
+
+/* Focus accessibility */
+
+.candidate-job-cv-settings:focus-visible,
+.candidate-job-cv-settings-action:focus-visible,
+.candidate-job-cv-delete-button:focus-visible,
+.candidate-job-cv-upload-button:focus-within,
+.candidate-job-application-field textarea:focus-visible {
+    outline: 3px solid var(--color-primary-soft);
+    outline-offset: 3px;
 }
 
 /* Responsive */
 
 @media (max-width: 700px) {
     .candidate-job-application-page {
-        width: min(100% - 20px, 960px);
-        padding-top: 20px;
+        width: calc(100% - 32px);
+        padding: 28px 0 44px;
     }
 
     .candidate-job-application-card {
         padding: 20px;
-        border-radius: 10px;
     }
 
     .candidate-job-cv-header {
@@ -594,16 +520,13 @@
         max-width: 220px;
     }
 
-    .candidate-job-cv-preview {
+    .candidate-job-cv-preview,
+    .candidate-job-cv-preview-state {
         min-height: 500px;
     }
 
     .candidate-job-cv-preview-frame {
         height: 500px;
-    }
-
-    .candidate-job-cv-preview-state {
-        min-height: 500px;
     }
 
     .candidate-job-cv-settings-panel {
@@ -621,7 +544,7 @@
     }
 
     .candidate-job-cv-upload-button,
-    .candidate-job-cv-cancel-button {
+    .candidate-job-cv-upload-actions .btn-secondary {
         width: 100%;
     }
 
@@ -629,15 +552,29 @@
         line-height: 1.5;
     }
 
-    .candidate-job-application-form-actions,
+    .candidate-job-application-form-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .candidate-job-application-form-actions>* {
+        width: 100%;
+    }
+
     .candidate-job-application-review-actions {
         grid-template-columns: 1fr;
     }
+
+    .candidate-job-application-success {
+        margin: 48px auto;
+    }
 }
+
+/* Compact state for selected Word documents and upload progress */
 
 .candidate-job-cv-conversion-state {
     gap: 16px;
-    color: #333;
+    color: var(--color-text);
 }
 
 .candidate-job-cv-conversion-state .candidate-job-cv-loading-spinner {
@@ -652,16 +589,15 @@
 
 .candidate-job-cv-conversion-state span {
     max-width: 360px;
+    color: var(--color-text-muted);
     font-size: 0.9rem;
     line-height: 1.5;
 }
 
-/* Compact state for selected Word documents and upload progress */
-
 .candidate-job-cv-preview.candidate-job-cv-compact-state {
     min-height: 0;
     height: auto;
-    background: #fafafa;
+    background: var(--color-background);
 }
 
 .candidate-job-cv-compact-state .candidate-job-cv-preview-state {
@@ -676,13 +612,14 @@
 
 .candidate-job-cv-compact-state .candidate-job-cv-preview-state strong {
     max-width: 100%;
-    color: #333;
+    color: var(--color-text);
     font-size: 0.95rem;
     overflow-wrap: anywhere;
 }
 
 .candidate-job-cv-compact-state .candidate-job-cv-preview-state span {
     max-width: 100%;
+    color: var(--color-text-muted);
     font-size: 0.875rem;
     line-height: 1.45;
 }
@@ -699,8 +636,14 @@
     flex: 0 0 22px;
 }
 
-@media (max-width: 700px) {
-    .candidate-job-cv-compact-state .candidate-job-cv-preview-state {
-        padding: 16px;
+/* Reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .candidate-job-cv-settings,
+    .candidate-job-cv-settings-action,
+    .candidate-job-cv-upload-button,
+    .candidate-job-application-field textarea {
+        transition: none;
     }
 }

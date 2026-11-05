@@ -289,7 +289,7 @@ describe('CandidateJobApplicationPage', () => {
         )
 
         const file = new File(
-            ['cv contents'],
+            ['%PDF-1.4\nCV test content'],
             'candidate-cv.pdf',
             { type: 'application/pdf' },
         )

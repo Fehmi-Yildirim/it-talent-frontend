@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Editor } from '@tiptap/react'
+import { useTranslation } from '../../i18n/useTranslation'
 
 interface RichTextToolbarProps {
     editor: Editor
@@ -26,8 +27,7 @@ function ToolbarButton({
     return (
         <button
             type="button"
-            className={`rich-text-toolbar__button${active ? ' is-active' : ''
-                }`}
+            className={`rich-text-toolbar__button${active ? ' is-active' : ''}`}
             aria-label={label}
             aria-pressed={active}
             disabled={disabled}
@@ -45,6 +45,7 @@ export function RichTextToolbar({
     showHtml,
     onToggleHtml,
 }: RichTextToolbarProps) {
+    const { t } = useTranslation()
     const isDisabled = disabled || !editor.isEditable
 
     const setLink = () => {
@@ -53,13 +54,11 @@ export function RichTextToolbar({
             | undefined
 
         const url = window.prompt(
-            'Enter URL',
+            t('feedback.richText.enterUrl'),
             currentHref ?? 'https://',
         )
 
-        if (url === null) {
-            return
-        }
+        if (url === null) return
 
         const trimmedUrl = url.trim()
 
@@ -68,45 +67,33 @@ export function RichTextToolbar({
             return
         }
 
-        editor
-            .chain()
-            .focus()
-            .setLink({ href: trimmedUrl })
-            .run()
+        editor.chain().focus().setLink({ href: trimmedUrl }).run()
     }
 
     return (
         <div
             className="rich-text-toolbar"
             role="toolbar"
-            aria-label="Text formatting"
+            aria-label={t('feedback.richText.toolbarLabel')}
         >
             <div className="rich-text-toolbar__group">
                 <ToolbarButton
-                    label="Heading 2"
+                    label={t('feedback.richText.heading2')}
                     active={editor.isActive('heading', { level: 2 })}
                     disabled={isDisabled}
                     onClick={() =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 2 })
-                            .run()
+                        editor.chain().focus().toggleHeading({ level: 2 }).run()
                     }
                 >
                     H2
                 </ToolbarButton>
 
                 <ToolbarButton
-                    label="Heading 3"
+                    label={t('feedback.richText.heading3')}
                     active={editor.isActive('heading', { level: 3 })}
                     disabled={isDisabled}
                     onClick={() =>
-                        editor
-                            .chain()
-                            .focus()
-                            .toggleHeading({ level: 3 })
-                            .run()
+                        editor.chain().focus().toggleHeading({ level: 3 }).run()
                     }
                 >
                     H3
@@ -115,34 +102,28 @@ export function RichTextToolbar({
 
             <div className="rich-text-toolbar__group">
                 <ToolbarButton
-                    label="Bold"
+                    label={t('feedback.richText.bold')}
                     active={editor.isActive('bold')}
                     disabled={isDisabled}
-                    onClick={() =>
-                        editor.chain().focus().toggleBold().run()
-                    }
+                    onClick={() => editor.chain().focus().toggleBold().run()}
                 >
                     <strong>B</strong>
                 </ToolbarButton>
 
                 <ToolbarButton
-                    label="Italic"
+                    label={t('feedback.richText.italic')}
                     active={editor.isActive('italic')}
                     disabled={isDisabled}
-                    onClick={() =>
-                        editor.chain().focus().toggleItalic().run()
-                    }
+                    onClick={() => editor.chain().focus().toggleItalic().run()}
                 >
                     <em>I</em>
                 </ToolbarButton>
 
                 <ToolbarButton
-                    label="Underline"
+                    label={t('feedback.richText.underline')}
                     active={editor.isActive('underline')}
                     disabled={isDisabled}
-                    onClick={() =>
-                        editor.chain().focus().toggleUnderline().run()
-                    }
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
                 >
                     <u>U</u>
                 </ToolbarButton>
@@ -150,56 +131,52 @@ export function RichTextToolbar({
 
             <div className="rich-text-toolbar__group">
                 <ToolbarButton
-                    label="Bullet list"
+                    label={t('feedback.richText.bulletList')}
                     active={editor.isActive('bulletList')}
                     disabled={isDisabled}
                     onClick={() =>
                         editor.chain().focus().toggleBulletList().run()
                     }
                 >
-                    • List
+                    {t('feedback.richText.bulletList')}
                 </ToolbarButton>
 
                 <ToolbarButton
-                    label="Ordered list"
+                    label={t('feedback.richText.orderedList')}
                     active={editor.isActive('orderedList')}
                     disabled={isDisabled}
                     onClick={() =>
                         editor.chain().focus().toggleOrderedList().run()
                     }
                 >
-                    1. List
+                    {t('feedback.richText.orderedList')}
                 </ToolbarButton>
             </div>
 
             <div className="rich-text-toolbar__group">
                 <ToolbarButton
-                    label="Link"
+                    label={t('feedback.richText.link')}
                     active={editor.isActive('link')}
                     disabled={isDisabled}
                     onClick={setLink}
                 >
-                    Link
+                    {t('feedback.richText.link')}
                 </ToolbarButton>
             </div>
 
             <div className="rich-text-toolbar__group">
                 <ToolbarButton
-                    label="Undo"
+                    label={t('feedback.richText.undo')}
                     disabled={isDisabled || !editor.can().undo()}
-                    onClick={() =>
-                        editor.chain().focus().undo().run()
-                    }
+                    onClick={() => editor.chain().focus().undo().run()}
                 >
                     ↶
                 </ToolbarButton>
 
                 <ToolbarButton
-                    label="Redo"
+                    label={t('feedback.richText.redo')}
                     disabled={isDisabled || !editor.can().redo()}
-                    onClick={() =>
-                        editor.chain().focus().redo().run()
-                    }
+                    onClick={() => editor.chain().focus().redo().run()}
                 >
                     ↷
                 </ToolbarButton>
@@ -207,12 +184,18 @@ export function RichTextToolbar({
 
             <div className="rich-text-toolbar__group rich-text-toolbar__group--right">
                 <ToolbarButton
-                    label={showHtml ? 'Visual editor' : 'HTML'}
+                    label={
+                        showHtml
+                            ? t('feedback.richText.visualEditor')
+                            : t('feedback.richText.html')
+                    }
                     active={showHtml}
                     disabled={disabled}
                     onClick={onToggleHtml}
                 >
-                    {showHtml ? 'Visual' : 'HTML'}
+                    {showHtml
+                        ? t('feedback.richText.visual')
+                        : t('feedback.richText.html')}
                 </ToolbarButton>
             </div>
         </div>

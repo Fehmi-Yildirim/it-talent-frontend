@@ -131,7 +131,9 @@ function CandidateApplicationsPage() {
                             )}
                         </p>
 
-                        <Link to="/dashboard">
+                        <Link to="/dashboard"
+                            className="back-link"
+                        >
                             {t(
                                 'common.backToDashboard',
                             )}
@@ -253,7 +255,7 @@ function CandidateApplicationsPage() {
 
                     <Link
                         to="/jobs"
-                        className="candidate-applications-primary-link"
+                        className="back-link"
                     >
                         {t('candidateApplications.browseJobs')}
                     </Link>

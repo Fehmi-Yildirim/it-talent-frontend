@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate, useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import {
     closeJob,
     getJobById,
@@ -114,7 +114,6 @@ function RequirementRow({
 }
 
 export default function RecruiterJobDetailsPage() {
-    const navigate = useNavigate()
     const { jobId } = useParams()
     const { language, t } = useTranslation()
 
@@ -322,8 +321,8 @@ export default function RecruiterJobDetailsPage() {
                     <p>{error}</p>
 
                     <Link
-                        className="recruiter-job-details-secondary-button"
                         to="/recruiter/jobs"
+                        className="back-link"
                     >
                         {t('recruiterJobs.backToJobs')}
                     </Link>
@@ -356,12 +355,6 @@ export default function RecruiterJobDetailsPage() {
         <div className="recruiter-job-details-page">
             <header className="recruiter-job-details-header">
                 <div>
-                    <Link
-                        className="recruiter-job-details-back"
-                        to="/recruiter/jobs"
-                    >
-                        ← {t('recruiterJobs.backToJobs')}
-                    </Link>
 
                     <h1>{job.title}</h1>
 
@@ -389,17 +382,24 @@ export default function RecruiterJobDetailsPage() {
                 </div>
 
                 <div className="recruiter-job-details-actions">
+                    <Link
+                        to="/recruiter/jobs"
+                        className="btn btn-secondary"
+                    >
+                        ← {t('recruiterJobs.backToJobs')}
+                    </Link>
+
                     {job.status === 'DRAFT' && (
                         <>
                             <Link
-                                className="recruiter-job-details-secondary-button"
+                                className="btn btn-secondary"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
                                 {t('common.edit')}
                             </Link>
 
                             <button
-                                className="recruiter-job-details-primary-button"
+                                className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handlePublish()}
                                 disabled={actionLoading}
@@ -414,14 +414,14 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'PUBLISHED' && (
                         <>
                             <Link
-                                className="recruiter-job-details-secondary-button"
+                                className="btn btn-secondary"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
                                 {t('common.edit')}
                             </Link>
 
                             <button
-                                className="recruiter-job-details-secondary-button"
+                                className="btn btn-secondary"
                                 type="button"
                                 onClick={() => void handlePause()}
                                 disabled={actionLoading}
@@ -432,7 +432,7 @@ export default function RecruiterJobDetailsPage() {
                             </button>
 
                             <button
-                                className="recruiter-job-details-danger-button"
+                                className="btn btn-danger"
                                 type="button"
                                 onClick={() => void handleClose()}
                                 disabled={actionLoading}
@@ -447,14 +447,14 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'PAUSED' && (
                         <>
                             <Link
-                                className="recruiter-job-details-secondary-button"
+                                className="btn btn-secondary"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
                                 {t('common.edit')}
                             </Link>
 
                             <button
-                                className="recruiter-job-details-primary-button"
+                                className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handleResume()}
                                 disabled={actionLoading}
@@ -465,7 +465,7 @@ export default function RecruiterJobDetailsPage() {
                             </button>
 
                             <button
-                                className="recruiter-job-details-danger-button"
+                                className="btn btn-danger"
                                 type="button"
                                 onClick={() => void handleClose()}
                                 disabled={actionLoading}
@@ -480,14 +480,14 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'CLOSED' && (
                         <>
                             <Link
-                                className="recruiter-job-details-secondary-button"
+                                className="btn btn-secondary"
                                 to={`/recruiter/jobs/${job.id}/edit`}
                             >
                                 {t('common.edit')}
                             </Link>
 
                             <button
-                                className="recruiter-job-details-primary-button"
+                                className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handleReopen()}
                                 disabled={actionLoading}
@@ -610,7 +610,7 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <Link
-                            className="recruiter-job-details-secondary-button"
+                            className="btn btn-secondary"
                             to={`/recruiter/jobs/${job.id}/edit`}
                         >
                             {t('recruiterJobs.manageRequirements')}
@@ -667,15 +667,6 @@ export default function RecruiterJobDetailsPage() {
                 </section>
             </div>
 
-            <footer className="recruiter-job-details-footer">
-                <button
-                    className="recruiter-job-details-secondary-button"
-                    type="button"
-                    onClick={() => navigate('/recruiter/jobs')}
-                >
-                    {t('recruiterJobs.backToJobs')}
-                </button>
-            </footer>
         </div>
     )
 }

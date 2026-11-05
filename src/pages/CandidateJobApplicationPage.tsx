@@ -155,6 +155,7 @@ export default function CandidateJobApplicationPage() {
     const [isDeletingCv, setIsDeletingCv] = useState(false)
     const [isLoadingExistingCv, setIsLoadingExistingCv] = useState(false)
     const [isUploadingCv, setIsUploadingCv] = useState(false)
+    const [isExistingCvPreviewOpen, setIsExistingCvPreviewOpen] = useState(false)
 
     const [existingCvPreviewUrl, setExistingCvPreviewUrl] =
         useState<string | null>(null)
@@ -244,7 +245,7 @@ export default function CandidateJobApplicationPage() {
         }
 
         async function loadExistingCv() {
-            if (!hasExistingCv || isReplacingCv) {
+            if (!hasExistingCv || isReplacingCv || !isExistingCvPreviewOpen) {
                 setIsLoadingExistingCv(false)
                 return
             }
@@ -296,7 +297,7 @@ export default function CandidateJobApplicationPage() {
             }
         }
 
-        if (hasExistingCv && !isReplacingCv) {
+        if (hasExistingCv && !isReplacingCv && isExistingCvPreviewOpen) {
             void loadExistingCv()
         } else {
             setIsLoadingExistingCv(false)
@@ -305,7 +306,7 @@ export default function CandidateJobApplicationPage() {
         return () => {
             cancelled = true
         }
-    }, [candidateCv, hasExistingCv, isReplacingCv, t])
+    }, [candidateCv, hasExistingCv, isReplacingCv, isExistingCvPreviewOpen, t])
 
     useEffect(() => {
         return () => {
@@ -690,9 +691,9 @@ export default function CandidateJobApplicationPage() {
             <div className="candidate-job-application-page">
                 <Link
                     to={`/jobs/${job.id}`}
-                    className="candidate-job-application-back"
+                    className="back-link"
                 >
-                    ← {t('candidateJobDetails.backToJobs')}
+                    {t('candidateJobDetails.backToJobs')}
                 </Link>
 
                 <div className="candidate-job-application-intro">
@@ -805,7 +806,7 @@ export default function CandidateJobApplicationPage() {
                     <div className="candidate-job-application-review-actions">
                         <button
                             type="button"
-                            className="candidate-job-application-button candidate-job-application-review-back-button"
+                            className="btn btn-secondary"
                             onClick={handleBackToEdit}
                             disabled={isSubmitting}
                         >
@@ -813,7 +814,7 @@ export default function CandidateJobApplicationPage() {
                         </button>
                         <button
                             type="button"
-                            className="candidate-job-application-button candidate-job-application-submit"
+                            className="btn btn-primary btn-block"
                             onClick={() => void handleSubmitApplication()}
                             disabled={isSubmitting}
                         >
@@ -844,9 +845,9 @@ export default function CandidateJobApplicationPage() {
         <div className="candidate-job-application-page">
             <Link
                 to={`/jobs/${job.id}`}
-                className="candidate-job-application-back"
+                className="back-link"
             >
-                ← {t('candidateJobDetails.backToJobs')}
+                {t('candidateJobDetails.backToJobs')}
             </Link>
 
             <div className="candidate-job-application-intro">
@@ -902,17 +903,29 @@ export default function CandidateJobApplicationPage() {
 
                         {showExistingCv && candidateCv?.cvOriginalName && (
                             <div className="candidate-job-cv-file">
+                                {showExistingCv && (
+                                    <button
+                                        type="button"
+                                        className="btn btn-secondary"
+                                        onClick={() =>
+                                            setIsExistingCvPreviewOpen((previous) => !previous)
+                                        }
+                                        aria-expanded={isExistingCvPreviewOpen}
+                                    >
+                                        {isExistingCvPreviewOpen ? t('candidateJobDetails.hideCv') : t('candidateJobDetails.viewCv')}
+                                    </button>
+                                )}
                                 <span className="candidate-job-cv-file-icon">
                                     📄
                                 </span>
-                                <div>
-                                    <strong>
-                                        {candidateCv.cvOriginalName}
-                                    </strong>
-                                    <span>
-                                        {t('candidateJobDetails.cvUploaded')}
-                                    </span>
-                                </div>
+                                <strong>
+                                    {candidateCv.cvOriginalName}
+                                </strong>
+                                <span>
+                                    {t('candidateJobDetails.cvUploaded')}
+                                </span>
+
+
                             </div>
                         )}
 
@@ -957,6 +970,7 @@ export default function CandidateJobApplicationPage() {
                 )}
 
                 {showExistingCv &&
+                    isExistingCvPreviewOpen &&
                     (isLoadingExistingCv ||
                         existingCvPreviewError ||
                         existingCvPreviewUrl) && (
@@ -1064,7 +1078,7 @@ export default function CandidateJobApplicationPage() {
                             {isReplacingCv && (
                                 <button
                                     type="button"
-                                    className="candidate-job-cv-cancel-button"
+                                    className="btn btn-secondary"
                                     onClick={cancelReplaceCv}
                                     disabled={
                                         isSubmitting || isUploadingCv
@@ -1149,16 +1163,11 @@ export default function CandidateJobApplicationPage() {
                     )}
 
                     <div className="candidate-job-application-form-actions">
-                        <Link
-                            to={`/jobs/${job.id}`}
-                            className="candidate-job-application-secondary-button"
-                        >
-                            {t('candidateJobDetails.backToJobs')}
-                        </Link>
+
 
                         <button
                             type="submit"
-                            className="candidate-job-application-button candidate-job-application-submit"
+                            className="btn btn-primary btn-block"
                             disabled={
                                 isSubmitting ||
                                 isUploadingCv ||

@@ -237,9 +237,8 @@ function CandidateApplicationDetailsPage() {
             <header className="candidate-application-details-header">
                 <Link
                     to="/applications"
-                    className="candidate-application-details-back-link"
+                    className="back-link"
                 >
-                    ←{' '}
                     {t(
                         'candidateApplications.details.backToApplications',
                     )}

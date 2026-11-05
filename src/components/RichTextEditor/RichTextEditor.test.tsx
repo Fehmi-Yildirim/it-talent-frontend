@@ -1,12 +1,22 @@
+
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import type { ReactNode } from 'react'
 import { describe, expect, it, vi } from 'vitest'
-
+import { I18nProvider } from '../../i18n/context'
 import { RichTextEditor } from './RichTextEditor'
+
+function renderWithI18n(ui: ReactNode) {
+    return render(
+        <I18nProvider>
+            {ui}
+        </I18nProvider>,
+    )
+}
 
 describe('RichTextEditor', () => {
     it('renders the toolbar and editor', () => {
-        render(
+        renderWithI18n(
             <RichTextEditor
                 value="<p>Hello</p>"
                 onChange={vi.fn()}
@@ -66,7 +76,7 @@ describe('RichTextEditor', () => {
     })
 
     it('renders the initial HTML content', () => {
-        render(
+        renderWithI18n(
             <RichTextEditor
                 value="<p>Hello <strong>world</strong></p>"
                 onChange={vi.fn()}
@@ -84,7 +94,7 @@ describe('RichTextEditor', () => {
         const user = userEvent.setup()
         const onChange = vi.fn()
 
-        render(
+        renderWithI18n(
             <RichTextEditor
                 value="<p>Hello</p>"
                 onChange={onChange}
@@ -131,7 +141,7 @@ describe('RichTextEditor', () => {
     it('calls onChange when HTML content is edited', () => {
         const onChange = vi.fn()
 
-        render(
+        renderWithI18n(
             <RichTextEditor
                 value="<p>Hello</p>"
                 onChange={onChange}
@@ -160,7 +170,7 @@ describe('RichTextEditor', () => {
     })
 
     it('supports an accessible label', () => {
-        render(
+        renderWithI18n(
             <>
                 <label id="description-label">
                     Description
@@ -189,7 +199,7 @@ describe('RichTextEditor', () => {
     })
 
     it('disables editing and toolbar controls', () => {
-        render(
+        renderWithI18n(
             <RichTextEditor
                 value="<p>Hello</p>"
                 onChange={vi.fn()}

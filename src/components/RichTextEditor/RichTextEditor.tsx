@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { EditorContent, useEditor } from '@tiptap/react'
@@ -6,6 +7,7 @@ import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
 import Underline from '@tiptap/extension-underline'
 
+import { useTranslation } from '../../i18n/useTranslation'
 import { RichTextToolbar } from './RichTextToolbar'
 import './RichTextEditor.css'
 
@@ -24,12 +26,14 @@ export function RichTextEditor({
     id,
     value,
     onChange,
-    placeholder = 'Start typing...',
+    placeholder: placeholderProp,
     disabled = false,
     minHeight = 180,
     'aria-label': ariaLabel,
     'aria-labelledby': ariaLabelledBy,
 }: RichTextEditorProps) {
+    const { t } = useTranslation()
+    const placeholder = placeholderProp ?? t('feedback.richText.placeholder')
     const [showHtml, setShowHtml] = useState(false)
 
     const editor = useEditor({
@@ -114,7 +118,7 @@ export function RichTextEditor({
                         '--rich-text-editor-min-height': `${minHeight}px`,
                     } as CSSProperties
                 }
-                aria-label="Rich text editor"
+                aria-label={t('feedback.richText.editorLabel')}
             />
         )
     }
@@ -143,7 +147,7 @@ export function RichTextEditor({
                     value={value}
                     onChange={(event) => onChange(event.target.value)}
                     disabled={disabled}
-                    aria-label="HTML source"
+                    aria-label={t('feedback.richText.htmlSourceLabel')}
                     spellCheck={false}
                 />
             ) : (

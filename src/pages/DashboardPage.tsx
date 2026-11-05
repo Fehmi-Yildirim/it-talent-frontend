@@ -72,7 +72,7 @@ function DashboardPage() {
           <p>{error}</p>
           <button
             type="button"
-            className="dashboard-action dashboard-action--primary"
+            className="btn btn-primary"
             onClick={() => void loadDashboard()}
           >
             {t('dashboard.retry')}
@@ -97,7 +97,7 @@ function DashboardPage() {
           </p>
         </div>
 
-        <Link to="/profile" className="dashboard-profile-link">
+        <Link to="/profile" className="btn btn-primary">
           {t('dashboard.viewProfile')}
         </Link>
       </div>
@@ -125,7 +125,7 @@ function DashboardPage() {
 
               <Link
                 to="/profile"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.candidate.editProfile')}
               </Link>
@@ -142,7 +142,7 @@ function DashboardPage() {
 
               <Link
                 to="/applications"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.candidate.viewApplications')}
               </Link>
@@ -162,7 +162,7 @@ function DashboardPage() {
 
               <Link
                 to="/jobs"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.candidate.browseJobs')}
               </Link>
@@ -179,7 +179,7 @@ function DashboardPage() {
 
               <Link
                 to="/profile"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.candidate.manageProfile')}
               </Link>
@@ -318,7 +318,7 @@ function DashboardPage() {
 
               <Link
                 to="/recruiter/company"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.recruiter.manageCompany')}
               </Link>
@@ -342,7 +342,7 @@ function DashboardPage() {
 
               <Link
                 to="/recruiter/jobs"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.recruiter.manageJobs')}
               </Link>
@@ -359,7 +359,7 @@ function DashboardPage() {
 
               <Link
                 to="/recruiter/applications"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.recruiter.viewApplications')}
               </Link>
@@ -377,7 +377,7 @@ function DashboardPage() {
 
               <Link
                 to="/profile"
-                className="dashboard-action dashboard-action--secondary"
+                className="btn btn-secondary"
               >
                 {t('dashboard.recruiter.editProfile')}
               </Link>
@@ -523,14 +523,14 @@ function DashboardPage() {
           <div className="dashboard-admin-actions">
             <Link
               to="/admin/users"
-              className="dashboard-action dashboard-action--primary"
+              className="btn btn-primary"
             >
               {t('dashboard.admin.manageUsers')}
             </Link>
 
             <Link
               to="/admin/skills"
-              className="dashboard-action dashboard-action--primary"
+              className="btn btn-primary"
             >
               {t('dashboard.admin.manageSkills')}
             </Link>

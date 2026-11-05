@@ -73,6 +73,7 @@ function ConfirmDialog({
                     <button
                         ref={cancelButtonRef}
                         type="button"
+                        className="btn btn-secondary"
                         onClick={onCancel}
                     >
                         {cancelLabel}
@@ -82,8 +83,8 @@ function ConfirmDialog({
                         type="button"
                         className={
                             destructive
-                                ? 'confirm-dialog__confirm--destructive'
-                                : undefined
+                                ? 'btn btn-danger'
+                                : 'btn btn-primary'
                         }
                         onClick={onConfirm}
                     >
