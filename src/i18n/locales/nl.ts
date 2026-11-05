@@ -565,6 +565,9 @@ export const nl: DeepPartial<typeof en> = {
             visualEditor: 'Visuele editor',
             html: 'HTML',
             visual: 'Visueel',
+            placeholder: 'Begin met typen...',
+            editorLabel: 'Teksteditor',
+            htmlSourceLabel: 'HTML-bron',
         },
     },
 

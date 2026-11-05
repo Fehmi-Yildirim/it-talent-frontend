@@ -453,6 +453,9 @@ export const en = {
             visualEditor: 'Visual editor',
             html: 'HTML',
             visual: 'Visual',
+            placeholder: 'Start typing...',
+            editorLabel: 'Text editor',
+            htmlSourceLabel: 'HTML source',
         },
     },
 
