@@ -300,7 +300,12 @@ function CompanyManagement() {
                         <p>
                             {new Date(company.createdAt).toLocaleDateString(
                                 undefined,
-                                { timeZone: 'UTC' },
+                                {
+                                    day: '2-digit',
+                                    month: '2-digit',
+                                    year: 'numeric',
+                                    timeZone: 'UTC',
+                                },
                             )}
                         </p>
                     </div>
