@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import './EmptyState.css'
 
 interface EmptyStateProps {
     title: string
@@ -12,11 +13,17 @@ function EmptyState({
     action,
 }: EmptyStateProps) {
     return (
-        <div>
-            <h2>{title}</h2>
-            <p>{message}</p>
-            {action}
-        </div>
+        <section className="empty-state" aria-labelledby="empty-state-title">
+            <div className="empty-state__content">
+                <h2 id="empty-state-title">{title}</h2>
+                <p>{message}</p>
+                {action && (
+                    <div className="empty-state__action">
+                        {action}
+                    </div>
+                )}
+            </div>
+        </section>
     )
 }
 
