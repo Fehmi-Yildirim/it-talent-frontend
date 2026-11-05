@@ -1,7 +1,9 @@
+
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import ErrorState from '../../components/feedback/ErrorState'
 import LoadingState from '../../components/feedback/LoadingState'
+import { useTranslation } from '../../i18n/useTranslation'
 import { ApiError } from '../../services/api/apiError'
 import { apiClient } from '../../services/api/apiClient'
 import './CompanyManagement.css'
@@ -25,6 +27,7 @@ interface CompanyInput {
 }
 
 function CompanyManagement() {
+    const { t } = useTranslation()
     const [company, setCompany] = useState<Company | null>(null)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
@@ -65,26 +68,16 @@ function CompanyManagement() {
                             caught.status === 401 ||
                             caught.status === 403
                         ) {
-                            setError(
-                                'You are not authorized to access company information.',
-                            )
+                            setError(t('companyManagement.unauthorizedRead'))
                         } else if (caught.status === 500) {
-                            setError(
-                                'The server encountered an error while loading company information.',
-                            )
+                            setError(t('companyManagement.serverLoadError'))
                         } else if (caught.status === 0) {
-                            setError(
-                                'Unable to connect to the server. Please check your connection and try again.',
-                            )
+                            setError(t('companyManagement.connectionError'))
                         } else {
-                            setError(
-                                'Unable to load company information.',
-                            )
+                            setError(t('companyManagement.loadError'))
                         }
                     } else {
-                        setError(
-                            'Unable to load company information.',
-                        )
+                        setError(t('companyManagement.loadError'))
                     }
                 }
             } finally {
@@ -99,7 +92,7 @@ function CompanyManagement() {
         return () => {
             cancelled = true
         }
-    }, [retryCount])
+    }, [retryCount, t])
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
@@ -117,14 +110,8 @@ function CompanyManagement() {
             setSuccess(null)
 
             const data = company
-                ? await apiClient.patch<Company>(
-                    '/companies/me',
-                    input,
-                )
-                : await apiClient.post<Company>(
-                    '/companies',
-                    input,
-                )
+                ? await apiClient.patch<Company>('/companies/me', input)
+                : await apiClient.post<Company>('/companies', input)
 
             setCompany(data)
             setName(data.name)
@@ -135,50 +122,35 @@ function CompanyManagement() {
 
             setSuccess(
                 company
-                    ? 'Company information saved successfully.'
-                    : 'Company created successfully.',
+                    ? t('companyManagement.saveSuccess')
+                    : t('companyManagement.createSuccess'),
             )
         } catch (caught) {
             if (caught instanceof ApiError) {
-                if (
-                    caught.status === 401 ||
-                    caught.status === 403
-                ) {
-                    setError(
-                        'You are not authorized to modify company information.',
-                    )
+                if (caught.status === 401 || caught.status === 403) {
+                    setError(t('companyManagement.unauthorizedModify'))
                 } else if (caught.status === 400) {
-                    setError(
-                        'Please check the company information and try again.',
-                    )
+                    setError(t('companyManagement.validationError'))
                 } else if (caught.status === 409) {
-                    setError(
-                        'A company with this information already exists.',
-                    )
+                    setError(t('companyManagement.existsError'))
                 } else if (caught.status === 422) {
-                    setError(
-                        'The company information could not be processed. Please check your input.',
-                    )
+                    setError(t('companyManagement.processError'))
                 } else if (caught.status === 500) {
-                    setError(
-                        'The server encountered an error. Please try again later.',
-                    )
+                    setError(t('companyManagement.serverSaveError'))
                 } else if (caught.status === 0) {
-                    setError(
-                        'Unable to connect to the server. Please check your connection and try again.',
-                    )
+                    setError(t('companyManagement.connectionError'))
                 } else {
                     setError(
                         company
-                            ? 'Unable to save company information.'
-                            : 'Unable to create company.',
+                            ? t('companyManagement.saveError')
+                            : t('companyManagement.createError'),
                     )
                 }
             } else {
                 setError(
                     company
-                        ? 'Unable to save company information.'
-                        : 'Unable to create company.',
+                        ? t('companyManagement.saveError')
+                        : t('companyManagement.createError'),
                 )
             }
         } finally {
@@ -187,19 +159,17 @@ function CompanyManagement() {
     }
 
     if (isLoading) {
-        return (
-            <LoadingState message="Loading company information..." />
-        )
+        return <LoadingState message={t('companyManagement.loading')} />
     }
 
     if (!company && !isCreating) {
         if (error) {
             return (
                 <section className="company-management">
-                    <h2>Company</h2>
+                    <h2>{t('companyManagement.title')}</h2>
 
                     <ErrorState
-                        title="Company information unavailable"
+                        title={t('companyManagement.unavailable')}
                         message={error}
                         onRetry={() => {
                             setError(null)
@@ -209,12 +179,13 @@ function CompanyManagement() {
 
                     <button
                         type="button"
+                        className="btn btn-primary"
                         onClick={() => {
                             setError(null)
                             setIsCreating(true)
                         }}
                     >
-                        Create company
+                        {t('companyManagement.createCompany')}
                     </button>
                 </section>
             )
@@ -222,17 +193,16 @@ function CompanyManagement() {
 
         return (
             <section className="company-management">
-                <h2>Company</h2>
+                <h2>{t('companyManagement.title')}</h2>
 
-                <p>
-                    You are not currently connected to a company.
-                </p>
+                <p>{t('companyManagement.noCompany')}</p>
 
                 <button
                     type="button"
+                    className="btn btn-primary"
                     onClick={() => setIsCreating(true)}
                 >
-                    Create company
+                    {t('companyManagement.createCompany')}
                 </button>
             </section>
         )
@@ -242,34 +212,34 @@ function CompanyManagement() {
         <section className="company-management">
             <h2>
                 {company
-                    ? 'Company information'
-                    : 'Create company'}
+                    ? t('companyManagement.information')
+                    : t('companyManagement.createCompany')}
             </h2>
 
             {error && (
                 <ErrorState
-                    title="Unable to save company"
+                    title={t('companyManagement.saveError')}
                     message={error}
                 />
             )}
 
             {success && (
-                <p role="status">{success}</p>
+                <p className="company-management__success" role="status">
+                    {success}
+                </p>
             )}
 
             <form onSubmit={handleSubmit}>
-                <div>
+                <div className="company-management__field">
                     <label htmlFor="company-name">
-                        Company name
+                        {t('companyManagement.name')}
                     </label>
-
                     <input
                         id="company-name"
                         type="text"
+                        className="form-control"
                         value={name}
-                        onChange={(event) =>
-                            setName(event.target.value)
-                        }
+                        onChange={(event) => setName(event.target.value)}
                         minLength={2}
                         maxLength={150}
                         required
@@ -277,17 +247,15 @@ function CompanyManagement() {
                     />
                 </div>
 
-                <div>
+                <div className="company-management__field">
                     <label htmlFor="company-description">
-                        Description
+                        {t('companyManagement.description')}
                     </label>
-
                     <textarea
                         id="company-description"
+                        className="form-control"
                         value={description}
-                        onChange={(event) =>
-                            setDescription(event.target.value)
-                        }
+                        onChange={(event) => setDescription(event.target.value)}
                         minLength={2}
                         maxLength={255}
                         rows={5}
@@ -296,62 +264,58 @@ function CompanyManagement() {
                     />
                 </div>
 
-                <div>
+                <div className="company-management__field">
                     <label htmlFor="company-website">
-                        Website
+                        {t('companyManagement.website')}
                     </label>
-
                     <input
                         id="company-website"
                         type="url"
+                        className="form-control"
                         value={website}
-                        onChange={(event) =>
-                            setWebsite(event.target.value)
-                        }
+                        onChange={(event) => setWebsite(event.target.value)}
                         maxLength={255}
                         aria-invalid={Boolean(error)}
                     />
                 </div>
 
-                <div>
+                <div className="company-management__field">
                     <label htmlFor="company-location">
-                        Location
+                        {t('companyManagement.location')}
                     </label>
-
                     <input
                         id="company-location"
                         type="text"
+                        className="form-control"
                         value={location}
-                        onChange={(event) =>
-                            setLocation(event.target.value)
-                        }
+                        onChange={(event) => setLocation(event.target.value)}
                         maxLength={255}
                         aria-invalid={Boolean(error)}
                     />
                 </div>
 
                 {company && (
-                    <div>
-                        <span>Created at</span>
+                    <div className="company-management__meta">
+                        <span>{t('companyManagement.createdAt')}</span>
                         <p>
-                            {new Date(
-                                company.createdAt,
-                            ).toLocaleDateString('en-GB', {
-                                timeZone: 'UTC',
-                            })}
+                            {new Date(company.createdAt).toLocaleDateString(
+                                undefined,
+                                { timeZone: 'UTC' },
+                            )}
                         </p>
                     </div>
                 )}
 
                 <button
                     type="submit"
+                    className="btn btn-primary"
                     disabled={isSaving}
                 >
                     {isSaving
-                        ? 'Saving...'
+                        ? t('companyManagement.saving')
                         : company
-                            ? 'Save'
-                            : 'Create company'}
+                            ? t('companyManagement.save')
+                            : t('companyManagement.createCompany')}
                 </button>
             </form>
         </section>
