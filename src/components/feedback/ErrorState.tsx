@@ -1,4 +1,5 @@
 import { useTranslation } from '../../i18n/useTranslation'
+import './ErrorState.css'
 
 interface ErrorStateProps {
     title?: string
@@ -22,16 +23,26 @@ function ErrorState({
         retryLabel ?? t('common.tryAgain')
 
     return (
-        <div role="alert">
-            <h2>{resolvedTitle}</h2>
-            <p>{message}</p>
+        <section className="error-state" role="alert">
+            <div className="error-state__icon" aria-hidden="true">
+                !
+            </div>
 
-            {onRetry && (
-                <button type="button" onClick={onRetry}>
-                    {resolvedRetryLabel}
-                </button>
-            )}
-        </div>
+            <div className="error-state__content">
+                <h2>{resolvedTitle}</h2>
+                <p>{message}</p>
+
+                {onRetry && (
+                    <button
+                        className="btn btn-primary"
+                        type="button"
+                        onClick={onRetry}
+                    >
+                        {resolvedRetryLabel}
+                    </button>
+                )}
+            </div>
+        </section>
     )
 }
 
