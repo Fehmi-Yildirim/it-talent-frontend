@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ErrorState from '../components/feedback/ErrorState'
@@ -144,7 +145,8 @@ function ProfileForm({
         event.preventDefault()
         onSubmit()
       }}
-    > <label>
+    >
+      <label>
         {t('profile.headline')}
         <input
           value={value.headline ?? ''}
@@ -154,8 +156,8 @@ function ProfileForm({
               headline: event.target.value,
             })
           }
-        /> </label>
-
+        />
+      </label>
 
       <label>
         {t('profile.summary')}
@@ -267,6 +269,7 @@ function ProfileForm({
       <div className="profile-actions">
         <button
           type="submit"
+          className="btn btn-primary"
           disabled={submitting}
         >
           {submitting ? savingLabel : submitLabel}
@@ -275,6 +278,7 @@ function ProfileForm({
         {onCancel && (
           <button
             type="button"
+            className="btn btn-secondary"
             onClick={onCancel}
             disabled={submitting}
           >
@@ -283,8 +287,6 @@ function ProfileForm({
         )}
       </div>
     </form>
-
-
   )
 }
 
@@ -322,14 +324,17 @@ function RecruiterProfileForm({
         event.preventDefault()
         onSubmit()
       }}
-    > <div className="profile-form-section"> <div> <p className="profile-eyebrow">
-      {t('profile.account')} </p>
+    >
+      <div className="profile-form-section">
+        <div>
+          <p className="profile-eyebrow">
+            {t('profile.account')}
+          </p>
 
-
-      <h2>
-        {t('profile.accountInformation')}
-      </h2>
-    </div>
+          <h2>
+            {t('profile.accountInformation')}
+          </h2>
+        </div>
 
         <div className="profile-form-row">
           <label>
@@ -393,6 +398,7 @@ function RecruiterProfileForm({
       <div className="profile-actions">
         <button
           type="submit"
+          className="btn btn-primary"
           disabled={submitting}
         >
           {submitting
@@ -402,6 +408,7 @@ function RecruiterProfileForm({
 
         <button
           type="button"
+          className="btn btn-secondary"
           onClick={onCancel}
           disabled={submitting}
         >
@@ -409,7 +416,6 @@ function RecruiterProfileForm({
         </button>
       </div>
     </form>
-
   )
 }
 
@@ -458,7 +464,6 @@ function ProfilePage() {
     if (!user || user.role !== 'CANDIDATE') {
       return
     }
-
 
     let cancelled = false
 
@@ -514,8 +519,6 @@ function ProfilePage() {
     return () => {
       cancelled = true
     }
-
-
   }, [user, retryCount, t])
 
   useEffect(() => {
@@ -553,15 +556,12 @@ function ProfilePage() {
     return () => {
       cancelled = true
     }
-
-
   }, [user, recruiterRetryCount, t])
 
   async function handleSubmit() {
     setSubmitting(true)
     setError(null)
     setSuccess(null)
-
 
     try {
       const profile = candidateProfile
@@ -619,15 +619,12 @@ function ProfilePage() {
     } finally {
       setSubmitting(false)
     }
-
-
   }
 
   async function handleProfileSubmit() {
     setProfileSubmitting(true)
     setError(null)
     setSuccess(null)
-
 
     try {
       await updateUser(
@@ -685,8 +682,6 @@ function ProfilePage() {
     setEditingProfile(false)
     setSuccess(t('profile.profileUpdated'))
     setProfileSubmitting(false)
-
-
   }
 
   function startEditing() {
@@ -712,7 +707,6 @@ function ProfilePage() {
     setError(null)
     setSuccess(null)
     setEditingProfile(true)
-
   }
 
   function cancelProfileEditing() {
@@ -724,29 +718,152 @@ function ProfilePage() {
     setError(null)
     setSuccess(null)
     setEditingProfile(false)
-
   }
 
-  return (<section className="profile-page"> <div className="profile-header"> <div> <p className="profile-eyebrow">IT Talent</p>
+  return (
+    <section className="profile-page">
+      <div className="profile-header">
+        <div>
+          <p className="profile-eyebrow">IT Talent</p>
+          <h1>{t('profile.title')}</h1>
+        </div>
 
-    <h1>{t('profile.title')}</h1>
-  </div>
+        <Link to="/dashboard" className="btn btn-secondary">
+          {t('common.backToDashboard')}
+        </Link>
+      </div>
 
-    <Link to="/dashboard">
-      {t('common.backToDashboard')}
-    </Link>
-  </div>
+      {success && (
+        <p role="status">{success}</p>
+      )}
 
-    {success && (
-      <p role="status">{success}</p>
-    )}
+      {user?.role === 'RECRUITER' ? (
+        <section
+          className="profile-section"
+          aria-labelledby="account-heading"
+        >
+          {!editingProfile && (
+            <div className="profile-section-header">
+              <div>
+                <p className="profile-eyebrow">
+                  {t('profile.account')}
+                </p>
 
-    {user?.role === 'RECRUITER' ? (
-      <section
-        className="profile-section"
-        aria-labelledby="account-heading"
-      >
-        {!editingProfile && (
+                <h2 id="account-heading">
+                  {t('profile.accountInformation')}
+                </h2>
+              </div>
+
+              {!recruiterLoading &&
+                !recruiterError && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={startProfileEditing}
+                  >
+                    {t('profile.editProfile')}
+                  </button>
+                )}
+            </div>
+          )}
+
+          {recruiterLoading && (
+            <LoadingState
+              message={t('profile.recruiterLoading')}
+            />
+          )}
+
+          {recruiterError && !recruiterLoading && (
+            <ErrorState
+              title={t('profile.recruiterUnavailable')}
+              message={recruiterError}
+              onRetry={() => {
+                setRecruiterError(null)
+                setRecruiterRetryCount(
+                  (current) => current + 1,
+                )
+              }}
+            />
+          )}
+
+          {editingProfile &&
+            !recruiterLoading &&
+            !recruiterError && (
+              <RecruiterProfileForm
+                accountForm={accountForm}
+                jobTitle={jobTitle}
+                submitting={profileSubmitting}
+                onAccountChange={setAccountForm}
+                onJobTitleChange={setJobTitle}
+                onSubmit={() =>
+                  void handleProfileSubmit()
+                }
+                onCancel={cancelProfileEditing}
+              />
+            )}
+
+          {!editingProfile &&
+            !recruiterLoading &&
+            !recruiterError && (
+              <>
+                <dl className="profile-details">
+                  <div>
+                    <dt>{t('profile.firstName')}</dt>
+                    <dd>{user?.firstName}</dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('profile.lastName')}</dt>
+                    <dd>{user?.lastName}</dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('common.email')}</dt>
+                    <dd>{user?.email}</dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('common.role')}</dt>
+                    <dd>{user?.role}</dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('common.status')}</dt>
+                    <dd>{user?.status}</dd>
+                  </div>
+                </dl>
+
+                <div className="profile-subsection">
+                  <div>
+                    <p className="profile-eyebrow">
+                      {t('common.recruiter')}
+                    </p>
+
+                    <h2>
+                      {t('profile.recruiterInformation')}
+                    </h2>
+                  </div>
+
+                  <dl className="profile-details">
+                    <div>
+                      <dt>{t('profile.jobTitle')}</dt>
+                      <dd>
+                        {formatNullable(
+                          jobTitle || null,
+                          t('common.notSpecified'),
+                        )}
+                      </dd>
+                    </div>
+                  </dl>
+                </div>
+              </>
+            )}
+        </section>
+      ) : (
+        <section
+          className="profile-section"
+          aria-labelledby="account-heading"
+        >
           <div className="profile-section-header">
             <div>
               <p className="profile-eyebrow">
@@ -758,384 +875,267 @@ function ProfilePage() {
               </h2>
             </div>
 
-            {!recruiterLoading &&
-              !recruiterError && (
+            {!editingProfile && (
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={startProfileEditing}
+              >
+                {t('profile.editProfile')}
+              </button>
+            )}
+          </div>
+
+          {editingProfile ? (
+            <form
+              className="profile-form"
+              onSubmit={(event) => {
+                event.preventDefault()
+                void handleProfileSubmit()
+              }}
+            >
+              <label>
+                {t('profile.firstName')}
+                <input
+                  value={accountForm.firstName}
+                  onChange={(event) =>
+                    setAccountForm({
+                      ...accountForm,
+                      firstName: event.target.value,
+                    })
+                  }
+                  required
+                />
+              </label>
+
+              <label>
+                {t('profile.lastName')}
+                <input
+                  value={accountForm.lastName}
+                  onChange={(event) =>
+                    setAccountForm({
+                      ...accountForm,
+                      lastName: event.target.value,
+                    })
+                  }
+                  required
+                />
+              </label>
+
+              <div className="profile-actions">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  disabled={profileSubmitting}
+                >
+                  {profileSubmitting
+                    ? t('common.saving')
+                    : t('profile.saveProfile')}
+                </button>
+
                 <button
                   type="button"
-                  onClick={startProfileEditing}
+                  className="btn btn-secondary"
+                  onClick={cancelProfileEditing}
+                  disabled={profileSubmitting}
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            </form>
+          ) : (
+            <dl className="profile-details">
+              <div>
+                <dt>{t('profile.firstName')}</dt>
+                <dd>{user?.firstName}</dd>
+              </div>
+
+              <div>
+                <dt>{t('profile.lastName')}</dt>
+                <dd>{user?.lastName}</dd>
+              </div>
+
+              <div>
+                <dt>{t('common.email')}</dt>
+                <dd>{user?.email}</dd>
+              </div>
+
+              <div>
+                <dt>{t('common.role')}</dt>
+                <dd>{user?.role}</dd>
+              </div>
+
+              <div>
+                <dt>{t('common.status')}</dt>
+                <dd>{user?.status}</dd>
+              </div>
+            </dl>
+          )}
+
+          {user?.role !== 'CANDIDATE' && error && (
+            <ErrorState
+              title={t('profile.profileUnavailable')}
+              message={error}
+              onRetry={() => setError(null)}
+            />
+          )}
+        </section>
+      )}
+
+      {user?.role === 'CANDIDATE' && (
+        <section
+          className="profile-section"
+          aria-labelledby="candidate-heading"
+        >
+          <div className="profile-section-header">
+            <div>
+              <p className="profile-eyebrow">
+                {t('common.candidate')}
+              </p>
+
+              <h2 id="candidate-heading">
+                {candidateProfile
+                  ? t('profile.candidateProfile')
+                  : t('profile.createCandidateProfile')}
+              </h2>
+            </div>
+
+            {!loading &&
+              candidateProfile &&
+              !editing && (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={startEditing}
                 >
                   {t('profile.editProfile')}
                 </button>
               )}
           </div>
-        )}
 
-        {recruiterLoading && (
-          <LoadingState
-            message={t('profile.recruiterLoading')}
-          />
-        )}
+          {loading && (
+            <LoadingState message={t('profile.loading')} />
+          )}
 
-        {recruiterError && !recruiterLoading && (
-          <ErrorState
-            title={t('profile.recruiterUnavailable')}
-            message={recruiterError}
-            onRetry={() => {
-              setRecruiterError(null)
-              setRecruiterRetryCount(
-                (current) => current + 1,
-              )
-            }}
-          />
-        )}
-
-        {editingProfile &&
-          !recruiterLoading &&
-          !recruiterError && (
-            <RecruiterProfileForm
-              accountForm={accountForm}
-              jobTitle={jobTitle}
-              submitting={profileSubmitting}
-              onAccountChange={setAccountForm}
-              onJobTitleChange={setJobTitle}
-              onSubmit={() =>
-                void handleProfileSubmit()
-              }
-              onCancel={cancelProfileEditing}
+          {error && !loading && (
+            <ErrorState
+              title={t('profile.profileUnavailable')}
+              message={error}
+              onRetry={() => {
+                setError(null)
+                setRetryCount(
+                  (current) => current + 1,
+                )
+              }}
             />
           )}
 
-        {!editingProfile &&
-          !recruiterLoading &&
-          !recruiterError && (
-            <>
-              <dl className="profile-details">
-                <div>
-                  <dt>{t('profile.firstName')}</dt>
-                  <dd>{user?.firstName}</dd>
-                </div>
+          {!loading && editing && (
+            <ProfileForm
+              value={formValue}
+              submitting={submitting}
+              submitLabel={t('profile.saveProfile')}
+              savingLabel={t('common.saving')}
+              cancelLabel={t('common.cancel')}
+              onChange={setFormValue}
+              onSubmit={() => void handleSubmit()}
+              onCancel={cancelEditing}
+            />
+          )}
 
-                <div>
-                  <dt>{t('profile.lastName')}</dt>
-                  <dd>{user?.lastName}</dd>
-                </div>
-
-                <div>
-                  <dt>{t('common.email')}</dt>
-                  <dd>{user?.email}</dd>
-                </div>
-
-                <div>
-                  <dt>{t('common.role')}</dt>
-                  <dd>{user?.role}</dd>
-                </div>
-
-                <div>
-                  <dt>{t('common.status')}</dt>
-                  <dd>{user?.status}</dd>
-                </div>
-              </dl>
-
-              <div className="profile-subsection">
-                <div>
-                  <p className="profile-eyebrow">
-                    {t('common.recruiter')}
-                  </p>
-
-                  <h2>
-                    {t('profile.recruiterInformation')}
-                  </h2>
-                </div>
-
+          {!loading &&
+            !editing &&
+            candidateProfile && (
+              <>
                 <dl className="profile-details">
                   <div>
-                    <dt>{t('profile.jobTitle')}</dt>
+                    <dt>{t('profile.headline')}</dt>
                     <dd>
                       {formatNullable(
-                        jobTitle || null,
+                        candidateProfile.headline,
+                        t('common.notSpecified'),
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('profile.summary')}</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.summary,
+                        t('common.notSpecified'),
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('common.location')}</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.location,
+                        t('common.notSpecified'),
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('common.salary')}</dt>
+                    <dd>
+                      {formatSalary(
+                        candidateProfile.salaryMin,
+                        candidateProfile.salaryMax,
+                        candidateProfile.currency,
+                        language,
+                        t('common.upTo'),
+                        t('common.from'),
+                        t('common.notSpecified'),
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('profile.remotePreference')}</dt>
+                    <dd>
+                      {formatNullable(
+                        candidateProfile.remotePreference,
+                        t('common.notSpecified'),
+                      )}
+                    </dd>
+                  </div>
+
+                  <div>
+                    <dt>{t('profile.availability')}</dt>
+                    <dd>
+                      {formatDate(
+                        candidateProfile.availabilityDate,
+                        language,
                         t('common.notSpecified'),
                       )}
                     </dd>
                   </div>
                 </dl>
-              </div>
-            </>
-          )}
-      </section>
-    ) : (
-      <section
-        className="profile-section"
-        aria-labelledby="account-heading"
-      >
-        <div className="profile-section-header">
-          <div>
-            <p className="profile-eyebrow">
-              {t('profile.account')}
-            </p>
 
-            <h2 id="account-heading">
-              {t('profile.accountInformation')}
-            </h2>
-          </div>
-
-          {!editingProfile && (
-            <button
-              type="button"
-              onClick={startProfileEditing}
-            >
-              {t('profile.editProfile')}
-            </button>
-          )}
-        </div>
-
-        {editingProfile ? (
-          <form
-            className="profile-form"
-            onSubmit={(event) => {
-              event.preventDefault()
-              void handleProfileSubmit()
-            }}
-          >
-            <label>
-              {t('profile.firstName')}
-              <input
-                value={accountForm.firstName}
-                onChange={(event) =>
-                  setAccountForm({
-                    ...accountForm,
-                    firstName: event.target.value,
-                  })
-                }
-                required
-              />
-            </label>
-
-            <label>
-              {t('profile.lastName')}
-              <input
-                value={accountForm.lastName}
-                onChange={(event) =>
-                  setAccountForm({
-                    ...accountForm,
-                    lastName: event.target.value,
-                  })
-                }
-                required
-              />
-            </label>
-
-            <div className="profile-actions">
-              <button
-                type="submit"
-                disabled={profileSubmitting}
-              >
-                {profileSubmitting
-                  ? t('common.saving')
-                  : t('profile.saveProfile')}
-              </button>
-
-              <button
-                type="button"
-                onClick={cancelProfileEditing}
-                disabled={profileSubmitting}
-              >
-                {t('common.cancel')}
-              </button>
-            </div>
-          </form>
-        ) : (
-          <dl className="profile-details">
-            <div>
-              <dt>{t('profile.firstName')}</dt>
-              <dd>{user?.firstName}</dd>
-            </div>
-
-            <div>
-              <dt>{t('profile.lastName')}</dt>
-              <dd>{user?.lastName}</dd>
-            </div>
-
-            <div>
-              <dt>{t('common.email')}</dt>
-              <dd>{user?.email}</dd>
-            </div>
-
-            <div>
-              <dt>{t('common.role')}</dt>
-              <dd>{user?.role}</dd>
-            </div>
-
-            <div>
-              <dt>{t('common.status')}</dt>
-              <dd>{user?.status}</dd>
-            </div>
-          </dl>
-        )}
-
-        {user?.role !== 'CANDIDATE' && error && (
-          <ErrorState
-            title={t('profile.profileUnavailable')}
-            message={error}
-            onRetry={() => setError(null)}
-          />
-        )}
-      </section>
-    )}
-
-    {user?.role === 'CANDIDATE' && (
-      <section
-        className="profile-section"
-        aria-labelledby="candidate-heading"
-      >
-        <div className="profile-section-header">
-          <div>
-            <p className="profile-eyebrow">
-              {t('common.candidate')}
-            </p>
-
-            <h2 id="candidate-heading">
-              {candidateProfile
-                ? t('profile.candidateProfile')
-                : t('profile.createCandidateProfile')}
-            </h2>
-          </div>
+                <CandidateSkills />
+              </>
+            )}
 
           {!loading &&
-            candidateProfile &&
-            !editing && (
-              <button
-                type="button"
-                onClick={startEditing}
-              >
-                {t('profile.editProfile')}
-              </button>
+            !editing &&
+            !candidateProfile &&
+            !error && (
+              <ProfileForm
+                value={formValue}
+                submitting={submitting}
+                submitLabel={t('profile.createProfile')}
+                savingLabel={t('common.saving')}
+                cancelLabel={t('common.cancel')}
+                onChange={setFormValue}
+                onSubmit={() => void handleSubmit()}
+              />
             )}
-        </div>
-
-        {loading && (
-          <LoadingState message={t('profile.loading')} />
-        )}
-
-        {error && !loading && (
-          <ErrorState
-            title={t('profile.profileUnavailable')}
-            message={error}
-            onRetry={() => {
-              setError(null)
-              setRetryCount(
-                (current) => current + 1,
-              )
-            }}
-          />
-        )}
-
-        {!loading && editing && (
-          <ProfileForm
-            value={formValue}
-            submitting={submitting}
-            submitLabel={t('profile.saveProfile')}
-            savingLabel={t('common.saving')}
-            cancelLabel={t('common.cancel')}
-            onChange={setFormValue}
-            onSubmit={() => void handleSubmit()}
-            onCancel={cancelEditing}
-          />
-        )}
-
-        {!loading &&
-          !editing &&
-          candidateProfile && (
-            <>
-              <dl className="profile-details">
-                <div>
-                  <dt>{t('profile.headline')}</dt>
-                  <dd>
-                    {formatNullable(
-                      candidateProfile.headline,
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>{t('profile.summary')}</dt>
-                  <dd>
-                    {formatNullable(
-                      candidateProfile.summary,
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>{t('common.location')}</dt>
-                  <dd>
-                    {formatNullable(
-                      candidateProfile.location,
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>{t('common.salary')}</dt>
-                  <dd>
-                    {formatSalary(
-                      candidateProfile.salaryMin,
-                      candidateProfile.salaryMax,
-                      candidateProfile.currency,
-                      language,
-                      t('common.upTo'),
-                      t('common.from'),
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>{t('profile.remotePreference')}</dt>
-                  <dd>
-                    {formatNullable(
-                      candidateProfile.remotePreference,
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-
-                <div>
-                  <dt>{t('profile.availability')}</dt>
-                  <dd>
-                    {formatDate(
-                      candidateProfile.availabilityDate,
-                      language,
-                      t('common.notSpecified'),
-                    )}
-                  </dd>
-                </div>
-              </dl>
-
-              <CandidateSkills />
-            </>
-          )}
-
-        {!loading &&
-          !editing &&
-          !candidateProfile &&
-          !error && (
-            <ProfileForm
-              value={formValue}
-              submitting={submitting}
-              submitLabel={t('profile.createProfile')}
-              savingLabel={t('common.saving')}
-              cancelLabel={t('common.cancel')}
-              onChange={setFormValue}
-              onSubmit={() => void handleSubmit()}
-            />
-          )}
-      </section>
-    )}
-  </section>
-
+        </section>
+      )}
+    </section>
   )
 }
 
