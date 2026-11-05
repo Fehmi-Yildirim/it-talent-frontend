@@ -436,6 +436,24 @@ export const en = {
     feedback: {
         somethingWentWrong: 'Something went wrong',
         loading: 'Loading...',
+
+        richText: {
+            toolbarLabel: 'Text formatting',
+            heading2: 'Heading 2',
+            heading3: 'Heading 3',
+            bold: 'Bold',
+            italic: 'Italic',
+            underline: 'Underline',
+            bulletList: 'Bullet list',
+            orderedList: 'Ordered list',
+            link: 'Link',
+            enterUrl: 'Enter URL',
+            undo: 'Undo',
+            redo: 'Redo',
+            visualEditor: 'Visual editor',
+            html: 'HTML',
+            visual: 'Visual',
+        },
     },
 
     landing: {
@@ -815,4 +833,5 @@ export const en = {
                 'Unable to update the application status.',
         },
     },
+
 } as const;

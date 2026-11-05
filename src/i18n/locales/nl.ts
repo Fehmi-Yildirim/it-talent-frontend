@@ -546,10 +546,26 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     feedback: {
-        somethingWentWrong:
-            'Er is iets misgegaan',
-        loading:
-            'Laden...',
+        somethingWentWrong: 'Er is iets misgegaan',
+        loading: 'Laden...',
+
+        richText: {
+            toolbarLabel: 'Tekstopmaak',
+            heading2: 'Kop 2',
+            heading3: 'Kop 3',
+            bold: 'Vet',
+            italic: 'Cursief',
+            underline: 'Onderstrepen',
+            bulletList: 'Opsomming',
+            orderedList: 'Genummerde lijst',
+            link: 'Link',
+            enterUrl: 'Voer URL in',
+            undo: 'Ongedaan maken',
+            redo: 'Opnieuw uitvoeren',
+            visualEditor: 'Visuele editor',
+            html: 'HTML',
+            visual: 'Visueel',
+        },
     },
 
     landing: {
