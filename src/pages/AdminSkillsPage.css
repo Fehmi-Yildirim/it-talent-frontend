@@ -158,11 +158,74 @@
         padding: 12px;
     }
 
+    .admin-skills-form-actions button {
+        flex: 1;
+    }
+}
+
+
+/* Create / Edit Skill form inside Drawer */
+.drawer__content form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.drawer__content form>div:not(.admin-skills-form-actions) {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.drawer__content form label {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.drawer__content form input,
+.drawer__content form select,
+.drawer__content form textarea {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font: inherit;
+    transition:
+        border-color 160ms ease,
+        box-shadow 160ms ease;
+}
+
+.drawer__content form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.drawer__content form input:focus,
+.drawer__content form select:focus,
+.drawer__content form textarea:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.drawer__content form input:disabled,
+.drawer__content form select:disabled,
+.drawer__content form textarea:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 640px) {
     .admin-skills-form-actions {
-        justify-content: stretch;
+        flex-direction: column-reverse;
+        align-items: stretch;
     }
 
     .admin-skills-form-actions button {
-        flex: 1;
+        width: 100%;
     }
 }
