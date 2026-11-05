@@ -308,3 +308,26 @@
     transition: none;
   }
 }
+
+.profile-details .profile-skill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-details .profile-skill>div:first-child {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  min-width: 0;
+}
+
+.profile-details .profile-skill>div:first-child>div {
+  display: block;
+  padding: 0;
+  border: 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
