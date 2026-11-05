@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import ErrorState from '../../components/feedback/ErrorState'
@@ -26,18 +25,26 @@ interface CompanyInput {
     location: string
 }
 
+type CompanyField = 'name' | 'description' | 'website' | 'location'
+
+type CompanyErrors = Partial<Record<CompanyField, string>>
+
 function CompanyManagement() {
     const { t } = useTranslation()
+
     const [company, setCompany] = useState<Company | null>(null)
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [website, setWebsite] = useState('')
     const [location, setLocation] = useState('')
+
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
     const [isCreating, setIsCreating] = useState(false)
+
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
+    const [errors, setErrors] = useState<CompanyErrors>({})
     const [retryCount, setRetryCount] = useState(0)
 
     useEffect(() => {
@@ -56,6 +63,7 @@ function CompanyManagement() {
                     setDescription(data.description)
                     setWebsite(data.website ?? '')
                     setLocation(data.location ?? '')
+                    setErrors({})
                 }
             } catch (caught) {
                 if (!cancelled) {
@@ -94,8 +102,169 @@ function CompanyManagement() {
         }
     }, [retryCount, t])
 
+    function validateField(
+        field: CompanyField,
+        value: string,
+    ): string | undefined {
+        const trimmedValue = value.trim()
+
+        switch (field) {
+            case 'name':
+                if (!trimmedValue) {
+                    return t('companyManagement.validationNameRequired')
+                }
+
+                if (trimmedValue.length < 2) {
+                    return t('companyManagement.validationNameMinLength')
+                }
+
+                if (trimmedValue.length > 150) {
+                    return t('companyManagement.validationNameMaxLength')
+                }
+                break
+
+            case 'description':
+                if (!trimmedValue) {
+                    return t('companyManagement.validationDescriptionRequired')
+                }
+
+                if (trimmedValue.length < 2) {
+                    return t('companyManagement.validationDescriptionMinLength')
+                }
+
+                if (trimmedValue.length > 255) {
+                    return t('companyManagement.validationDescriptionMaxLength')
+                }
+                break
+
+            case 'website':
+                if (!trimmedValue) {
+                    return t('companyManagement.validationWebsiteRequired')
+                }
+
+                try {
+                    const url = new URL(trimmedValue)
+
+                    if (
+                        url.protocol !== 'http:' &&
+                        url.protocol !== 'https:'
+                    ) {
+                        throw new Error('Invalid URL protocol')
+                    }
+                } catch {
+                    return t('companyManagement.validationWebsite')
+                }
+                break
+
+            case 'location':
+                if (!trimmedValue) {
+                    return t('companyManagement.validationLocationRequired')
+                }
+
+                if (trimmedValue.length > 255) {
+                    return t('companyManagement.validationLocationMaxLength')
+                }
+                break
+        }
+
+        return undefined
+    }
+
+    function validateForm(): boolean {
+        const values: Record<CompanyField, string> = {
+            name,
+            description,
+            website,
+            location,
+        }
+
+        const nextErrors: CompanyErrors = {}
+
+            ; (Object.keys(values) as CompanyField[]).forEach((field) => {
+                const message = validateField(field, values[field])
+
+                if (message) {
+                    nextErrors[field] = message
+                }
+            })
+
+        setErrors(nextErrors)
+
+        return Object.keys(nextErrors).length === 0
+    }
+
+    function handleFieldChange(field: CompanyField, value: string) {
+        switch (field) {
+            case 'name':
+                setName(value)
+                break
+            case 'description':
+                setDescription(value)
+                break
+            case 'website':
+                setWebsite(value)
+                break
+            case 'location':
+                setLocation(value)
+                break
+        }
+
+        setErrors((current) => {
+            if (!(field in current)) {
+                return current
+            }
+
+            return {
+                ...current,
+                [field]: undefined,
+            }
+        })
+    }
+
+    function handleFieldBlur(field: CompanyField, value: string) {
+        const message = validateField(field, value)
+
+        setErrors((current) => ({
+            ...current,
+            [field]: message,
+        }))
+    }
+
+    function renderFieldError(field: CompanyField, value: string) {
+        const message = errors[field]
+
+        if (!message) {
+            return null
+        }
+
+        if (!value.trim()) {
+            return (
+                <span id={`company-${field}-error`} className="sr-only">
+                    {message}
+                </span>
+            )
+        }
+
+        return (
+            <p
+                id={`company-${field}-error`}
+                className="form-field-error"
+                role="alert"
+            >
+                {message}
+            </p>
+        )
+    }
+
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
+
+        setError(null)
+        setSuccess(null)
+
+        if (!validateForm()) {
+            return
+        }
 
         const input: CompanyInput = {
             name: name.trim(),
@@ -106,8 +275,6 @@ function CompanyManagement() {
 
         try {
             setIsSaving(true)
-            setError(null)
-            setSuccess(null)
 
             const data = company
                 ? await apiClient.patch<Company>('/companies/me', input)
@@ -118,6 +285,7 @@ function CompanyManagement() {
             setDescription(data.description)
             setWebsite(data.website ?? '')
             setLocation(data.location ?? '')
+            setErrors({})
             setIsCreating(false)
 
             setSuccess(
@@ -218,7 +386,11 @@ function CompanyManagement() {
 
             {error && (
                 <ErrorState
-                    title={t('companyManagement.saveError')}
+                    title={
+                        company
+                            ? t('companyManagement.saveError')
+                            : t('companyManagement.createError')
+                    }
                     message={error}
                 />
             )}
@@ -229,69 +401,134 @@ function CompanyManagement() {
                 </p>
             )}
 
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} noValidate>
                 <div className="company-management__field">
                     <label htmlFor="company-name">
                         {t('companyManagement.name')}
                     </label>
+
                     <input
                         id="company-name"
                         type="text"
-                        className="form-control"
+                        className={`form-control ${errors.name ? 'form-control--invalid' : ''}`}
                         value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        minLength={2}
+                        placeholder={
+                            errors.name && !name.trim() ? errors.name : ''
+                        }
+                        onChange={(event) =>
+                            handleFieldChange('name', event.target.value)
+                        }
+                        onBlur={() => handleFieldBlur('name', name)}
                         maxLength={150}
                         required
-                        aria-invalid={Boolean(error)}
+                        aria-invalid={Boolean(errors.name)}
+                        aria-describedby={
+                            errors.name ? 'company-name-error' : undefined
+                        }
                     />
+
+                    {renderFieldError('name', name)}
                 </div>
 
                 <div className="company-management__field">
                     <label htmlFor="company-description">
                         {t('companyManagement.description')}
                     </label>
+
                     <textarea
                         id="company-description"
-                        className="form-control"
+                        className={`form-control ${errors.description ? 'form-control--invalid' : ''}`}
                         value={description}
-                        onChange={(event) => setDescription(event.target.value)}
-                        minLength={2}
+                        placeholder={
+                            errors.description && !description.trim()
+                                ? errors.description
+                                : ''
+                        }
+                        onChange={(event) =>
+                            handleFieldChange(
+                                'description',
+                                event.target.value,
+                            )
+                        }
+                        onBlur={() =>
+                            handleFieldBlur('description', description)
+                        }
                         maxLength={255}
                         rows={5}
                         required
-                        aria-invalid={Boolean(error)}
+                        aria-invalid={Boolean(errors.description)}
+                        aria-describedby={
+                            errors.description
+                                ? 'company-description-error'
+                                : undefined
+                        }
                     />
+
+                    {renderFieldError('description', description)}
                 </div>
 
                 <div className="company-management__field">
                     <label htmlFor="company-website">
                         {t('companyManagement.website')}
                     </label>
+
                     <input
                         id="company-website"
                         type="url"
-                        className="form-control"
+                        required
+                        className={`form-control ${errors.website ? 'form-control--invalid' : ''}`}
                         value={website}
-                        onChange={(event) => setWebsite(event.target.value)}
+                        placeholder={
+                            errors.website && !website.trim()
+                                ? errors.website
+                                : ''
+                        }
+                        onChange={(event) =>
+                            handleFieldChange('website', event.target.value)
+                        }
+                        onBlur={() => handleFieldBlur('website', website)}
                         maxLength={255}
-                        aria-invalid={Boolean(error)}
+                        aria-invalid={Boolean(errors.website)}
+                        aria-describedby={
+                            errors.website
+                                ? 'company-website-error'
+                                : undefined
+                        }
                     />
+
+                    {renderFieldError('website', website)}
                 </div>
 
                 <div className="company-management__field">
                     <label htmlFor="company-location">
                         {t('companyManagement.location')}
                     </label>
+
                     <input
                         id="company-location"
                         type="text"
-                        className="form-control"
+                        required
+                        className={`form-control ${errors.location ? 'form-control--invalid' : ''}`}
                         value={location}
-                        onChange={(event) => setLocation(event.target.value)}
+                        placeholder={
+                            errors.location && !location.trim()
+                                ? errors.location
+                                : ''
+                        }
+                        onChange={(event) =>
+                            handleFieldChange('location', event.target.value)
+                        }
+                        onBlur={() => handleFieldBlur('location', location)}
                         maxLength={255}
-                        aria-invalid={Boolean(error)}
+                        aria-invalid={Boolean(errors.location)}
+                        aria-describedby={
+                            errors.location
+                                ? 'company-location-error'
+                                : undefined
+                        }
                     />
+
+                    {renderFieldError('location', location)}
                 </div>
 
                 {company && (
@@ -311,17 +548,17 @@ function CompanyManagement() {
                     </div>
                 )}
 
-                <button
-                    type="submit"
-                    className="btn btn-primary"
-                    disabled={isSaving}
-                >
-                    {isSaving
-                        ? t('companyManagement.saving')
-                        : company
-                            ? t('companyManagement.save')
-                            : t('companyManagement.createCompany')}
-                </button>
+                <div className="company-form-actions">
+                    <button
+                        type="submit"
+                        className="btn btn-primary"
+                        disabled={isSaving}
+                    >
+                        {isSaving
+                            ? t('companyManagement.saving')
+                            : t('companyManagement.save')}
+                    </button>
+                </div>
             </form>
         </section>
     )

@@ -410,6 +410,16 @@ export const en = {
         serverSaveError: 'The server encountered an error. Please try again later.',
         saveError: 'Unable to save company information.',
         createError: 'Unable to create company.',
+        validationNameRequired: 'Company name is required.',
+        validationNameMinLength: 'Company name must contain at least 2 characters.',
+        validationDescriptionRequired: 'Description is required.',
+        validationDescriptionMinLength: 'Description must contain at least 2 characters.',
+        validationWebsite: 'Please enter a valid website URL starting with http:// or https://.',
+        validationNameMaxLength: 'Company name cannot exceed 150 characters.',
+        validationDescriptionMaxLength: 'Description cannot exceed 255 characters.',
+        validationLocationMaxLength: 'Location cannot exceed 255 characters.',
+        validationWebsiteRequired: 'Company website is required.',
+        validationLocationRequired: 'Company location is required.',
     },
 
     dashboard: {

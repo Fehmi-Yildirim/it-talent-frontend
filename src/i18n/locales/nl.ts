@@ -470,6 +470,16 @@ export const nl: DeepPartial<typeof en> = {
         serverSaveError: 'Er is een serverfout opgetreden. Probeer het later opnieuw.',
         saveError: 'Bedrijfsgegevens konden niet worden opgeslagen.',
         createError: 'Bedrijf kon niet worden aangemaakt.',
+        validationNameRequired: 'Bedrijfsnaam is verplicht.',
+        validationNameMinLength: 'De bedrijfsnaam moet minimaal 2 tekens bevatten.',
+        validationDescriptionRequired: 'Beschrijving is verplicht.',
+        validationDescriptionMinLength: 'De beschrijving moet minimaal 2 tekens bevatten.',
+        validationWebsite: 'Voer een geldige website-URL in die begint met http:// of https://.',
+        validationNameMaxLength: 'De bedrijfsnaam mag maximaal 150 tekens bevatten.',
+        validationDescriptionMaxLength: 'De beschrijving mag maximaal 255 tekens bevatten.',
+        validationLocationMaxLength: 'De locatie mag maximaal 255 tekens bevatten.',
+        validationWebsiteRequired: 'Website van het bedrijf is verplicht.',
+        validationLocationRequired: 'Locatie van het bedrijf is verplicht.',
     },
 
     dashboard: {

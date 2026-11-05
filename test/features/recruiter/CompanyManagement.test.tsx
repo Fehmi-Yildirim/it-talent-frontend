@@ -13,6 +13,7 @@ import {
 } from 'vitest'
 import CompanyManagement from '../../../src/features/recruiter/CompanyManagement'
 import { apiClient } from '../../../src/services/api/apiClient'
+import { ApiError } from '../../../src/services/api/apiError'
 
 vi.mock('../../../src/services/api/apiClient', () => ({
     apiClient: {
@@ -72,7 +73,7 @@ describe('CompanyManagement', () => {
         ).toBeInTheDocument()
 
         expect(
-            screen.getByText('01/01/2026'),
+            screen.getByText(/^01[/-]01[/-]2026$/),
         ).toBeInTheDocument()
 
         expect(apiClient.get).toHaveBeenCalledWith('/companies/me')
@@ -80,7 +81,7 @@ describe('CompanyManagement', () => {
 
     it('shows create option when recruiter has no company', async () => {
         vi.mocked(apiClient.get).mockRejectedValue(
-            new Error('Company not found'),
+            new Error('Request failed'),
         )
 
         render(<CompanyManagement />)
@@ -106,16 +107,16 @@ describe('CompanyManagement', () => {
 
     it('shows create form', async () => {
         vi.mocked(apiClient.get).mockRejectedValue(
-            new Error('Company not found'),
+            new ApiError(404, 'Company not found'),
         )
 
         render(<CompanyManagement />)
 
         fireEvent.click(
-            await screen.findByRole('button', {
-                name: 'Create company',
-            }),
+            await screen.findByRole('button', { name: 'Create company' }),
         )
+
+        await screen.findByRole('button', { name: 'Save' })
 
         expect(
             screen.getByRole('heading', {
@@ -142,7 +143,7 @@ describe('CompanyManagement', () => {
 
     it('creates a company', async () => {
         vi.mocked(apiClient.get).mockRejectedValue(
-            new Error('Company not found'),
+            new ApiError(404, 'Company not found'),
         )
 
         vi.mocked(apiClient.post).mockResolvedValue(company)
@@ -183,11 +184,11 @@ describe('CompanyManagement', () => {
             },
         )
 
-        fireEvent.click(
-            screen.getByRole('button', {
-                name: 'Create company',
-            }),
-        )
+        await screen.findByRole('button', {
+            name: 'Save',
+        })
+
+        fireEvent.click(screen.getByRole('button', { name: 'Save' }))
 
         await waitFor(() => {
             expect(apiClient.post).toHaveBeenCalledWith(
@@ -312,7 +313,7 @@ describe('CompanyManagement', () => {
         ).toHaveValue('')
 
         expect(
-            screen.getByText('01/01/2026'),
+            screen.getByText(/^01[/-]01[/-]2026$/),
         ).toBeInTheDocument()
     })
 
