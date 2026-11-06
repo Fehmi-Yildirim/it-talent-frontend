@@ -848,6 +848,7 @@ export const en = {
             'Unable to update the job.',
         unableToCreateJob:
             'Unable to create the job.',
+        "locationRequired": "Location is required.",
     },
 
     recruiterApplications: {

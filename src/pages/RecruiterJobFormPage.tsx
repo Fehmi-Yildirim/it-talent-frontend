@@ -38,6 +38,18 @@ import { DEFAULT_CURRENCY } from '../config/app'
 import './RecruiterJobFormPage.css'
 import { RichTextEditor } from '../components/RichTextEditor/RichTextEditor'
 
+type JobFormField =
+    | 'title'
+    | 'description'
+    | 'location'
+    | 'salaryMin'
+    | 'salaryMax'
+    | 'expiresAt'
+
+type JobFormErrors = Partial<
+    Record<JobFormField, string>
+>
+
 interface PendingRequirement {
     skillId: string
     required: boolean
@@ -403,8 +415,13 @@ export default function RecruiterJobFormPage() {
         setRequirementSaving,
     ] = useState(false)
 
+    const [isSkillDropdownOpen, setIsSkillDropdownOpen] =
+        useState(false)
+
     const [error, setError] =
         useState<string | null>(null)
+
+    const [errors, setErrors] = useState<JobFormErrors>({})
     const [
         validationError,
         setValidationError,
@@ -443,7 +460,9 @@ export default function RecruiterJobFormPage() {
                 if (active) {
                     setSkills(response)
                 }
-            } catch {
+            } catch (error) {
+                console.error('Failed to load skills:', error)
+
                 if (active) {
                     setError(
                         t(
@@ -609,9 +628,16 @@ export default function RecruiterJobFormPage() {
                 .includes(normalizedSkillSearch),
     )
 
+    const showSkillResults =
+        isSkillDropdownOpen &&
+        !selectedSkillId &&
+        !skillsLoading &&
+        filteredSkills.length > 0
+
     function selectSkill(skill: Skill) {
         setSelectedSkillId(skill.id)
         setSkillSearch(skill.name)
+        setIsSkillDropdownOpen(false)
         setError(null)
         setValidationError(null)
     }
@@ -619,11 +645,10 @@ export default function RecruiterJobFormPage() {
     function clearSkillSelection() {
         setSelectedSkillId('')
         setSkillSearch('')
+        setIsSkillDropdownOpen(false)
     }
 
-    function handleSkillSearchChange(
-        value: string,
-    ) {
+    function handleSkillSearchChange(value: string) {
         const skillById = skills.find(
             (skill) => skill.id === value,
         )
@@ -631,9 +656,7 @@ export default function RecruiterJobFormPage() {
         if (skillById) {
             if (usedSkillIds.has(skillById.id)) {
                 setError(
-                    t(
-                        'recruiterJobForm.duplicateSkillError',
-                    ),
+                    t('recruiterJobForm.duplicateSkillError'),
                 )
                 return
             }
@@ -644,6 +667,7 @@ export default function RecruiterJobFormPage() {
 
         setSkillSearch(value)
         setSelectedSkillId('')
+        setIsSkillDropdownOpen(true)
         setError(null)
         setValidationError(null)
     }
@@ -909,143 +933,256 @@ export default function RecruiterJobFormPage() {
         }
     }
 
-    function validate(): string | null {
-        if (!title.trim()) {
-            return t(
-                'recruiterJobForm.titleRequired',
-            )
-        }
+    function hasRichTextContent(value: string): boolean {
+        const container = document.createElement('div')
+        container.innerHTML = value
 
-        if (!description.trim()) {
-            return t(
-                'recruiterJobForm.descriptionRequired',
-            )
+        return Boolean(
+            container.textContent
+                ?.replace(/[\u200B\uFEFF]/g, '')
+                .trim(),
+        )
+    }
+
+    function validateFieldValue(
+        field: JobFormField,
+        value: string,
+    ): string | undefined {
+        switch (field) {
+            case 'title':
+                return value.trim()
+                    ? undefined
+                    : t('recruiterJobForm.titleRequired')
+
+            case 'description':
+                return hasRichTextContent(value)
+                    ? undefined
+                    : t('recruiterJobForm.descriptionRequired')
+
+            case 'location':
+                return value.trim()
+                    ? undefined
+                    : t('recruiterJobForm.locationRequired')
+
+            case 'salaryMin': {
+                const normalized = normalizeSalary(value)
+
+                if (value.trim() && normalized === undefined) {
+                    return t('recruiterJobForm.minimumSalaryNegative')
+                }
+
+                if (normalized !== undefined && normalized < 0) {
+                    return t('recruiterJobForm.minimumSalaryNegative')
+                }
+
+                return undefined
+            }
+
+            case 'salaryMax': {
+                const normalized = normalizeSalary(value)
+
+                if (value.trim() && normalized === undefined) {
+                    return t('recruiterJobForm.maximumSalaryNegative')
+                }
+
+                if (normalized !== undefined && normalized < 0) {
+                    return t('recruiterJobForm.maximumSalaryNegative')
+                }
+
+                return undefined
+            }
+
+            case 'expiresAt':
+                return value && value < getTodayString()
+                    ? t('recruiterJobForm.expirationPast')
+                    : undefined
         }
+    }
+
+    function getFieldValue(field: JobFormField): string {
+        switch (field) {
+            case 'title':
+                return title
+            case 'description':
+                return description
+            case 'location':
+                return location
+            case 'salaryMin':
+                return salaryMin
+            case 'salaryMax':
+                return salaryMax
+            case 'expiresAt':
+                return expiresAt
+        }
+    }
+
+    function validateField(field: JobFormField): string | undefined {
+        return validateFieldValue(field, getFieldValue(field))
+    }
+
+    function validateForm(): JobFormErrors {
+        const fields: JobFormField[] = [
+            'title',
+            'description',
+            'location',
+            'salaryMin',
+            'salaryMax',
+            'expiresAt',
+        ]
+
+        const nextErrors: JobFormErrors = {}
+
+        fields.forEach((field) => {
+            const message = validateField(field)
+
+            if (message) {
+                nextErrors[field] = message
+            }
+        })
+
+        const min = normalizeSalary(salaryMin)
+        const max = normalizeSalary(salaryMax)
 
         if (
-            !EMPLOYMENT_TYPES.includes(
-                employmentType,
-            )
+            min !== undefined &&
+            max !== undefined &&
+            min > max
         ) {
-            return t(
-                'recruiterJobForm.invalidEmploymentType',
-            )
-        }
-
-        if (!WORK_MODES.includes(workMode)) {
-            return t(
-                'recruiterJobForm.invalidWorkMode',
-            )
-        }
-
-        const normalizedSalaryMin =
-            normalizeSalary(salaryMin)
-
-        const normalizedSalaryMax =
-            normalizeSalary(salaryMax)
-
-        if (
-            salaryMin.trim() !== '' &&
-            normalizedSalaryMin === undefined
-        ) {
-            return t(
-                'recruiterJobForm.minimumSalaryNegative',
-            )
-        }
-
-        if (
-            salaryMax.trim() !== '' &&
-            normalizedSalaryMax === undefined
-        ) {
-            return t(
-                'recruiterJobForm.maximumSalaryNegative',
-            )
-        }
-
-        if (
-            normalizedSalaryMin !== undefined &&
-            normalizedSalaryMin < 0
-        ) {
-            return t(
-                'recruiterJobForm.minimumSalaryNegative',
-            )
-        }
-
-        if (
-            normalizedSalaryMax !== undefined &&
-            normalizedSalaryMax < 0
-        ) {
-            return t(
-                'recruiterJobForm.maximumSalaryNegative',
-            )
-        }
-
-        if (
-            normalizedSalaryMin !== undefined &&
-            normalizedSalaryMax !== undefined &&
-            normalizedSalaryMin >
-            normalizedSalaryMax
-        ) {
-            return t(
+            nextErrors.salaryMin = t(
                 'recruiterJobForm.minimumSalaryGreater',
             )
         }
 
-        if (
-            expiresAt &&
-            expiresAt < getTodayString()
-        ) {
-            return t(
-                'recruiterJobForm.expirationPast',
-            )
+        return nextErrors
+    }
+
+    function handleFieldBlur(field: JobFormField) {
+        const value = getFieldValue(field)
+        const message = validateFieldValue(field, value)
+
+        setErrors((current) => {
+            const next = { ...current }
+
+            if (message) {
+                next[field] = message
+            } else {
+                delete next[field]
+            }
+
+            if (field === 'salaryMin' || field === 'salaryMax') {
+                const min = normalizeSalary(
+                    field === 'salaryMin' ? value : salaryMin,
+                )
+                const max = normalizeSalary(
+                    field === 'salaryMax' ? value : salaryMax,
+                )
+
+                if (min !== undefined && max !== undefined && min > max) {
+                    next.salaryMin = t(
+                        'recruiterJobForm.minimumSalaryGreater',
+                    )
+                } else if (
+                    next.salaryMin ===
+                    t('recruiterJobForm.minimumSalaryGreater')
+                ) {
+                    const minError = validateFieldValue(
+                        'salaryMin',
+                        salaryMin,
+                    )
+
+                    if (minError) {
+                        next.salaryMin = minError
+                    } else {
+                        delete next.salaryMin
+                    }
+                }
+            }
+
+            return next
+        })
+    }
+
+    function handleFieldChange(
+        field: JobFormField,
+        value: string,
+    ) {
+        switch (field) {
+            case 'title':
+                setTitle(value)
+                break
+            case 'description':
+                setDescription(value)
+                break
+            case 'location':
+                setLocation(value)
+                break
+            case 'salaryMin':
+                setSalaryMin(value)
+                break
+            case 'salaryMax':
+                setSalaryMax(value)
+                break
+            case 'expiresAt':
+                setExpiresAt(value)
+                break
         }
 
-        if (
-            pendingRequirements.some(
-                (requirement) =>
-                    !isValidUuid(
-                        requirement.skillId,
-                    ),
-            )
-        ) {
-            return t(
-                'recruiterJobForm.invalidSkillIds',
-            )
-        }
+        setErrors((current) => {
+            const next = { ...current }
 
-        if (
-            pendingRequirements.some(
-                (requirement) =>
-                    requirement.minimumLevel < 1 ||
-                    requirement.minimumLevel > 5 ||
-                    !Number.isInteger(
-                        requirement.minimumLevel,
-                    ),
-            )
-        ) {
-            return t(
-                'recruiterJobForm.minimumSkillLevel',
-            )
-        }
+            if (current[field]) {
+                const message = validateFieldValue(field, value)
 
-        return null
+                if (message) {
+                    next[field] = message
+                } else {
+                    delete next[field]
+                }
+            }
+
+            if (field === 'salaryMin' || field === 'salaryMax') {
+                const nextMinValue =
+                    field === 'salaryMin' ? value : salaryMin
+                const nextMaxValue =
+                    field === 'salaryMax' ? value : salaryMax
+                const min = normalizeSalary(nextMinValue)
+                const max = normalizeSalary(nextMaxValue)
+
+                if (min !== undefined && max !== undefined && min > max) {
+                    next.salaryMin = t(
+                        'recruiterJobForm.minimumSalaryGreater',
+                    )
+                } else if (
+                    next.salaryMin ===
+                    t('recruiterJobForm.minimumSalaryGreater')
+                ) {
+                    const minError = validateFieldValue(
+                        'salaryMin',
+                        nextMinValue,
+                    )
+
+                    if (minError) {
+                        next.salaryMin = minError
+                    } else {
+                        delete next.salaryMin
+                    }
+                }
+            }
+
+            return next
+        })
     }
 
     async function createPendingRequirements(
         newJobId: string,
+        requirementsToCreate: PendingRequirement[] = pendingRequirements,
     ) {
-        for (const requirement of pendingRequirements) {
-            await createJobRequirement(
-                newJobId,
-                {
-                    skillId:
-                        requirement.skillId,
-                    required:
-                        requirement.required,
-                    minimumLevel:
-                        requirement.minimumLevel,
-                },
-            )
+        for (const requirement of requirementsToCreate) {
+            await createJobRequirement(newJobId, {
+                skillId: requirement.skillId,
+                required: requirement.required,
+                minimumLevel: requirement.minimumLevel,
+            })
         }
     }
 
@@ -1055,13 +1192,96 @@ export default function RecruiterJobFormPage() {
         event.preventDefault()
 
         setValidationError(null)
+        setErrors({})
         setError(null)
 
-        const validationMessage = validate()
+        // Validate a selected skill that has not yet been added.
+        if (selectedSkillId) {
+            if (!isValidUuid(selectedSkillId)) {
+                setError(
+                    t('recruiterJobForm.invalidSkillError'),
+                )
+                return
+            }
 
-        if (validationMessage) {
+            if (usedSkillIds.has(selectedSkillId)) {
+                setError(
+                    t('recruiterJobForm.duplicateSkillError'),
+                )
+                return
+            }
+
+            if (
+                !Number.isInteger(selectedMinimumLevel) ||
+                selectedMinimumLevel < 1 ||
+                selectedMinimumLevel > 5
+            ) {
+                setError(
+                    t('recruiterJobForm.minimumLevelError'),
+                )
+                return
+            }
+        }
+
+        // Include a selected skill even if the user forgot to click +.
+        const requirementsToSave: PendingRequirement[] = [
+            ...pendingRequirements,
+        ]
+
+        if (selectedSkillId) {
+            requirementsToSave.push({
+                skillId: selectedSkillId,
+                required: selectedRequired,
+                minimumLevel: selectedMinimumLevel,
+            })
+        }
+
+        // Validate regular form fields.
+        const nextErrors = validateForm()
+        setErrors(nextErrors)
+
+        if (Object.keys(nextErrors).length > 0) {
+            return
+        }
+
+        // Validate employment type and work mode.
+        if (!EMPLOYMENT_TYPES.includes(employmentType)) {
             setValidationError(
-                validationMessage,
+                t('recruiterJobForm.invalidEmploymentType'),
+            )
+            return
+        }
+
+        if (!WORK_MODES.includes(workMode)) {
+            setValidationError(
+                t('recruiterJobForm.invalidWorkMode'),
+            )
+            return
+        }
+
+        // Validate pending requirements.
+        if (
+            requirementsToSave.some(
+                (requirement) =>
+                    !isValidUuid(requirement.skillId),
+            )
+        ) {
+            setValidationError(
+                t('recruiterJobForm.invalidSkillIds'),
+            )
+            return
+        }
+
+        if (
+            requirementsToSave.some(
+                (requirement) =>
+                    requirement.minimumLevel < 1 ||
+                    requirement.minimumLevel > 5 ||
+                    !Number.isInteger(requirement.minimumLevel),
+            )
+        ) {
+            setValidationError(
+                t('recruiterJobForm.minimumSkillLevel'),
             )
             return
         }
@@ -1078,24 +1298,35 @@ export default function RecruiterJobFormPage() {
             if (jobId) {
                 const data: UpdateJobRequest = {
                     title: title.trim(),
-                    description:
-                        description.trim(),
-                    location:
-                        location.trim() ||
-                        undefined,
+                    description: description.trim(),
+                    location: location.trim() || undefined,
                     employmentType,
                     workMode,
-                    salaryMin:
-                        normalizedSalaryMin,
-                    salaryMax:
-                        normalizedSalaryMax,
-                    currency:
-                        currency || undefined,
-                    expiresAt:
-                        expiresAt || undefined,
+                    salaryMin: normalizedSalaryMin,
+                    salaryMax: normalizedSalaryMax,
+                    currency: currency || undefined,
+                    expiresAt: expiresAt || undefined,
                 }
 
                 await updateJob(jobId, data)
+
+                // Save a selected skill in edit mode.
+                if (selectedSkillId) {
+                    try {
+                        await createJobRequirement(jobId, {
+                            skillId: selectedSkillId,
+                            required: selectedRequired,
+                            minimumLevel: selectedMinimumLevel,
+                        })
+                    } catch {
+                        setError(
+                            t(
+                                'recruiterJobForm.unableToAddRequirement',
+                            ),
+                        )
+                        return
+                    }
+                }
 
                 navigate('/recruiter/jobs')
                 return
@@ -1103,32 +1334,24 @@ export default function RecruiterJobFormPage() {
 
             const data: CreateJobRequest = {
                 title: title.trim(),
-                description:
-                    description.trim(),
-                location:
-                    location.trim() ||
-                    undefined,
+                description: description.trim(),
+                location: location.trim() || undefined,
                 employmentType,
                 workMode,
-                salaryMin:
-                    normalizedSalaryMin,
-                salaryMax:
-                    normalizedSalaryMax,
-                currency:
-                    currency || undefined,
-                expiresAt:
-                    expiresAt || undefined,
+                salaryMin: normalizedSalaryMin,
+                salaryMax: normalizedSalaryMax,
+                currency: currency || undefined,
+                expiresAt: expiresAt || undefined,
             }
 
-            const createdJob =
-                await createJob(data)
+            const createdJob = await createJob(data)
 
-            if (
-                pendingRequirements.length > 0
-            ) {
+            // Save all requirements, including the unconfirmed selection.
+            if (requirementsToSave.length > 0) {
                 try {
                     await createPendingRequirements(
                         createdJob.id,
+                        requirementsToSave,
                     )
                 } catch {
                     setError(
@@ -1144,12 +1367,8 @@ export default function RecruiterJobFormPage() {
         } catch {
             setError(
                 jobId
-                    ? t(
-                        'recruiterJobForm.unableToUpdateJob',
-                    )
-                    : t(
-                        'recruiterJobForm.unableToCreateJob',
-                    ),
+                    ? t('recruiterJobForm.unableToUpdateJob')
+                    : t('recruiterJobForm.unableToCreateJob'),
             )
         } finally {
             setSaving(false)
@@ -1350,16 +1569,21 @@ export default function RecruiterJobFormPage() {
                                 type="text"
                                 value={title}
                                 onChange={(event) =>
-                                    setTitle(
-                                        event.target
-                                            .value,
-                                    )
+                                    handleFieldChange('title', event.target.value)
                                 }
+                                onBlur={() => handleFieldBlur('title')}
+                                aria-invalid={Boolean(errors.title)}
+
                                 placeholder={t(
                                     'recruiterJobForm.jobTitlePlaceholder',
                                 )}
                                 required
                             />
+                            {errors.title && (
+                                <span className="field-error" role="alert">
+                                    {errors.title}
+                                </span>
+                            )}
                         </div>
 
                         <div className="form-field">
@@ -1440,15 +1664,20 @@ export default function RecruiterJobFormPage() {
                                 type="text"
                                 value={location}
                                 onChange={(event) =>
-                                    setLocation(
-                                        event.target
-                                            .value,
-                                    )
+                                    handleFieldChange('location', event.target.value)
                                 }
+                                onBlur={() => handleFieldBlur('location')}
+                                aria-invalid={Boolean(errors.location)}
+                                required
                                 placeholder={t(
                                     'recruiterJobForm.locationPlaceholder',
                                 )}
                             />
+                            {errors.location && (
+                                <span className="field-error" role="alert">
+                                    {errors.location}
+                                </span>
+                            )}
                         </div>
 
                         <div className="form-field form-field--full">
@@ -1458,12 +1687,25 @@ export default function RecruiterJobFormPage() {
                                 )}
                             </label>
 
-                            <RichTextEditor
-                                id="description"
-                                value={description}
-                                onChange={setDescription}
-                                aria-labelledby="description-label"
-                            />
+                            <div
+                                onBlurCapture={() =>
+                                    handleFieldBlur('description')
+                                }
+                            >
+                                <RichTextEditor
+                                    id="description"
+                                    value={description}
+                                    onChange={(value) =>
+                                        handleFieldChange('description', value)
+                                    }
+                                    aria-labelledby="description-label"
+                                />
+                            </div>
+                            {errors.description && (
+                                <span className="field-error" role="alert">
+                                    {errors.description}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -1499,13 +1741,17 @@ export default function RecruiterJobFormPage() {
                                 inputMode="numeric"
                                 value={salaryMin}
                                 onChange={(event) =>
-                                    setSalaryMin(
-                                        event.target
-                                            .value,
-                                    )
+                                    handleFieldChange('salaryMin', event.target.value)
                                 }
+                                onBlur={() => handleFieldBlur('salaryMin')}
+                                aria-invalid={Boolean(errors.salaryMin)}
                                 placeholder="2500"
                             />
+                            {errors.salaryMin && (
+                                <span className="field-error" role="alert">
+                                    {errors.salaryMin}
+                                </span>
+                            )}
                         </div>
 
                         <div className="form-field">
@@ -1521,13 +1767,17 @@ export default function RecruiterJobFormPage() {
                                 inputMode="numeric"
                                 value={salaryMax}
                                 onChange={(event) =>
-                                    setSalaryMax(
-                                        event.target
-                                            .value,
-                                    )
+                                    handleFieldChange('salaryMax', event.target.value)
                                 }
+                                onBlur={() => handleFieldBlur('salaryMax')}
+                                aria-invalid={Boolean(errors.salaryMax)}
                                 placeholder="4500"
                             />
+                            {errors.salaryMax && (
+                                <span className="field-error" role="alert">
+                                    {errors.salaryMax}
+                                </span>
+                            )}
                         </div>
 
                         <div className="form-field">
@@ -1573,12 +1823,16 @@ export default function RecruiterJobFormPage() {
                                 type="date"
                                 value={expiresAt}
                                 onChange={(event) =>
-                                    setExpiresAt(
-                                        event.target
-                                            .value,
-                                    )
+                                    handleFieldChange('expiresAt', event.target.value)
                                 }
+                                onBlur={() => handleFieldBlur('expiresAt')}
+                                aria-invalid={Boolean(errors.expiresAt)}
                             />
+                            {errors.expiresAt && (
+                                <span className="field-error" role="alert">
+                                    {errors.expiresAt}
+                                </span>
+                            )}
                         </div>
                     </div>
                 </section>
@@ -1611,9 +1865,7 @@ export default function RecruiterJobFormPage() {
                     <div className="requirement-create">
                         <div className="form-field skill-search-field">
                             <label htmlFor="skill-search">
-                                {t(
-                                    'common.skill',
-                                )}
+                                {t('common.skill')}
                             </label>
 
                             <div className="skill-search">
@@ -1622,104 +1874,64 @@ export default function RecruiterJobFormPage() {
                                     type="text"
                                     role="combobox"
                                     aria-autocomplete="list"
-                                    aria-expanded={
-                                        !selectedSkillId &&
-                                        skillSearch.trim()
-                                            .length > 0 &&
-                                        filteredSkills.length >
-                                        0
-                                    }
+                                    aria-expanded={showSkillResults}
                                     aria-controls="skill-results"
                                     autoComplete="off"
-                                    value={
-                                        skillSearch
-                                    }
-                                    disabled={
-                                        skillsLoading ||
-                                        requirementSaving
-                                    }
-                                    placeholder={t(
-                                        'recruiterJobForm.selectSkill',
-                                    )}
-                                    onChange={(event) =>
-                                        handleSkillSearchChange(
-                                            event.target
-                                                .value,
-                                        )
-                                    }
+                                    value={skillSearch}
+                                    disabled={skillsLoading || requirementSaving}
+                                    placeholder={t('recruiterJobForm.selectSkill')}
+                                    onFocus={() => setIsSkillDropdownOpen(true)}
+                                    onClick={() => setIsSkillDropdownOpen(true)}
+                                    onChange={(event) => {
+                                        handleSkillSearchChange(event.target.value)
+                                    }}
                                 />
 
                                 {selectedSkillId && (
                                     <button
                                         type="button"
                                         className="skill-search__clear"
-                                        aria-label={t(
-                                            'recruiterJobForm.selectSkill',
-                                        )}
-                                        title={t(
-                                            'recruiterJobForm.selectSkill',
-                                        )}
-                                        disabled={
-                                            requirementSaving
-                                        }
-                                        onClick={
-                                            clearSkillSelection
-                                        }
+                                        aria-label={t('recruiterJobForm.selectSkill')}
+                                        title={t('recruiterJobForm.selectSkill')}
+                                        disabled={requirementSaving}
+                                        onClick={clearSkillSelection}
                                     >
                                         ×
                                     </button>
                                 )}
 
-                                {!selectedSkillId &&
-                                    skillSearch.trim() &&
-                                    filteredSkills.length >
-                                    0 && (
-                                        <div
-                                            id="skill-results"
-                                            className="skill-search__results"
-                                            role="listbox"
-                                        >
-                                            {filteredSkills.map(
-                                                (
-                                                    skill,
-                                                ) => (
-                                                    <button
-                                                        key={
-                                                            skill.id
-                                                        }
-                                                        type="button"
-                                                        role="option"
-                                                        aria-selected={
-                                                            false
-                                                        }
-                                                        className="skill-search__option"
-                                                        onClick={() =>
-                                                            selectSkill(
-                                                                skill,
-                                                            )
-                                                        }
-                                                    >
-                                                        {
-                                                            skill.name
-                                                        }
-                                                    </button>
-                                                ),
-                                            )}
-                                        </div>
-                                    )}
+                                {showSkillResults && (
+                                    <div
+                                        id="skill-results"
+                                        className="skill-search__results"
+                                        role="listbox"
+                                    >
+                                        {filteredSkills.map((skill) => (
+                                            <button
+                                                key={skill.id}
+                                                type="button"
+                                                role="option"
+                                                aria-selected={false}
+                                                className="skill-search__option"
+                                                onClick={() => selectSkill(skill)}
+                                            >
+                                                {skill.name}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
 
-                                {!selectedSkillId &&
-                                    skillSearch.trim() &&
+                                {isSkillDropdownOpen &&
+                                    !selectedSkillId &&
                                     !skillsLoading &&
-                                    filteredSkills.length ===
-                                    0 && (
+                                    filteredSkills.length === 0 && (
                                         <div
                                             className="skill-search__empty"
                                             role="status"
                                         >
-                                            {t(
-                                                'recruiterJobForm.noSkillsFound',
-                                            )}
+                                            {skills.length === 0
+                                                ? 'No skills available.'
+                                                : t('recruiterJobForm.noSkillsFound')}
                                         </div>
                                     )}
                             </div>

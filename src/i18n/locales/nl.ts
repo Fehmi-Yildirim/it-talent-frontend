@@ -1096,6 +1096,7 @@ export const nl: DeepPartial<typeof en> = {
             'De vacature kan niet worden bijgewerkt.',
         unableToCreateJob:
             'De vacature kan niet worden aangemaakt.',
+        "locationRequired": "Locatie is verplicht."
     },
 
     recruiterApplications: {

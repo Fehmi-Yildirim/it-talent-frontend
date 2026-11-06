@@ -461,6 +461,15 @@ describe('RecruiterJobFormPage', () => {
             },
         )
 
+        fireEvent.change(
+            screen.getByLabelText('Location'),
+            {
+                target: {
+                    value: 'Amsterdam',
+                },
+            },
+        )
+
         fireEvent.click(
             screen.getByRole('button', {
                 name: 'HTML',
@@ -520,7 +529,7 @@ describe('RecruiterJobFormPage', () => {
                 title: 'React Developer',
                 description:
                     '<p>Build React applications.</p>',
-                location: undefined,
+                location: 'Amsterdam',
                 employmentType: 'FULL_TIME',
                 workMode: 'ONSITE',
                 salaryMin: undefined,
@@ -561,10 +570,8 @@ describe('RecruiterJobFormPage', () => {
         )
 
         expect(
-            screen.getByRole('alert'),
-        ).toHaveTextContent(
-            'Title is required.',
-        )
+            screen.getByText('Title is required.'),
+        ).toHaveAttribute('role', 'alert')
 
         expect(createJob).not.toHaveBeenCalled()
     })
@@ -616,10 +623,10 @@ describe('RecruiterJobFormPage', () => {
         )
 
         expect(
-            screen.getByRole('alert'),
-        ).toHaveTextContent(
-            'Minimum salary cannot be greater than maximum salary.',
-        )
+            screen.getByText(
+                'Minimum salary cannot be greater than maximum salary.',
+            ),
+        ).toHaveAttribute('role', 'alert')
 
         expect(createJob).not.toHaveBeenCalled()
     })
