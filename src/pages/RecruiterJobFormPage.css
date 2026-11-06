@@ -108,6 +108,11 @@
     gap: 7px;
 }
 
+.form-field label .required {
+    color: var(--color-danger);
+    margin-left: 3px;
+}
+
 .form-field--full {
     grid-column: 1 / -1;
 }
@@ -171,6 +176,13 @@
     color: var(--color-danger);
     font-size: 0.85rem;
     line-height: 1.4;
+}
+
+.form-field input:focus-visible,
+.form-field textarea:focus-visible,
+.form-field select:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
 }
 
 .form-field input:disabled,

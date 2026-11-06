@@ -835,6 +835,7 @@ export const en = {
 
         expirationPast:
             'Expiration date cannot be in the past.',
+        "expirationRequired": "Enter an expiration date.",
 
         invalidSkillIds:
             'One or more skill IDs are invalid.',
@@ -849,6 +850,9 @@ export const en = {
         unableToCreateJob:
             'Unable to create the job.',
         "locationRequired": "Location is required.",
+        "descriptionMinLength": "Description must contain at least 10 characters.",
+        "descriptionMaxLength": "Description cannot exceed 10,000 characters.",
+        descriptionCharacterCount: 'characters',
     },
 
     recruiterApplications: {

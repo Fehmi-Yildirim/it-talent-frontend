@@ -69,17 +69,36 @@ type FormSection =
 function getInitialDate(): string {
     const date = new Date()
     date.setDate(date.getDate() + 30)
-    return date.toISOString().slice(0, 10)
+
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
 }
 
 function getTodayString(): string {
-    return new Date().toISOString().slice(0, 10)
+    const date = new Date()
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+
+    return `${year}-${month}-${day}`
 }
 
 function isValidUuid(value: string): boolean {
     return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
         value,
     )
+}
+
+function getRichTextCharacterCount(value: string): number {
+    const container = document.createElement('div')
+    container.innerHTML = value
+
+    return (container.textContent ?? '')
+        .replace(/[\u200B\uFEFF]/g, '')
+        .length
 }
 
 function normalizeSalary(
@@ -427,6 +446,11 @@ export default function RecruiterJobFormPage() {
         setValidationError,
     ] = useState<string | null>(null)
 
+    const [submitted, setSubmitted] = useState(false)
+    const [touchedFields, setTouchedFields] = useState<
+        Partial<Record<JobFormField, boolean>>
+    >({})
+
     const [activeSection, setActiveSection] =
         useState<FormSection | null>(null)
 
@@ -436,6 +460,13 @@ export default function RecruiterJobFormPage() {
         useRef<HTMLElement | null>(null)
     const jobRequirementsRef =
         useRef<HTMLElement | null>(null)
+
+    const titleInputRef = useRef<HTMLInputElement | null>(null)
+    const descriptionInputRef = useRef<HTMLDivElement | null>(null)
+    const locationInputRef = useRef<HTMLInputElement | null>(null)
+    const salaryMinInputRef = useRef<HTMLInputElement | null>(null)
+    const salaryMaxInputRef = useRef<HTMLInputElement | null>(null)
+    const expiresAtInputRef = useRef<HTMLInputElement | null>(null)
 
     function getSkillName(
         skillId: string,
@@ -619,6 +650,9 @@ export default function RecruiterJobFormPage() {
 
     const normalizedSkillSearch =
         skillSearch.trim().toLowerCase()
+
+    const descriptionCharacterCount =
+        getRichTextCharacterCount(description)
 
     const filteredSkills = skills.filter(
         (skill) =>
@@ -933,17 +967,6 @@ export default function RecruiterJobFormPage() {
         }
     }
 
-    function hasRichTextContent(value: string): boolean {
-        const container = document.createElement('div')
-        container.innerHTML = value
-
-        return Boolean(
-            container.textContent
-                ?.replace(/[\u200B\uFEFF]/g, '')
-                .trim(),
-        )
-    }
-
     function validateFieldValue(
         field: JobFormField,
         value: string,
@@ -954,10 +977,26 @@ export default function RecruiterJobFormPage() {
                     ? undefined
                     : t('recruiterJobForm.titleRequired')
 
-            case 'description':
-                return hasRichTextContent(value)
-                    ? undefined
-                    : t('recruiterJobForm.descriptionRequired')
+            case 'description': {
+                const text = value
+                    .replace(/<[^>]*>/g, '')
+                    .replace(/&nbsp;/g, ' ')
+                    .trim()
+
+                if (!text) {
+                    return t('recruiterJobForm.descriptionRequired')
+                }
+
+                if (text.length < 10) {
+                    return t('recruiterJobForm.descriptionMinLength')
+                }
+
+                if (value.length > 10000) {
+                    return t('recruiterJobForm.descriptionMaxLength')
+                }
+
+                return undefined
+            }
 
             case 'location':
                 return value.trim()
@@ -993,9 +1032,15 @@ export default function RecruiterJobFormPage() {
             }
 
             case 'expiresAt':
-                return value && value < getTodayString()
-                    ? t('recruiterJobForm.expirationPast')
-                    : undefined
+                if (!value) {
+                    return t('recruiterJobForm.expirationRequired')
+                }
+
+                if (value < getTodayString()) {
+                    return t('recruiterJobForm.expirationPast')
+                }
+
+                return undefined
         }
     }
 
@@ -1056,9 +1101,51 @@ export default function RecruiterJobFormPage() {
         return nextErrors
     }
 
+    function focusFirstInvalidField(
+        fieldErrors: JobFormErrors,
+    ) {
+        const fieldOrder: JobFormField[] = [
+            'title',
+            'description',
+            'location',
+            'salaryMin',
+            'salaryMax',
+            'expiresAt',
+        ]
+
+        const refs = {
+            title: titleInputRef,
+            description: descriptionInputRef,
+            location: locationInputRef,
+            salaryMin: salaryMinInputRef,
+            salaryMax: salaryMaxInputRef,
+            expiresAt: expiresAtInputRef,
+        }
+
+        const firstInvalidField = fieldOrder.find(
+            (field) => fieldErrors[field],
+        )
+
+        if (firstInvalidField) {
+            const element = refs[firstInvalidField].current
+
+            element?.scrollIntoView?.({
+                behavior: 'smooth',
+                block: 'center',
+            })
+
+            element?.focus()
+        }
+    }
+
     function handleFieldBlur(field: JobFormField) {
         const value = getFieldValue(field)
         const message = validateFieldValue(field, value)
+
+        setTouchedFields((current) => ({
+            ...current,
+            [field]: true,
+        }))
 
         setErrors((current) => {
             const next = { ...current }
@@ -1130,7 +1217,7 @@ export default function RecruiterJobFormPage() {
         setErrors((current) => {
             const next = { ...current }
 
-            if (current[field]) {
+            if (current[field] || touchedFields[field] || submitted) {
                 const message = validateFieldValue(field, value)
 
                 if (message) {
@@ -1143,12 +1230,18 @@ export default function RecruiterJobFormPage() {
             if (field === 'salaryMin' || field === 'salaryMax') {
                 const nextMinValue =
                     field === 'salaryMin' ? value : salaryMin
+
                 const nextMaxValue =
                     field === 'salaryMax' ? value : salaryMax
+
                 const min = normalizeSalary(nextMinValue)
                 const max = normalizeSalary(nextMaxValue)
 
-                if (min !== undefined && max !== undefined && min > max) {
+                if (
+                    min !== undefined &&
+                    max !== undefined &&
+                    min > max
+                ) {
                     next.salaryMin = t(
                         'recruiterJobForm.minimumSalaryGreater',
                     )
@@ -1190,6 +1283,12 @@ export default function RecruiterJobFormPage() {
         event: FormEvent<HTMLFormElement>,
     ) {
         event.preventDefault()
+
+        if (saving) {
+            return
+        }
+
+        setSubmitted(true)
 
         setValidationError(null)
         setErrors({})
@@ -1241,6 +1340,7 @@ export default function RecruiterJobFormPage() {
         setErrors(nextErrors)
 
         if (Object.keys(nextErrors).length > 0) {
+            focusFirstInvalidField(nextErrors)
             return
         }
 
@@ -1565,22 +1665,24 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <input
+                                ref={titleInputRef}
                                 id="title"
                                 type="text"
+                                maxLength={150}
                                 value={title}
                                 onChange={(event) =>
                                     handleFieldChange('title', event.target.value)
                                 }
                                 onBlur={() => handleFieldBlur('title')}
                                 aria-invalid={Boolean(errors.title)}
-
+                                aria-describedby={errors.title ? 'title-error' : undefined}
                                 placeholder={t(
                                     'recruiterJobForm.jobTitlePlaceholder',
                                 )}
                                 required
                             />
                             {errors.title && (
-                                <span className="field-error" role="alert">
+                                <span id="title-error" className="field-error" role="alert">
                                     {errors.title}
                                 </span>
                             )}
@@ -1660,21 +1762,24 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <input
+                                ref={locationInputRef}
                                 id="location"
                                 type="text"
+                                maxLength={255}
                                 value={location}
                                 onChange={(event) =>
                                     handleFieldChange('location', event.target.value)
                                 }
                                 onBlur={() => handleFieldBlur('location')}
                                 aria-invalid={Boolean(errors.location)}
+                                aria-describedby={errors.location ? 'location-error' : undefined}
                                 required
                                 placeholder={t(
                                     'recruiterJobForm.locationPlaceholder',
                                 )}
                             />
                             {errors.location && (
-                                <span className="field-error" role="alert">
+                                <span id="location-error" className="field-error" role="alert">
                                     {errors.location}
                                 </span>
                             )}
@@ -1688,9 +1793,17 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <div
-                                onBlurCapture={() =>
-                                    handleFieldBlur('description')
-                                }
+                                ref={descriptionInputRef}
+                                tabIndex={-1}
+                                onBlurCapture={(event) => {
+                                    if (
+                                        !event.currentTarget.contains(
+                                            event.relatedTarget as Node | null,
+                                        )
+                                    ) {
+                                        handleFieldBlur('description')
+                                    }
+                                }}
                             >
                                 <RichTextEditor
                                     id="description"
@@ -1699,12 +1812,22 @@ export default function RecruiterJobFormPage() {
                                         handleFieldChange('description', value)
                                     }
                                     aria-labelledby="description-label"
+                                    aria-invalid={Boolean(errors.description)}
+                                    aria-describedby={
+                                        errors.description ? 'description-error' : undefined
+                                    }
                                 />
                             </div>
                             {errors.description && (
-                                <span className="field-error" role="alert">
+                                <span id="description-error" className="field-error" role="alert">
                                     {errors.description}
                                 </span>
+                            )}
+                            {descriptionCharacterCount > 0 && (
+                                <p className="form-help" aria-live="polite">
+                                    {descriptionCharacterCount.toLocaleString()} / 10,000{' '}
+                                    {t('recruiterJobForm.descriptionCharacterCount')}
+                                </p>
                             )}
                         </div>
                     </div>
@@ -1736,6 +1859,7 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <input
+                                ref={salaryMinInputRef}
                                 id="salaryMin"
                                 type="text"
                                 inputMode="numeric"
@@ -1745,10 +1869,11 @@ export default function RecruiterJobFormPage() {
                                 }
                                 onBlur={() => handleFieldBlur('salaryMin')}
                                 aria-invalid={Boolean(errors.salaryMin)}
+                                aria-describedby={errors.salaryMin ? 'salaryMin-error' : undefined}
                                 placeholder="2500"
                             />
                             {errors.salaryMin && (
-                                <span className="field-error" role="alert">
+                                <span id="salaryMin-error" className="field-error" role="alert">
                                     {errors.salaryMin}
                                 </span>
                             )}
@@ -1762,6 +1887,7 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <input
+                                ref={salaryMaxInputRef}
                                 id="salaryMax"
                                 type="text"
                                 inputMode="numeric"
@@ -1771,10 +1897,11 @@ export default function RecruiterJobFormPage() {
                                 }
                                 onBlur={() => handleFieldBlur('salaryMax')}
                                 aria-invalid={Boolean(errors.salaryMax)}
+                                aria-describedby={errors.salaryMax ? 'salaryMax-error' : undefined}
                                 placeholder="4500"
                             />
                             {errors.salaryMax && (
-                                <span className="field-error" role="alert">
+                                <span id="salaryMax-error" className="field-error" role="alert">
                                     {errors.salaryMax}
                                 </span>
                             )}
@@ -1819,6 +1946,7 @@ export default function RecruiterJobFormPage() {
                             </label>
 
                             <input
+                                ref={expiresAtInputRef}
                                 id="expiresAt"
                                 type="date"
                                 value={expiresAt}
@@ -1827,9 +1955,11 @@ export default function RecruiterJobFormPage() {
                                 }
                                 onBlur={() => handleFieldBlur('expiresAt')}
                                 aria-invalid={Boolean(errors.expiresAt)}
+                                aria-describedby={errors.expiresAt ? 'expiresAt-error' : undefined}
+                                required
                             />
                             {errors.expiresAt && (
-                                <span className="field-error" role="alert">
+                                <span id="expiresAt-error" className="field-error" role="alert">
                                     {errors.expiresAt}
                                 </span>
                             )}

@@ -1083,6 +1083,7 @@ export const nl: DeepPartial<typeof en> = {
 
         expirationPast:
             'De vervaldatum kan niet in het verleden liggen.',
+        "expirationRequired": "Vul een vervaldatum in.",
 
         invalidSkillIds:
             'Een of meer vaardigheids-ID’s zijn ongeldig.',
@@ -1096,7 +1097,10 @@ export const nl: DeepPartial<typeof en> = {
             'De vacature kan niet worden bijgewerkt.',
         unableToCreateJob:
             'De vacature kan niet worden aangemaakt.',
-        "locationRequired": "Locatie is verplicht."
+        "locationRequired": "Locatie is verplicht.",
+        "descriptionMinLength": "Beschrijving moet minimaal 10 tekens bevatten.",
+        "descriptionMaxLength": "Beschrijving mag maximaal 10.000 tekens bevatten.",
+        descriptionCharacterCount: 'tekens',
     },
 
     recruiterApplications: {
