@@ -1,3 +1,4 @@
+
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from './App'
 import AdminRoute from './AdminRoute'
@@ -117,48 +118,48 @@ export const router = createBrowserRouter([
             element: <Navigate to="/profile" replace />,
           },
           {
-            path: 'recruiter/company',
-            element: (
-              <LazyPage>
-                <CompanyManagement />
-              </LazyPage>
-            ),
-          },
-          {
-            path: 'recruiter/jobs',
-            element: (
-              <LazyPage>
-                <RecruiterJobsPage />
-              </LazyPage>
-            ),
-          },
-          {
-            path: 'recruiter/jobs/new',
-            element: (
-              <LazyPage>
-                <RecruiterJobFormPage />
-              </LazyPage>
-            ),
-          },
-          {
-            path: 'recruiter/jobs/:jobId/edit',
-            element: (
-              <LazyPage>
-                <RecruiterJobFormPage />
-              </LazyPage>
-            ),
-          },
-          {
-            path: 'recruiter/jobs/:jobId',
-            element: (
-              <LazyPage>
-                <RecruiterJobDetailsPage />
-              </LazyPage>
-            ),
-          },
-          {
             element: <RecruiterRoute />,
             children: [
+              {
+                path: 'recruiter/company',
+                element: (
+                  <LazyPage>
+                    <CompanyManagement />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'recruiter/jobs',
+                element: (
+                  <LazyPage>
+                    <RecruiterJobsPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'recruiter/jobs/new',
+                element: (
+                  <LazyPage>
+                    <RecruiterJobFormPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'recruiter/jobs/:jobId/edit',
+                element: (
+                  <LazyPage>
+                    <RecruiterJobFormPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'recruiter/jobs/:jobId',
+                element: (
+                  <LazyPage>
+                    <RecruiterJobDetailsPage />
+                  </LazyPage>
+                ),
+              },
               {
                 path: 'recruiter/applications',
                 element: (
