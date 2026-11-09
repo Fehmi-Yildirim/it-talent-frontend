@@ -722,15 +722,15 @@ function ProfilePage() {
 
   return (
     <section className="profile-page">
+      <Link to="/dashboard" className="back-link">
+        {t('common.backToDashboard')}
+      </Link>
       <div className="profile-header">
         <div>
           <p className="profile-eyebrow">IT Talent</p>
           <h1>{t('profile.title')}</h1>
         </div>
 
-        <Link to="/dashboard" className="btn btn-secondary">
-          {t('common.backToDashboard')}
-        </Link>
       </div>
 
       {success && (

@@ -33,7 +33,7 @@ export const ProfilePage = lazy(
 )
 
 export const CompanyManagement = lazy(
-    () => import('../features/recruiter/CompanyManagement'),
+    () => import('../pages/CompanyManagement'),
 )
 
 export const RecruiterJobsPage = lazy(

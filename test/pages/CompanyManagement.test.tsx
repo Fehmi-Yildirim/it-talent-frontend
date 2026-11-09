@@ -3,7 +3,7 @@ import {
     render,
     screen,
     waitFor,
-} from '../../test-utils'
+} from '../test-utils'
 import {
     beforeEach,
     describe,
@@ -11,11 +11,12 @@ import {
     it,
     vi,
 } from 'vitest'
-import CompanyManagement from '../../../src/features/recruiter/CompanyManagement'
-import { apiClient } from '../../../src/services/api/apiClient'
-import { ApiError } from '../../../src/services/api/apiError'
+import CompanyManagement from '../../src/pages/CompanyManagement'
+import { apiClient } from '../../src/services/api/apiClient'
+import { ApiError } from '../../src/services/api/apiError'
+import { MemoryRouter } from 'react-router-dom'
 
-vi.mock('../../../src/services/api/apiClient', () => ({
+vi.mock('../../src/services/api/apiClient', () => ({
     apiClient: {
         get: vi.fn(),
         post: vi.fn(),
@@ -34,6 +35,14 @@ const company = {
     updatedAt: '2026-01-01',
 }
 
+function renderCompanyManagement() {
+    return render(
+        <MemoryRouter>
+            <CompanyManagement />
+        </MemoryRouter>,
+    )
+}
+
 describe('CompanyManagement', () => {
     beforeEach(() => {
         vi.clearAllMocks()
@@ -44,7 +53,7 @@ describe('CompanyManagement', () => {
             new Promise(() => undefined),
         )
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         expect(
             screen.getByText('Loading company information...'),
@@ -54,7 +63,7 @@ describe('CompanyManagement', () => {
     it('displays existing company', async () => {
         vi.mocked(apiClient.get).mockResolvedValue(company)
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         expect(
             await screen.findByDisplayValue('Tech Company'),
@@ -84,7 +93,7 @@ describe('CompanyManagement', () => {
             new Error('Request failed'),
         )
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         expect(
             await screen.findByRole('heading', {
@@ -110,7 +119,7 @@ describe('CompanyManagement', () => {
             new ApiError(404, 'Company not found'),
         )
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         fireEvent.click(
             await screen.findByRole('button', { name: 'Create company' }),
@@ -148,7 +157,7 @@ describe('CompanyManagement', () => {
 
         vi.mocked(apiClient.post).mockResolvedValue(company)
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         fireEvent.click(
             await screen.findByRole('button', {
@@ -220,7 +229,7 @@ describe('CompanyManagement', () => {
             location: 'Rotterdam',
         })
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         const nameInput =
             await screen.findByDisplayValue('Tech Company')
@@ -298,7 +307,7 @@ describe('CompanyManagement', () => {
             location: null,
         })
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         expect(
             await screen.findByDisplayValue('Tech Company'),
@@ -324,7 +333,7 @@ describe('CompanyManagement', () => {
             new Error('Request failed'),
         )
 
-        render(<CompanyManagement />)
+        renderCompanyManagement()
 
         const nameInput =
             await screen.findByDisplayValue('Tech Company')
