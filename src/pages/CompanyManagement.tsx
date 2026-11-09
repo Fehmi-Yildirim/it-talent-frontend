@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,6 +7,14 @@ import { useTranslation } from '../i18n/useTranslation'
 import { ApiError } from '../services/api/apiError'
 import { apiClient } from '../services/api/apiClient'
 import './CompanyManagement.css'
+import {
+    maxLength,
+    minLength,
+    required,
+    url,
+    validate,
+} from '../validation/validators'
+
 
 interface Company {
     id: string
@@ -104,68 +111,90 @@ function CompanyManagement() {
         }
     }, [retryCount, t])
 
+
     function validateField(
         field: CompanyField,
         value: string,
     ): string | undefined {
-        const trimmedValue = value.trim()
+        let validationError
 
         switch (field) {
             case 'name':
-                if (!trimmedValue) {
+                validationError = validate(value, [
+                    required,
+                    minLength(2),
+                    maxLength(150),
+                ])
+
+                if (validationError?.code === 'required') {
                     return t('companyManagement.validationNameRequired')
                 }
 
-                if (trimmedValue.length < 2) {
+                if (validationError?.code === 'minLength') {
                     return t('companyManagement.validationNameMinLength')
                 }
 
-                if (trimmedValue.length > 150) {
+                if (validationError?.code === 'maxLength') {
                     return t('companyManagement.validationNameMaxLength')
                 }
+
                 break
 
             case 'description':
-                if (!trimmedValue) {
+                validationError = validate(value, [
+                    required,
+                    minLength(2),
+                    maxLength(255),
+                ])
+
+                if (validationError?.code === 'required') {
                     return t('companyManagement.validationDescriptionRequired')
                 }
 
-                if (trimmedValue.length < 2) {
+                if (validationError?.code === 'minLength') {
                     return t('companyManagement.validationDescriptionMinLength')
                 }
 
-                if (trimmedValue.length > 255) {
+                if (validationError?.code === 'maxLength') {
                     return t('companyManagement.validationDescriptionMaxLength')
                 }
+
                 break
 
             case 'website':
-                if (!trimmedValue) {
+                validationError = validate(value, [
+                    required,
+                    maxLength(255),
+                    url,
+                ])
+
+                if (validationError?.code === 'required') {
                     return t('companyManagement.validationWebsiteRequired')
                 }
 
-                try {
-                    const url = new URL(trimmedValue)
-
-                    if (
-                        url.protocol !== 'http:' &&
-                        url.protocol !== 'https:'
-                    ) {
-                        throw new Error('Invalid URL protocol')
-                    }
-                } catch {
+                if (
+                    validationError?.code === 'maxLength' ||
+                    validationError?.code === 'invalidUrl'
+                ) {
                     return t('companyManagement.validationWebsite')
                 }
+
                 break
 
             case 'location':
-                if (!trimmedValue) {
+                validationError = validate(value, [
+                    required,
+                    maxLength(255),
+                ])
+
+                if (validationError?.code === 'required') {
                     return t('companyManagement.validationLocationRequired')
                 }
 
-                if (trimmedValue.length > 255) {
+                if (validationError?.code === 'maxLength') {
                     return t('companyManagement.validationLocationMaxLength')
                 }
+
                 break
         }
 
@@ -232,29 +261,21 @@ function CompanyManagement() {
         }))
     }
 
-    function renderFieldError(field: CompanyField, value: string) {
+    function renderFieldError(field: CompanyField) {
         const message = errors[field]
 
         if (!message) {
             return null
         }
 
-        if (!value.trim()) {
-            return (
-                <span id={`company-${field}-error`} className="sr-only">
-                    {message}
-                </span>
-            )
-        }
-
         return (
-            <p
+            <span
                 id={`company-${field}-error`}
                 className="form-field-error"
                 role="alert"
             >
                 {message}
-            </p>
+            </span>
         )
     }
 
@@ -436,9 +457,7 @@ function CompanyManagement() {
                             type="text"
                             className={`form-control ${errors.name ? 'form-control--invalid' : ''}`}
                             value={name}
-                            placeholder={
-                                errors.name && !name.trim() ? errors.name : ''
-                            }
+                            placeholder={t('companyManagement.namePlaceholder')}
                             onChange={(event) =>
                                 handleFieldChange('name', event.target.value)
                             }
@@ -451,7 +470,7 @@ function CompanyManagement() {
                             }
                         />
 
-                        {renderFieldError('name', name)}
+                        {renderFieldError('name')}
                     </div>
 
                     <div className="company-management__field">
@@ -463,11 +482,7 @@ function CompanyManagement() {
                             id="company-description"
                             className={`form-control ${errors.description ? 'form-control--invalid' : ''}`}
                             value={description}
-                            placeholder={
-                                errors.description && !description.trim()
-                                    ? errors.description
-                                    : ''
-                            }
+                            placeholder={t('companyManagement.descriptionPlaceholder')}
                             onChange={(event) =>
                                 handleFieldChange(
                                     'description',
@@ -488,7 +503,7 @@ function CompanyManagement() {
                             }
                         />
 
-                        {renderFieldError('description', description)}
+                        {renderFieldError('description')}
                     </div>
 
                     <div className="company-management__field">
@@ -502,11 +517,7 @@ function CompanyManagement() {
                             required
                             className={`form-control ${errors.website ? 'form-control--invalid' : ''}`}
                             value={website}
-                            placeholder={
-                                errors.website && !website.trim()
-                                    ? errors.website
-                                    : ''
-                            }
+                            placeholder={t('companyManagement.websitePlaceholder')}
                             onChange={(event) =>
                                 handleFieldChange('website', event.target.value)
                             }
@@ -520,7 +531,7 @@ function CompanyManagement() {
                             }
                         />
 
-                        {renderFieldError('website', website)}
+                        {renderFieldError('website')}
                     </div>
 
                     <div className="company-management__field">
@@ -534,11 +545,7 @@ function CompanyManagement() {
                             required
                             className={`form-control ${errors.location ? 'form-control--invalid' : ''}`}
                             value={location}
-                            placeholder={
-                                errors.location && !location.trim()
-                                    ? errors.location
-                                    : ''
-                            }
+                            placeholder={t('companyManagement.locationPlaceholder')}
                             onChange={(event) =>
                                 handleFieldChange('location', event.target.value)
                             }
@@ -552,7 +559,7 @@ function CompanyManagement() {
                             }
                         />
 
-                        {renderFieldError('location', location)}
+                        {renderFieldError('location')}
                     </div>
 
                     {company && (

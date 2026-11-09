@@ -37,6 +37,12 @@ import {
 import { DEFAULT_CURRENCY } from '../config/app'
 import './RecruiterJobFormPage.css'
 import { RichTextEditor } from '../components/RichTextEditor/RichTextEditor'
+import {
+    maxLength,
+    minLength,
+    required,
+    validate,
+} from '../validation/validators'
 
 type JobFormField =
     | 'title'
@@ -972,10 +978,15 @@ export default function RecruiterJobFormPage() {
         value: string,
     ): string | undefined {
         switch (field) {
-            case 'title':
-                return value.trim()
-                    ? undefined
-                    : t('recruiterJobForm.titleRequired')
+            case 'title': {
+                const error = validate(value, [required])
+
+                if (error?.code === 'required') {
+                    return t('recruiterJobForm.titleRequired')
+                }
+
+                return undefined
+            }
 
             case 'description': {
                 const text = value
@@ -983,25 +994,36 @@ export default function RecruiterJobFormPage() {
                     .replace(/&nbsp;/g, ' ')
                     .trim()
 
-                if (!text) {
+                const requiredError = validate(text, [required])
+
+                if (requiredError?.code === 'required') {
                     return t('recruiterJobForm.descriptionRequired')
                 }
 
-                if (text.length < 10) {
+                const minError = validate(text, [minLength(10)])
+
+                if (minError?.code === 'minLength') {
                     return t('recruiterJobForm.descriptionMinLength')
                 }
 
-                if (value.length > 10000) {
+                const maxError = validate(value, [maxLength(10000)])
+
+                if (maxError?.code === 'maxLength') {
                     return t('recruiterJobForm.descriptionMaxLength')
                 }
 
                 return undefined
             }
 
-            case 'location':
-                return value.trim()
-                    ? undefined
-                    : t('recruiterJobForm.locationRequired')
+            case 'location': {
+                const error = validate(value, [required])
+
+                if (error?.code === 'required') {
+                    return t('recruiterJobForm.locationRequired')
+                }
+
+                return undefined
+            }
 
             case 'salaryMin': {
                 const normalized = normalizeSalary(value)

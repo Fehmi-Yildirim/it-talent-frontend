@@ -454,6 +454,10 @@ export const nl: DeepPartial<typeof en> = {
         description: 'Beschrijving',
         website: 'Website',
         location: 'Locatie',
+        namePlaceholder: 'Bijv. Acme Technologies',
+        descriptionPlaceholder: 'Beschrijf kort je bedrijf...',
+        websitePlaceholder: 'Bijv. https://www.example.nl',
+        locationPlaceholder: 'Bijv. Amsterdam, Nederland',
         createdAt: 'Aangemaakt op',
         saving: 'Opslaan...',
         save: 'Opslaan',
@@ -884,7 +888,7 @@ export const nl: DeepPartial<typeof en> = {
         jobTitlePlaceholder:
             'bijv. Senior Frontend Developer',
         locationPlaceholder:
-            'bijv. Amsterdam, Nederland',
+            'bijv. Amsterdam, Nederland of Remote',
         salaryExpiration:
             'Salaris & einddatum',
         salaryMin:

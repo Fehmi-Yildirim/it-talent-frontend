@@ -237,13 +237,13 @@ describe('CandidateJobApplicationPage', () => {
 
         expect(consent).not.toBeDisabled()
 
-        fireEvent.change(screen.getByLabelText(/cover letter/i), { target: { value: 'Please consider my application.' } })
+        fireEvent.change(screen.getByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
         fireEvent.click(screen.getByRole('button', { name: /continue/i }))
 
         expect(
             await screen.findByRole('alert'),
         ).toHaveTextContent(
-            'Please give consent to retain your CV before continuing.',
+            'Give consent to retain your CV before continuing.',
         )
 
         expect(mockedCreateApplication).not.toHaveBeenCalled()
@@ -268,7 +268,7 @@ describe('CandidateJobApplicationPage', () => {
         expect(
             await screen.findByRole('alert'),
         ).toHaveTextContent(
-            'Please select a valid PDF, DOC, or DOCX file.',
+            'Select a valid PDF, DOC, or DOCX file.',
         )
 
         expect(
@@ -330,7 +330,7 @@ describe('CandidateJobApplicationPage', () => {
 
         renderPage()
 
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Please consider my application.' } })
+        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
         fireEvent.click(screen.getByRole('button', { name: /continue/i }))
         await screen.findByRole('heading', { name: /review your application/i })
         fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
@@ -350,7 +350,7 @@ describe('CandidateJobApplicationPage', () => {
 
         renderPage()
 
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Please consider my application.' } })
+        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
         fireEvent.click(screen.getByRole('button', { name: /continue/i }))
         await screen.findByRole('heading', { name: /review your application/i })
         fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
@@ -358,7 +358,7 @@ describe('CandidateJobApplicationPage', () => {
         expect(
             await screen.findByRole('alert'),
         ).toHaveTextContent(
-            'Unable to submit your application. Please try again.',
+            'Unable to submit your application. Try again.',
         )
     })
 
@@ -370,7 +370,7 @@ describe('CandidateJobApplicationPage', () => {
 
         renderPage()
 
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Please consider my application.' } })
+        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
         fireEvent.click(screen.getByRole('button', { name: /continue/i }))
         await screen.findByRole('heading', { name: /review your application/i })
         fireEvent.click(screen.getByRole('button', { name: /submit application/i }))

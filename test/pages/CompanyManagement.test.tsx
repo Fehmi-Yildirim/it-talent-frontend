@@ -150,6 +150,118 @@ describe('CompanyManagement', () => {
         ).toBeInTheDocument()
     })
 
+
+    it('rejects empty required fields', async () => {
+        vi.mocked(apiClient.get).mockRejectedValue(
+            new ApiError(404, 'Company not found'),
+        )
+
+        renderCompanyManagement()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
+        )
+
+        fireEvent.click(
+            screen.getByRole('button', { name: 'Save' }),
+        )
+
+        expect(
+            screen.getByLabelText('Company name'),
+        ).toHaveAttribute('aria-invalid', 'true')
+
+        expect(
+            screen.getByLabelText('Description'),
+        ).toHaveAttribute('aria-invalid', 'true')
+
+        expect(
+            screen.getByLabelText('Website'),
+        ).toHaveAttribute('aria-invalid', 'true')
+
+        expect(
+            screen.getByLabelText('Location'),
+        ).toHaveAttribute('aria-invalid', 'true')
+
+        expect(apiClient.post).not.toHaveBeenCalled()
+    })
+
+    it('rejects a company name shorter than two characters', async () => {
+        vi.mocked(apiClient.get).mockRejectedValue(
+            new ApiError(404, 'Company not found'),
+        )
+
+        renderCompanyManagement()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
+        )
+
+        const nameInput = screen.getByLabelText('Company name')
+
+        fireEvent.change(nameInput, {
+            target: { value: 'A' },
+        })
+
+        fireEvent.blur(nameInput)
+
+        expect(nameInput).toHaveAttribute('aria-invalid', 'true')
+        expect(apiClient.post).not.toHaveBeenCalled()
+    })
+
+    it('rejects an invalid website URL', async () => {
+        vi.mocked(apiClient.get).mockRejectedValue(
+            new ApiError(404, 'Company not found'),
+        )
+
+        renderCompanyManagement()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
+        )
+
+        const websiteInput = screen.getByLabelText('Website')
+
+        fireEvent.change(websiteInput, {
+            target: { value: 'ftp://example.com' },
+        })
+
+        fireEvent.blur(websiteInput)
+
+        expect(websiteInput).toHaveAttribute('aria-invalid', 'true')
+        expect(apiClient.post).not.toHaveBeenCalled()
+    })
+
+    it('rejects a location longer than 255 characters', async () => {
+        vi.mocked(apiClient.get).mockRejectedValue(
+            new ApiError(404, 'Company not found'),
+        )
+
+        renderCompanyManagement()
+
+        fireEvent.click(
+            await screen.findByRole('button', {
+                name: 'Create company',
+            }),
+        )
+
+        const locationInput = screen.getByLabelText('Location')
+
+        fireEvent.change(locationInput, {
+            target: { value: 'A'.repeat(256) },
+        })
+
+        fireEvent.blur(locationInput)
+
+        expect(locationInput).toHaveAttribute('aria-invalid', 'true')
+        expect(apiClient.post).not.toHaveBeenCalled()
+    })
+
     it('creates a company', async () => {
         vi.mocked(apiClient.get).mockRejectedValue(
             new ApiError(404, 'Company not found'),

@@ -466,7 +466,7 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to publish this job. Please try again.',
+                'Unable to publish this job. Try again.',
             ),
         ).toBeInTheDocument()
 
@@ -493,7 +493,7 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to pause this job. Please try again.',
+                'Unable to pause this job. Try again.',
             ),
         ).toBeInTheDocument()
 
@@ -520,7 +520,7 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to resume this job. Please try again.',
+                'Unable to resume this job. Try again.',
             ),
         ).toBeInTheDocument()
 
@@ -547,7 +547,7 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to close this job. Please try again.',
+                'Unable to close this job. Try again.',
             ),
         ).toBeInTheDocument()
 
@@ -573,7 +573,7 @@ describe('RecruiterJobDetailsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to reopen this job. Please try again.',
+                'Unable to reopen this job. Try again.',
             ),
         ).toBeInTheDocument()
 

@@ -262,7 +262,7 @@ describe('DashboardPage', () => {
 
     expect(
       screen.getByText(
-        'Unable to load the dashboard. Please try again.',
+        'Unable to load the dashboard. Try again.',
       ),
     ).toBeInTheDocument()
 

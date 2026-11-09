@@ -306,7 +306,7 @@ describe('CandidateJobDetailsPage', () => {
 
         expect(
             screen.getByText(
-                'Something went wrong while loading this job. Please try again.',
+                'Something went wrong while loading this job. Try again.',
             ),
         ).toBeInTheDocument()
 

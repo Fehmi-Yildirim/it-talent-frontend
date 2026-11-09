@@ -23,7 +23,7 @@ describe('feedback components', () => {
         render(
             <ErrorState
                 title="Profile unavailable"
-                message="Please try again."
+                message="Try again."
                 onRetry={onRetry}
             />,
         )

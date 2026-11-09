@@ -76,9 +76,12 @@
     box-shadow: 0 0 0 3px rgb(220 38 38 / 12%);
 }
 
-.company-management__field .form-control--invalid::placeholder {
+/* Validation errors */
+
+.company-management__field .form-field-error {
     color: var(--color-danger);
-    opacity: 1;
+    font-size: 0.85rem;
+    line-height: 1.4;
 }
 
 /* Company metadata */
