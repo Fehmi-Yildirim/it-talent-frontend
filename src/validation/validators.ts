@@ -86,7 +86,10 @@ export const email: Validator = (value) => {
 export const number: Validator = (value) => {
     const trimmedValue = value.trim()
 
-    if (!trimmedValue || !Number.isFinite(Number(trimmedValue))) {
+    if (
+        !trimmedValue ||
+        !Number.isFinite(Number(trimmedValue))
+    ) {
         return { code: 'invalidNumber' }
     }
 
@@ -103,6 +106,31 @@ export const nonNegativeNumber: Validator = (value) => {
         parsedValue < 0
     ) {
         return { code: 'negativeNumber' }
+    }
+
+    return undefined
+}
+
+export const validDate: Validator = (value) => {
+    const trimmedValue = value.trim()
+
+    if (!trimmedValue) {
+        return undefined
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(trimmedValue)) {
+        return { code: 'invalidDate' }
+    }
+
+    const parsedDate = new Date(
+        `${trimmedValue}T00:00:00.000Z`,
+    )
+
+    if (
+        Number.isNaN(parsedDate.getTime()) ||
+        parsedDate.toISOString().slice(0, 10) !== trimmedValue
+    ) {
+        return { code: 'invalidDate' }
     }
 
     return undefined

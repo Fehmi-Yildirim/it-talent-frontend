@@ -624,6 +624,16 @@ export const en = {
         jobTitle: 'Job title',
         jobTitlePlaceholder: 'e.g. Senior Recruiter',
         saveRecruiterProfile: 'Save profile',
+
+        validation: {
+            required: 'This field is required.',
+            minLength: 'This field contains too few characters.',
+            maxLength: 'This field exceeds the maximum allowed number of characters.',
+            invalidSalary: 'Enter a valid salary of at least 0.',
+            invalidDate: 'Enter a valid date.',
+            salaryRange: 'The minimum salary cannot exceed the maximum salary.',
+            invalidValue: 'The entered value is invalid.',
+        },
     },
 
     recruiterJobs: {

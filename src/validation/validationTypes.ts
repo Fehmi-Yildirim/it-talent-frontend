@@ -6,6 +6,8 @@ export type ValidationErrorCode =
     | 'invalidEmail'
     | 'invalidNumber'
     | 'negativeNumber'
+    | 'invalidDate'
+    | 'salaryRange'
 
 export interface ValidationError {
     code: ValidationErrorCode

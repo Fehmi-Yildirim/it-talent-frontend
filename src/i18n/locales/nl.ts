@@ -780,6 +780,16 @@ export const nl: DeepPartial<typeof en> = {
             'bijv. Senior Recruiter',
         saveRecruiterProfile:
             'Profiel opslaan',
+
+        validation: {
+            required: 'Dit veld is verplicht.',
+            minLength: 'Dit veld bevat te weinig tekens.',
+            maxLength: 'Dit veld mag niet meer dan het toegestane aantal tekens bevatten.',
+            invalidSalary: 'Vul een geldig salaris van minimaal 0 in.',
+            invalidDate: 'Vul een geldige datum in.',
+            salaryRange: 'Het minimumsalaris mag niet hoger zijn dan het maximumsalaris.',
+            invalidValue: 'De ingevoerde waarde is ongeldig.',
+        },
     },
 
     recruiterJobs: {
