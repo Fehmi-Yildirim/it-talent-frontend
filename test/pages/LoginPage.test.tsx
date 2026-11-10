@@ -136,5 +136,7 @@ describe('LoginPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Account is not active.',
     )
+
+    expect(localStorage.getItem('it-talent-access-token')).toBeNull()
   })
 })

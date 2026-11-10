@@ -5,7 +5,7 @@ import { useTranslation } from '../i18n/useTranslation'
 import './LoginPage.css'
 
 function LoginPage() {
-  const { login, isLoading } = useAuth()
+  const { login, logout, isLoading } = useAuth()
   const { t } = useTranslation()
   const navigate = useNavigate()
 
@@ -38,6 +38,7 @@ function LoginPage() {
       const user = await login(normalizedEmail, password)
 
       if (user.status !== 'ACTIVE') {
+        logout()
         setError(t('auth.accountNotActive'))
         return
       }
