@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-    ApiRequestError,
     createSkill,
     deleteSkill,
     getSkills,
     updateSkill,
 } from '../features/admin/skills.api'
+import { ApiError } from '../services/api/apiError'
 import type { Skill } from '../types/candidate'
 import type { SkillCategory } from '../types/skill'
 import { useTranslation } from '../i18n/useTranslation'
@@ -283,7 +283,7 @@ export default function AdminSkillsPage() {
 
             const isDuplicate =
                 (
-                    requestError instanceof ApiRequestError &&
+                    requestError instanceof ApiError &&
                     requestError.status === 409
                 ) ||
                 message.toLowerCase().includes('slug') ||
@@ -329,7 +329,7 @@ export default function AdminSkillsPage() {
             }
         } catch (requestError) {
             if (
-                requestError instanceof ApiRequestError &&
+                requestError instanceof ApiError &&
                 requestError.status === 409
             ) {
                 setError(t('adminSkills.skillInUseError'))

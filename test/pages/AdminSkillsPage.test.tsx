@@ -15,35 +15,22 @@ import {
     vi,
 } from 'vitest'
 import { MemoryRouter } from 'react-router-dom'
-
 import AdminSkillsPage from '../../src/pages/AdminSkillsPage'
 import {
-    ApiRequestError,
     createSkill,
     deleteSkill,
     getSkills,
     updateSkill,
 } from '../../src/features/admin/skills.api'
+import { ApiError } from '../../src/services/api/apiError'
 
-vi.mock('../../src/features/admin/skills.api', () => {
-    class MockApiRequestError extends Error {
-        readonly status: number
+vi.mock('../../src/features/admin/skills.api', () => ({
+    createSkill: vi.fn(),
+    deleteSkill: vi.fn(),
+    getSkills: vi.fn(),
+    updateSkill: vi.fn(),
+}))
 
-        constructor(message: string, status: number) {
-            super(message)
-            this.name = 'ApiRequestError'
-            this.status = status
-        }
-    }
-
-    return {
-        ApiRequestError: MockApiRequestError,
-        createSkill: vi.fn(),
-        deleteSkill: vi.fn(),
-        getSkills: vi.fn(),
-        updateSkill: vi.fn(),
-    }
-})
 
 const mockedGetSkills = vi.mocked(getSkills)
 const mockedCreateSkill = vi.mocked(createSkill)
@@ -870,9 +857,9 @@ describe('AdminSkillsPage', () => {
 
     it('shows the skill in use error when deletion returns 409', async () => {
         mockedDeleteSkill.mockRejectedValueOnce(
-            new ApiRequestError(
-                'Skill cannot be deleted because it is still in use.',
+            new ApiError(
                 409,
+                'Skill cannot be deleted because it is still in use.',
             ),
         )
 
