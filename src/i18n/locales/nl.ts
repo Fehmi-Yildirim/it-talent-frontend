@@ -120,6 +120,8 @@ export const nl: DeepPartial<typeof en> = {
         categoryRequired: 'Categorie is verplicht.',
         deleteConfirmation:
             'Weet je zeker dat je deze skill wilt verwijderen?',
+        nameTooShort: 'De naam moet minimaal 2 tekens bevatten.',
+        nameTooLong: 'De naam mag maximaal 100 tekens bevatten.',
 
         categories: {
             frontend: 'Frontend',

@@ -187,12 +187,14 @@ function AdminUsersPage() {
 
     return (
         <>
-            <Link
-                to="/dashboard"
-                className="back-link"
-            >
-                {t('common.backToDashboard')}
-            </Link>
+            <div className="admin-users-header">
+                <Link
+                    to="/dashboard"
+                    className="back-link"
+                >
+                    {t('common.backToDashboard')}
+                </Link>
+            </div>
 
             <h1>{t('adminUsers.title')}</h1>
 

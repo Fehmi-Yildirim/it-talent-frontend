@@ -1,22 +1,8 @@
-.back-to-dashboard {
-    display: inline-flex;
-    align-items: center;
-    min-height: var(--button-height);
-    margin-bottom: 20px;
-    padding: 9px var(--button-padding-x);
-    border: 1px solid var(--color-border);
-    border-radius: var(--button-radius);
-    background: var(--color-surface);
-    color: var(--color-text);
-    font-weight: 600;
-    text-decoration: none;
-    transition: 160ms ease;
-}
-
-.back-to-dashboard:hover {
-    border-color: var(--color-primary);
-    background: var(--color-primary-soft);
-    color: var(--color-primary);
+.admin-skills-header {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    margin-bottom: 16px;
 }
 
 .admin-skills-toolbar {
@@ -228,4 +214,26 @@
     .admin-skills-form-actions button {
         width: 100%;
     }
+}
+
+
+/* Create / Edit Skill field validation */
+.drawer__content form input[aria-invalid='true'],
+.drawer__content form select[aria-invalid='true'],
+.drawer__content form textarea[aria-invalid='true'] {
+    border-color: var(--color-danger, #dc2626);
+}
+
+.drawer__content form input[aria-invalid='true']:focus,
+.drawer__content form select[aria-invalid='true']:focus,
+.drawer__content form textarea[aria-invalid='true']:focus {
+    border-color: var(--color-danger, #dc2626);
+    box-shadow: 0 0 0 3px var(--color-danger-soft, rgb(220 38 38 / 12%));
+}
+
+.admin-skills-field-error {
+    margin: 0;
+    color: var(--color-danger, #dc2626);
+    font-size: 0.85rem;
+    line-height: 1.4;
 }

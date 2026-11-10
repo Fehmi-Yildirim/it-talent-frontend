@@ -108,6 +108,8 @@ export const en = {
         slugRequired: 'Slug is required.',
         categoryRequired: 'Category is required.',
         deleteConfirmation: 'Are you sure you want to delete this skill?',
+        nameTooShort: 'The name must contain at least 2 characters.',
+        nameTooLong: 'The name must not exceed 100 characters.',
 
         categories: {
             frontend: 'Frontend',
