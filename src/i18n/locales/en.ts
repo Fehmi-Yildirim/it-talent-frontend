@@ -108,6 +108,8 @@ export const en = {
         slugRequired: 'Slug is required.',
         categoryRequired: 'Category is required.',
         deleteConfirmation: 'Are you sure you want to delete this skill?',
+        nameTooShort: 'The name must contain at least 2 characters.',
+        nameTooLong: 'The name must not exceed 100 characters.',
 
         categories: {
             frontend: 'Frontend',
@@ -131,7 +133,7 @@ export const en = {
         password: 'Password',
         accountType: 'Account type',
         emailRequired: 'Email is required.',
-        invalidEmail: 'Please enter a valid email address.',
+        invalidEmail: 'Enter a valid email address.',
         passwordMinLength: 'Password must be at least 8 characters.',
         loginFailed: 'Login failed.',
         loggingIn: 'Logging in...',
@@ -158,9 +160,9 @@ export const en = {
         loadingSkills: 'Loading skills...',
         noSkills: 'No skills available.',
         unableToLoadJobs: 'Unable to load jobs',
-        loadError: 'Unable to load jobs. Please try again.',
+        loadError: 'Unable to load jobs. Try again.',
         invalidSearch:
-            'The search request is invalid. Please check your filters.',
+            'The search request is invalid. Check your filters.',
         loadingJobs: 'Loading jobs...',
         noJobsFound: 'No jobs found',
         noJobsMatch:
@@ -193,7 +195,7 @@ export const en = {
             'We could not find your applications right now.',
         unableToLoad: 'Unable to load applications',
         loadError:
-            'Something went wrong while loading your applications. Please try again.',
+            'Something went wrong while loading your applications. Try again.',
 
         noApplications: 'No applications yet',
         noApplicationsDescription:
@@ -216,7 +218,7 @@ export const en = {
             notFound:
                 'The application could not be found or is no longer available.',
             loadError:
-                'Something went wrong while loading this application. Please try again later.',
+                'Something went wrong while loading this application. Try again later.',
 
             backToApplications: 'Back to applications',
             eyebrow: 'Candidate application',
@@ -237,7 +239,7 @@ export const en = {
             withdrawNotFound:
                 'The application could not be found.',
             withdrawError:
-                'Unable to withdraw the application. Please try again.',
+                'Unable to withdraw the application. Try again.',
         },
     },
 
@@ -249,7 +251,7 @@ export const en = {
         jobUnavailable:
             'This job is no longer available or could not be found.',
         loadError:
-            'Something went wrong while loading this job. Please try again.',
+            'Something went wrong while loading this job. Try again.',
 
         backToJobs: 'Back to jobs',
         jobOpportunity: 'Job opportunity',
@@ -287,7 +289,7 @@ export const en = {
         cvConverting: 'Uploading CV and converting to PDF...',
         cvUploadConsentPrompt:
             'Give consent to upload the CV and convert it to PDF.',
-        cvUploadError: 'Your CV could not be uploaded. Please try again.',
+        cvUploadError: 'Your CV could not be uploaded. Try again.',
         cvReadyToUpload: 'Ready to upload',
         cvLoading: 'Loading CV...',
         cvPreviewError: 'Unable to load the CV preview.',
@@ -296,11 +298,11 @@ export const en = {
         deleteCv: 'Delete CV',
         deletingCv: 'Deleting CV...',
         deleteCvError:
-            'Your CV could not be deleted. Please try again.',
+            'Your CV could not be deleted. Try again.',
         deleteCvConfirmation:
             'Are you sure you want to delete your current CV? This will remove the CV from this application.',
 
-        "invalidCvFile": "Please select a valid PDF, DOC, or DOCX file.",
+        "invalidCvFile": "Select a valid PDF, DOC, or DOCX file.",
         cvRetentionConsent:
             'I agree that my CV can be securely stored and considered for future job opportunities.',
 
@@ -313,7 +315,7 @@ export const en = {
         continue: 'Continue',
 
         submitError:
-            'Unable to submit your application. Please try again.',
+            'Unable to submit your application. Try again.',
         submitUnexpectedError:
             'Something went wrong while submitting your application.',
 
@@ -332,7 +334,7 @@ export const en = {
         reviewStep: 'Step 2 of 2',
         reviewApplication: 'Review your application',
         reviewApplicationDescription:
-            'Please check your application details before submitting. You can go back and make changes if needed.',
+            'Check your application details before submitting. You can go back and make changes if needed.',
         reviewJob: 'Job',
         reviewCoverLetter: 'Cover letter',
         reviewCv: 'CV / resume',
@@ -344,11 +346,11 @@ export const en = {
         editApplication: 'Back and edit',
         submitApplication: 'Submit application',
         coverLetterRequired:
-            'Please enter a cover letter before continuing.',
+            'Enter a cover letter before continuing.',
         cvRequired:
-            'Please select a CV / resume before continuing.',
+            'Select a CV / resume before continuing.',
         cvRetentionConsentRequired:
-            'Please give consent to retain your CV before continuing.',
+            'Give consent to retain your CV before continuing.',
     },
 
     candidateSkills: {
@@ -368,7 +370,7 @@ export const en = {
         edit: 'Edit',
         remove: 'Remove',
         empty: 'No skills added yet.',
-        selectRequired: 'Please select a skill.',
+        selectRequired: 'Select a skill.',
         added: 'Skill added successfully.',
         updated: 'Skill updated successfully.',
         removed: 'Skill removed successfully.',
@@ -394,6 +396,10 @@ export const en = {
         description: 'Description',
         website: 'Website',
         location: 'Location',
+        namePlaceholder: 'e.g. Acme Technologies',
+        descriptionPlaceholder: 'Briefly describe your company...',
+        websitePlaceholder: 'e.g. https://www.example.com',
+        locationPlaceholder: 'e.g. Amsterdam, Netherlands',
         createdAt: 'Created at',
         saving: 'Saving...',
         save: 'Save',
@@ -401,20 +407,20 @@ export const en = {
         createSuccess: 'Company created successfully.',
         unauthorizedRead: 'You are not authorized to access company information.',
         serverLoadError: 'The server encountered an error while loading company information.',
-        connectionError: 'Unable to connect to the server. Please check your connection and try again.',
+        connectionError: 'Unable to connect to the server. Check your connection and try again.',
         loadError: 'Unable to load company information.',
         unauthorizedModify: 'You are not authorized to modify company information.',
-        validationError: 'Please check the company information and try again.',
+        validationError: 'Check the company information and try again.',
         existsError: 'A company with this information already exists.',
-        processError: 'The company information could not be processed. Please check your input.',
-        serverSaveError: 'The server encountered an error. Please try again later.',
+        processError: 'The company information could not be processed. Check your input.',
+        serverSaveError: 'The server encountered an error. Try again later.',
         saveError: 'Unable to save company information.',
         createError: 'Unable to create company.',
         validationNameRequired: 'Company name is required.',
         validationNameMinLength: 'Company name must contain at least 2 characters.',
         validationDescriptionRequired: 'Description is required.',
         validationDescriptionMinLength: 'Description must contain at least 2 characters.',
-        validationWebsite: 'Please enter a valid website URL starting with http:// or https://.',
+        validationWebsite: 'Enter a valid website URL starting with http:// or https://.',
         validationNameMaxLength: 'Company name cannot exceed 150 characters.',
         validationDescriptionMaxLength: 'Description cannot exceed 255 characters.',
         validationLocationMaxLength: 'Location cannot exceed 255 characters.',
@@ -426,7 +432,7 @@ export const en = {
         loading: 'Loading dashboard...',
         jobIdMissing: 'Job ID is missing.',
         unavailable: 'Dashboard unavailable',
-        loadError: 'Unable to load the dashboard. Please try again.',
+        loadError: 'Unable to load the dashboard. Try again.',
         retry: 'Retry',
         title: 'Dashboard',
         eyebrow: 'IT Talent Dashboard',
@@ -588,21 +594,21 @@ export const en = {
         serverLoadError:
             'The server encountered an error while loading your candidate profile.',
         connectionError:
-            'Unable to connect to the server. Please check your connection and try again.',
+            'Unable to connect to the server. Check your connection and try again.',
         loadError:
             'Unable to load your candidate profile.',
         unauthorizedModify:
             'You are not authorized to modify your candidate profile.',
         invalidInformation:
-            'Please check your profile information and try again.',
+            'Check your profile information and try again.',
         invalidAccountInformation:
-            'Please check your first and last name and try again.',
+            'Check your first and last name and try again.',
         profileAlreadyExists:
             'A candidate profile already exists.',
         processingError:
-            'The profile information could not be processed. Please check your input.',
+            'The profile information could not be processed. Check your input.',
         serverError:
-            'The server encountered an error. Please try again later.',
+            'The server encountered an error. Try again later.',
         updateError:
             'Unable to update your candidate profile.',
         createError:
@@ -618,6 +624,16 @@ export const en = {
         jobTitle: 'Job title',
         jobTitlePlaceholder: 'e.g. Senior Recruiter',
         saveRecruiterProfile: 'Save profile',
+
+        validation: {
+            required: 'This field is required.',
+            minLength: 'This field contains too few characters.',
+            maxLength: 'This field exceeds the maximum allowed number of characters.',
+            invalidSalary: 'Enter a valid salary of at least 0.',
+            invalidDate: 'Enter a valid date.',
+            salaryRange: 'The minimum salary cannot exceed the maximum salary.',
+            invalidValue: 'The entered value is invalid.',
+        },
     },
 
     recruiterJobs: {
@@ -625,7 +641,7 @@ export const en = {
         description: "Manage your company's job vacancies.",
         newJob: 'New Job',
         loading: 'Loading jobs...',
-        loadError: 'Unable to load your jobs. Please try again.',
+        loadError: 'Unable to load your jobs. Try again.',
         noJobs: 'No jobs yet',
         noJobsDescription:
             'Create your first job vacancy to start recruiting.',
@@ -653,11 +669,11 @@ export const en = {
         resumedSuccessfully: 'Job resumed successfully.',
         closedSuccessfully: 'Job closed successfully.',
         reopenedSuccessfully: 'Job reopened successfully.',
-        publishError: 'Unable to publish this job. Please try again.',
-        pauseError: 'Unable to pause this job. Please try again.',
-        resumeError: 'Unable to resume this job. Please try again.',
-        closeError: 'Unable to close this job. Please try again.',
-        reopenError: 'Unable to reopen this job. Please try again.',
+        publishError: 'Unable to publish this job. Try again.',
+        pauseError: 'Unable to pause this job. Try again.',
+        resumeError: 'Unable to resume this job. Try again.',
+        closeError: 'Unable to close this job. Try again.',
+        reopenError: 'Unable to reopen this job. Try again.',
         jobDescription: 'Job description',
         jobInformation: 'Job information',
         expirationDate: 'Expiration date',
@@ -679,7 +695,7 @@ export const en = {
         jobTitlePlaceholder:
             'e.g. Senior Frontend Developer',
         locationPlaceholder:
-            'e.g. Amsterdam, Netherlands',
+            'e.g. Amsterdam, Netherlands or Remote',
         salaryExpiration: 'Salary & expiration',
         salaryMin: 'Minimum salary',
         salaryMax: 'Maximum salary',
@@ -707,8 +723,8 @@ export const en = {
         loadJobError: 'Unable to load the job.',
         loadRequirementsError:
             'Unable to load job requirements.',
-        selectSkillError: 'Please select a skill.',
-        validSkillError: 'Please select a valid skill.',
+        selectSkillError: 'Select a skill.',
+        validSkillError: 'Select a valid skill.',
         minimumLevelRangeError:
             'Minimum level must be between 1 and 5.',
         duplicateSkillError:
@@ -720,9 +736,9 @@ export const en = {
         deleteRequirementError:
             'Unable to delete the requirement.',
         validEmploymentTypeError:
-            'Please select a valid employment type.',
+            'Select a valid employment type.',
         validWorkModeError:
-            'Please select a valid work mode.',
+            'Select a valid work mode.',
         minimumSalaryNegative:
             'Minimum salary cannot be negative.',
         maximumSalaryNegative:
@@ -802,9 +818,9 @@ export const en = {
             'Unable to load job requirements.',
 
         selectSkillError:
-            'Please select a skill.',
+            'Select a skill.',
         invalidSkillError:
-            'Please select a valid skill.',
+            'Select a valid skill.',
         minimumLevelError:
             'Minimum level must be between 1 and 5.',
         duplicateSkillError:
@@ -822,9 +838,9 @@ export const en = {
             'Description is required.',
 
         invalidEmploymentType:
-            'Please select a valid employment type.',
+            'Select a valid employment type.',
         invalidWorkMode:
-            'Please select a valid work mode.',
+            'Select a valid work mode.',
 
         minimumSalaryNegative:
             'Minimum salary cannot be negative.',
@@ -835,6 +851,7 @@ export const en = {
 
         expirationPast:
             'Expiration date cannot be in the past.',
+        "expirationRequired": "Enter an expiration date.",
 
         invalidSkillIds:
             'One or more skill IDs are invalid.',
@@ -848,6 +865,10 @@ export const en = {
             'Unable to update the job.',
         unableToCreateJob:
             'Unable to create the job.',
+        "locationRequired": "Location is required.",
+        "descriptionMinLength": "Description must contain at least 10 characters.",
+        "descriptionMaxLength": "Description cannot exceed 10,000 characters.",
+        descriptionCharacterCount: 'characters',
     },
 
     recruiterApplications: {
@@ -861,7 +882,7 @@ export const en = {
             'You are not authorized to view recruiter applications.',
         unableToLoad: 'Unable to load applications',
         loadError:
-            'Something went wrong while loading applications. Please try again later.',
+            'Something went wrong while loading applications. Try again later.',
         filters: 'Application filters',
         job: 'Job',
         allJobs: 'All jobs',

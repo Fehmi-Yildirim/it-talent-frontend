@@ -2,7 +2,7 @@ import { ApiError } from './apiError'
 
 export function getApiErrorMessage(
     error: unknown,
-    fallback = 'Something went wrong. Please try again.',
+    fallback = 'Something went wrong. Try again.',
 ): string {
     if (!(error instanceof ApiError)) {
         return fallback
@@ -10,11 +10,11 @@ export function getApiErrorMessage(
 
     switch (error.status) {
         case 0:
-            return 'Unable to connect to the server. Please check your connection and try again.'
+            return 'Unable to connect to the server. Check your connection and try again.'
         case 400:
-            return 'Please check your input and try again.'
+            return 'Check your input and try again.'
         case 401:
-            return 'Your session has expired. Please log in again.'
+            return 'Your session has expired. Log in again.'
         case 403:
             return 'You are not authorized to perform this action.'
         case 404:
@@ -22,9 +22,9 @@ export function getApiErrorMessage(
         case 409:
             return 'This action conflicts with existing data.'
         case 422:
-            return 'The submitted data could not be processed. Please check your input.'
+            return 'The submitted data could not be processed. Check your input.'
         case 500:
-            return 'The server encountered an error. Please try again later.'
+            return 'The server encountered an error. Try again later.'
         default:
             return fallback
     }

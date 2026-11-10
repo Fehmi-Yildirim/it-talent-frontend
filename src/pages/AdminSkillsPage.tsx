@@ -22,6 +22,10 @@ interface SkillForm {
     description: string
 }
 
+type SkillFormErrors = Partial<
+    Record<keyof SkillForm, string>
+>
+
 const ITEMS_PER_PAGE = 10
 
 const INITIAL_FORM: SkillForm = {
@@ -104,6 +108,7 @@ export default function AdminSkillsPage() {
         useState<Skill | null>(null)
 
     const [form, setForm] = useState<SkillForm>(INITIAL_FORM)
+    const [formErrors, setFormErrors] = useState<SkillFormErrors>({})
 
     const totalPages = Math.ceil(
         skills.length / ITEMS_PER_PAGE,
@@ -159,10 +164,18 @@ export default function AdminSkillsPage() {
             ...current,
             [field]: value,
         }))
+
+        // Clear the error for the field being corrected.
+        setFormErrors((current) => {
+            const next = { ...current }
+            delete next[field]
+            return next
+        })
     }
 
     const resetForm = () => {
         setForm(INITIAL_FORM)
+        setFormErrors({})
         setEditingSkillId(null)
     }
 
@@ -191,23 +204,32 @@ export default function AdminSkillsPage() {
             description: skill.description ?? '',
         })
 
+        setFormErrors({})
         setError(null)
         setIsDrawerOpen(true)
     }
 
     const validateForm = (): boolean => {
-        if (!form.name.trim()) {
-            setError(t('adminSkills.nameRequired'))
-            return false
+        const errors: SkillFormErrors = {}
+        const name = form.name.trim()
+
+        if (!name) {
+            errors.name = t('adminSkills.nameRequired')
+        } else if (name.length < 2) {
+            errors.name = t('adminSkills.nameTooShort')
+        } else if (name.length > 100) {
+            errors.name = t('adminSkills.nameTooLong')
         }
 
         if (!form.category) {
-            setError(t('adminSkills.categoryRequired'))
-            return false
+            errors.category = t('adminSkills.categoryRequired')
         }
 
-        return true
+        setFormErrors(errors)
+
+        return Object.keys(errors).length === 0
     }
+
 
     const saveSkill = async () => {
         if (!validateForm()) {
@@ -216,6 +238,7 @@ export default function AdminSkillsPage() {
 
         setIsSaving(true)
         setError(null)
+        setFormErrors({})
 
         const name = form.name.trim()
 
@@ -258,11 +281,18 @@ export default function AdminSkillsPage() {
                     ? requestError.message
                     : ''
 
-            if (
+            const isDuplicate =
+                (
+                    requestError instanceof ApiRequestError &&
+                    requestError.status === 409
+                ) ||
                 message.toLowerCase().includes('slug') ||
                 message.includes('409')
-            ) {
-                setError(t('adminSkills.duplicateSlug'))
+
+            if (isDuplicate) {
+                setFormErrors({
+                    name: t('adminSkills.duplicateSlug'),
+                })
             } else if (editingSkillId) {
                 setError(t('adminSkills.updateError'))
             } else {
@@ -323,12 +353,14 @@ export default function AdminSkillsPage() {
 
     return (
         <>
-            <Link
-                to="/dashboard"
-                className="back-link"
-            >
-                {t('common.backToDashboard')}
-            </Link>
+            <div className="admin-skills-header">
+                <Link
+                    to="/dashboard"
+                    className="back-link"
+                >
+                    {t('common.backToDashboard')}
+                </Link>
+            </div>
 
             <div>
                 <h1>{t('adminSkills.title')}</h1>
@@ -501,6 +533,7 @@ export default function AdminSkillsPage() {
                     closeLabel={t('common.cancel')}
                 >
                     <form
+                        noValidate
                         onSubmit={(event) => {
                             event.preventDefault()
                             void saveSkill()
@@ -516,13 +549,25 @@ export default function AdminSkillsPage() {
                                 type="text"
                                 value={form.name}
                                 onChange={(event) =>
-                                    updateForm(
-                                        'name',
-                                        event.target.value,
-                                    )
+                                    updateForm('name', event.target.value)
                                 }
                                 disabled={isSaving}
+                                required
+                                aria-invalid={Boolean(formErrors.name)}
+                                aria-describedby={
+                                    formErrors.name ? 'skill-name-error' : undefined
+                                }
                             />
+
+                            {formErrors.name && (
+                                <p
+                                    id="skill-name-error"
+                                    className="admin-skills-field-error"
+                                    role="alert"
+                                >
+                                    {formErrors.name}
+                                </p>
+                            )}
                         </div>
 
                         <div>
@@ -534,26 +579,37 @@ export default function AdminSkillsPage() {
                                 id="skill-category"
                                 value={form.category}
                                 onChange={(event) =>
-                                    updateForm(
-                                        'category',
-                                        event.target.value,
-                                    )
+                                    updateForm('category', event.target.value)
                                 }
                                 disabled={isSaving}
+                                required
+                                aria-invalid={Boolean(formErrors.category)}
+                                aria-describedby={
+                                    formErrors.category
+                                        ? 'skill-category-error'
+                                        : undefined
+                                }
                             >
                                 <option value="">
                                     {t('adminSkills.category')}
                                 </option>
 
                                 {CATEGORIES.map((category) => (
-                                    <option
-                                        key={category}
-                                        value={category}
-                                    >
+                                    <option key={category} value={category}>
                                         {formatCategory(category, t)}
                                     </option>
                                 ))}
                             </select>
+
+                            {formErrors.category && (
+                                <p
+                                    id="skill-category-error"
+                                    className="admin-skills-field-error"
+                                    role="alert"
+                                >
+                                    {formErrors.category}
+                                </p>
+                            )}
                         </div>
 
                         <div>

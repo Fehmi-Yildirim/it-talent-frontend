@@ -21,6 +21,15 @@ import type {
   CandidateProfileInput,
 } from '../types/candidate'
 import type { Language } from '../i18n'
+import {
+  maxLength,
+  nonNegativeNumber,
+  optional,
+  required,
+  validate,
+  validDate,
+} from '../validation/validators'
+import type { ValidationError } from '../validation/validationTypes'
 import './ProfilePage.css'
 
 function formatNullable(
@@ -115,24 +124,80 @@ function toInput(
   }
 }
 
+type CandidateField =
+  | 'salaryMin'
+  | 'salaryMax'
+  | 'availabilityDate'
+
+type AccountField = 'firstName' | 'lastName'
+
+type RecruiterField = 'jobTitle'
+
+type CandidateFormErrors = Partial<
+  Record<CandidateField, ValidationError>
+>
+
+type AccountFormErrors = Partial<
+  Record<AccountField, ValidationError>
+>
+
+type RecruiterFormErrors = Partial<
+  Record<RecruiterField, ValidationError>
+>
+
 interface ProfileFormProps {
   value: CandidateProfileInput
+  errors: CandidateFormErrors
   submitting: boolean
   submitLabel: string
   savingLabel: string
   cancelLabel: string
   onChange: (value: CandidateProfileInput) => void
+  onClearError: (field: CandidateField) => void
   onSubmit: () => void
   onCancel?: () => void
 }
 
+type Translate = ReturnType<typeof useTranslation>['t']
+
+function getValidationMessage(
+  error: ValidationError,
+  t: Translate,
+): string {
+  switch (error.code) {
+    case 'required':
+      return t('profile.validation.required')
+
+    case 'minLength':
+      return t('profile.validation.minLength')
+
+    case 'maxLength':
+      return t('profile.validation.maxLength')
+
+    case 'negativeNumber':
+    case 'invalidNumber':
+      return t('profile.validation.invalidSalary')
+
+    case 'invalidDate':
+      return t('profile.validation.invalidDate')
+
+    case 'salaryRange':
+      return t('profile.validation.salaryRange')
+
+    default:
+      return t('profile.validation.invalidValue')
+  }
+}
+
 function ProfileForm({
   value,
+  errors,
   submitting,
   submitLabel,
   savingLabel,
   cancelLabel,
   onChange,
+  onClearError,
   onSubmit,
   onCancel,
 }: ProfileFormProps) {
@@ -192,7 +257,11 @@ function ProfileForm({
             type="number"
             min="0"
             value={value.salaryMin ?? ''}
-            onChange={(event) =>
+            aria-invalid={Boolean(errors.salaryMin)}
+            aria-describedby={
+              errors.salaryMin ? 'salary-min-error' : undefined
+            }
+            onChange={(event) => {
               onChange({
                 ...value,
                 salaryMin:
@@ -200,8 +269,18 @@ function ProfileForm({
                     ? undefined
                     : Number(event.target.value),
               })
-            }
+              onClearError('salaryMin')
+              onClearError('salaryMax')
+            }}
           />
+          {errors.salaryMin && (
+            <span
+              id="salary-min-error"
+              className="profile-field-error"
+            >
+              {getValidationMessage(errors.salaryMin, t)}
+            </span>
+          )}
         </label>
 
         <label>
@@ -210,7 +289,11 @@ function ProfileForm({
             type="number"
             min="0"
             value={value.salaryMax ?? ''}
-            onChange={(event) =>
+            aria-invalid={Boolean(errors.salaryMax)}
+            aria-describedby={
+              errors.salaryMax ? 'salary-max-error' : undefined
+            }
+            onChange={(event) => {
               onChange({
                 ...value,
                 salaryMax:
@@ -218,8 +301,18 @@ function ProfileForm({
                     ? undefined
                     : Number(event.target.value),
               })
-            }
+              onClearError('salaryMin')
+              onClearError('salaryMax')
+            }}
           />
+          {errors.salaryMax && (
+            <span
+              id="salary-max-error"
+              className="profile-field-error"
+            >
+              {getValidationMessage(errors.salaryMax, t)}
+            </span>
+          )}
         </label>
       </div>
 
@@ -242,14 +335,29 @@ function ProfileForm({
         <input
           type="date"
           value={value.availabilityDate?.slice(0, 10) ?? ''}
-          onChange={(event) =>
+          aria-invalid={Boolean(errors.availabilityDate)}
+          aria-describedby={
+            errors.availabilityDate
+              ? 'availability-date-error'
+              : undefined
+          }
+          onChange={(event) => {
             onChange({
               ...value,
               availabilityDate:
                 event.target.value || undefined,
             })
-          }
+            onClearError('availabilityDate')
+          }}
         />
+        {errors.availabilityDate && (
+          <span
+            id="availability-date-error"
+            className="profile-field-error"
+          >
+            {getValidationMessage(errors.availabilityDate, t)}
+          </span>
+        )}
       </label>
 
       <label>
@@ -295,6 +403,8 @@ interface RecruiterProfileFormProps {
     firstName: string
     lastName: string
   }
+  accountErrors: AccountFormErrors
+  recruiterErrors: RecruiterFormErrors
   jobTitle: string
   submitting: boolean
   onAccountChange: (value: {
@@ -302,16 +412,22 @@ interface RecruiterProfileFormProps {
     lastName: string
   }) => void
   onJobTitleChange: (value: string) => void
+  onClearAccountError: (field: AccountField) => void
+  onClearRecruiterError: (field: RecruiterField) => void
   onSubmit: () => void
   onCancel: () => void
 }
 
 function RecruiterProfileForm({
   accountForm,
+  accountErrors,
+  recruiterErrors,
   jobTitle,
   submitting,
   onAccountChange,
   onJobTitleChange,
+  onClearAccountError,
+  onClearRecruiterError,
   onSubmit,
   onCancel,
 }: RecruiterProfileFormProps) {
@@ -341,28 +457,60 @@ function RecruiterProfileForm({
             {t('profile.firstName')}
             <input
               value={accountForm.firstName}
-              onChange={(event) =>
+              maxLength={100}
+              required
+              aria-invalid={Boolean(accountErrors.firstName)}
+              aria-describedby={
+                accountErrors.firstName
+                  ? 'recruiter-first-name-error'
+                  : undefined
+              }
+              onChange={(event) => {
                 onAccountChange({
                   ...accountForm,
                   firstName: event.target.value,
                 })
-              }
-              required
+                onClearAccountError('firstName')
+              }}
             />
+            {accountErrors.firstName && (
+              <span
+                id="recruiter-first-name-error"
+                className="profile-field-error"
+              >
+                {getValidationMessage(accountErrors.firstName, t)}
+              </span>
+            )}
           </label>
 
           <label>
             {t('profile.lastName')}
             <input
               value={accountForm.lastName}
-              onChange={(event) =>
+              maxLength={100}
+              required
+              aria-invalid={Boolean(accountErrors.lastName)}
+              aria-describedby={
+                accountErrors.lastName
+                  ? 'recruiter-last-name-error'
+                  : undefined
+              }
+              onChange={(event) => {
                 onAccountChange({
                   ...accountForm,
                   lastName: event.target.value,
                 })
-              }
-              required
+                onClearAccountError('lastName')
+              }}
             />
+            {accountErrors.lastName && (
+              <span
+                id="recruiter-last-name-error"
+                className="profile-field-error"
+              >
+                {getValidationMessage(accountErrors.lastName, t)}
+              </span>
+            )}
           </label>
         </div>
       </div>
@@ -384,14 +532,28 @@ function RecruiterProfileForm({
             id="recruiter-job-title"
             type="text"
             value={jobTitle}
-            onChange={(event) =>
-              onJobTitleChange(event.target.value)
-            }
-            minLength={2}
             maxLength={150}
             required
+            aria-invalid={Boolean(recruiterErrors.jobTitle)}
+            aria-describedby={
+              recruiterErrors.jobTitle
+                ? 'recruiter-job-title-error'
+                : undefined
+            }
+            onChange={(event) => {
+              onJobTitleChange(event.target.value)
+              onClearRecruiterError('jobTitle')
+            }}
             placeholder={t('profile.jobTitlePlaceholder')}
           />
+          {recruiterErrors.jobTitle && (
+            <span
+              id="recruiter-job-title-error"
+              className="profile-field-error"
+            >
+              {getValidationMessage(recruiterErrors.jobTitle, t)}
+            </span>
+          )}
         </label>
       </div>
 
@@ -452,6 +614,15 @@ function ProfilePage() {
     useState<string | null>(null)
   const [recruiterRetryCount, setRecruiterRetryCount] =
     useState(0)
+
+  const [candidateErrors, setCandidateErrors] =
+    useState<CandidateFormErrors>({})
+
+  const [accountErrors, setAccountErrors] =
+    useState<AccountFormErrors>({})
+
+  const [recruiterErrors, setRecruiterErrors] =
+    useState<RecruiterFormErrors>({})
 
   useEffect(() => {
     setAccountForm({
@@ -558,7 +729,126 @@ function ProfilePage() {
     }
   }, [user, recruiterRetryCount, t])
 
+  function clearCandidateError(field: CandidateField) {
+    setCandidateErrors((current) => {
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
+
+  function clearAccountError(field: AccountField) {
+    setAccountErrors((current) => {
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
+
+  function clearRecruiterError(field: RecruiterField) {
+    setRecruiterErrors((current) => {
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
+  }
+
+  function validateCandidateForm(): boolean {
+    const nextErrors: CandidateFormErrors = {}
+
+    const minError = validate(
+      formValue.salaryMin === undefined
+        ? ''
+        : String(formValue.salaryMin),
+      [optional(nonNegativeNumber)],
+    )
+
+    const maxError = validate(
+      formValue.salaryMax === undefined
+        ? ''
+        : String(formValue.salaryMax),
+      [optional(nonNegativeNumber)],
+    )
+
+    const dateError = validate(
+      formValue.availabilityDate?.slice(0, 10) ?? '',
+      [optional(validDate)],
+    )
+
+    if (minError) {
+      nextErrors.salaryMin = minError
+    }
+
+    if (maxError) {
+      nextErrors.salaryMax = maxError
+    }
+
+    if (dateError) {
+      nextErrors.availabilityDate = dateError
+    }
+
+    if (
+      formValue.salaryMin !== undefined &&
+      formValue.salaryMax !== undefined &&
+      formValue.salaryMin > formValue.salaryMax
+    ) {
+      nextErrors.salaryMin = { code: 'salaryRange' }
+      nextErrors.salaryMax = { code: 'salaryRange' }
+    }
+
+    setCandidateErrors(nextErrors)
+
+    return Object.keys(nextErrors).length === 0
+  }
+
+  function validateAccountForm(): boolean {
+    const nextErrors: AccountFormErrors = {}
+
+    const firstNameError = validate(accountForm.firstName, [
+      required,
+      maxLength(100),
+    ])
+
+    const lastNameError = validate(accountForm.lastName, [
+      required,
+      maxLength(100),
+    ])
+
+    if (firstNameError) {
+      nextErrors.firstName = firstNameError
+    }
+
+    if (lastNameError) {
+      nextErrors.lastName = lastNameError
+    }
+
+    setAccountErrors(nextErrors)
+
+    return Object.keys(nextErrors).length === 0
+  }
+
+  function validateRecruiterForm(): boolean {
+    const nextErrors: RecruiterFormErrors = {}
+
+    const jobTitleError = validate(
+      jobTitle,
+      [required, maxLength(150)],
+    )
+
+    if (jobTitleError) {
+      nextErrors.jobTitle = jobTitleError
+    }
+
+    setRecruiterErrors(nextErrors)
+
+    return Object.keys(nextErrors).length === 0
+  }
+
   async function handleSubmit() {
+    if (!validateCandidateForm()) {
+      return
+    }
+
     setSubmitting(true)
     setError(null)
     setSuccess(null)
@@ -571,6 +861,7 @@ function ProfilePage() {
       setCandidateProfile(profile)
       setFormValue(toInput(profile))
       setEditing(false)
+      setCandidateErrors({})
 
       setSuccess(
         candidateProfile
@@ -622,14 +913,23 @@ function ProfilePage() {
   }
 
   async function handleProfileSubmit() {
+    const accountIsValid = validateAccountForm()
+
+    const recruiterIsValid =
+      user?.role !== 'RECRUITER' || validateRecruiterForm()
+
+    if (!accountIsValid || !recruiterIsValid) {
+      return
+    }
+
     setProfileSubmitting(true)
     setError(null)
     setSuccess(null)
 
     try {
       await updateUser(
-        accountForm.firstName,
-        accountForm.lastName,
+        accountForm.firstName.trim(),
+        accountForm.lastName.trim(),
       )
     } catch (caught) {
       if (
@@ -680,12 +980,15 @@ function ProfilePage() {
     }
 
     setEditingProfile(false)
+    setAccountErrors({})
+    setRecruiterErrors({})
     setSuccess(t('profile.profileUpdated'))
     setProfileSubmitting(false)
   }
 
   function startEditing() {
     setFormValue(toInput(candidateProfile))
+    setCandidateErrors({})
     setError(null)
     setSuccess(null)
     setEditing(true)
@@ -693,6 +996,7 @@ function ProfilePage() {
 
   function cancelEditing() {
     setFormValue(toInput(candidateProfile))
+    setCandidateErrors({})
     setError(null)
     setSuccess(null)
     setEditing(false)
@@ -704,6 +1008,8 @@ function ProfilePage() {
       lastName: user?.lastName ?? '',
     })
 
+    setAccountErrors({})
+    setRecruiterErrors({})
     setError(null)
     setSuccess(null)
     setEditingProfile(true)
@@ -715,6 +1021,8 @@ function ProfilePage() {
       lastName: user?.lastName ?? '',
     })
 
+    setAccountErrors({})
+    setRecruiterErrors({})
     setError(null)
     setSuccess(null)
     setEditingProfile(false)
@@ -722,15 +1030,15 @@ function ProfilePage() {
 
   return (
     <section className="profile-page">
+      <Link to="/dashboard" className="back-link">
+        {t('common.backToDashboard')}
+      </Link>
+
       <div className="profile-header">
         <div>
           <p className="profile-eyebrow">IT Talent</p>
           <h1>{t('profile.title')}</h1>
         </div>
-
-        <Link to="/dashboard" className="btn btn-secondary">
-          {t('common.backToDashboard')}
-        </Link>
       </div>
 
       {success && (
@@ -791,13 +1099,15 @@ function ProfilePage() {
             !recruiterError && (
               <RecruiterProfileForm
                 accountForm={accountForm}
+                accountErrors={accountErrors}
+                recruiterErrors={recruiterErrors}
                 jobTitle={jobTitle}
                 submitting={profileSubmitting}
                 onAccountChange={setAccountForm}
                 onJobTitleChange={setJobTitle}
-                onSubmit={() =>
-                  void handleProfileSubmit()
-                }
+                onClearAccountError={clearAccountError}
+                onClearRecruiterError={clearRecruiterError}
+                onSubmit={() => void handleProfileSubmit()}
                 onCancel={cancelProfileEditing}
               />
             )}
@@ -898,28 +1208,58 @@ function ProfilePage() {
                 {t('profile.firstName')}
                 <input
                   value={accountForm.firstName}
-                  onChange={(event) =>
+                  maxLength={100}
+                  aria-invalid={Boolean(accountErrors.firstName)}
+                  aria-describedby={
+                    accountErrors.firstName
+                      ? 'account-first-name-error'
+                      : undefined
+                  }
+                  onChange={(event) => {
                     setAccountForm({
                       ...accountForm,
                       firstName: event.target.value,
                     })
-                  }
-                  required
+                    clearAccountError('firstName')
+                  }}
                 />
+                {accountErrors.firstName && (
+                  <span
+                    id="account-first-name-error"
+                    className="profile-field-error"
+                  >
+                    {getValidationMessage(accountErrors.firstName, t)}
+                  </span>
+                )}
               </label>
 
               <label>
                 {t('profile.lastName')}
                 <input
                   value={accountForm.lastName}
-                  onChange={(event) =>
+                  maxLength={100}
+                  aria-invalid={Boolean(accountErrors.lastName)}
+                  aria-describedby={
+                    accountErrors.lastName
+                      ? 'account-last-name-error'
+                      : undefined
+                  }
+                  onChange={(event) => {
                     setAccountForm({
                       ...accountForm,
                       lastName: event.target.value,
                     })
-                  }
-                  required
+                    clearAccountError('lastName')
+                  }}
                 />
+                {accountErrors.lastName && (
+                  <span
+                    id="account-last-name-error"
+                    className="profile-field-error"
+                  >
+                    {getValidationMessage(accountErrors.lastName, t)}
+                  </span>
+                )}
               </label>
 
               <div className="profile-actions">
@@ -1033,11 +1373,13 @@ function ProfilePage() {
           {!loading && editing && (
             <ProfileForm
               value={formValue}
+              errors={candidateErrors}
               submitting={submitting}
               submitLabel={t('profile.saveProfile')}
               savingLabel={t('common.saving')}
               cancelLabel={t('common.cancel')}
               onChange={setFormValue}
+              onClearError={clearCandidateError}
               onSubmit={() => void handleSubmit()}
               onCancel={cancelEditing}
             />
@@ -1125,11 +1467,13 @@ function ProfilePage() {
             !error && (
               <ProfileForm
                 value={formValue}
+                errors={candidateErrors}
                 submitting={submitting}
                 submitLabel={t('profile.createProfile')}
                 savingLabel={t('common.saving')}
                 cancelLabel={t('common.cancel')}
                 onChange={setFormValue}
+                onClearError={clearCandidateError}
                 onSubmit={() => void handleSubmit()}
               />
             )}

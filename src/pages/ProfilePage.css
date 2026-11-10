@@ -258,3 +258,21 @@
     flex-direction: column;
   }
 }
+
+
+.profile-field-error {
+  display: block;
+  color: #dc2626;
+  font-size: 0.875rem;
+  margin-top: 4px;
+}
+
+.profile-form input[aria-invalid='true'],
+.profile-form textarea[aria-invalid='true'] {
+  border-color: #dc2626;
+}
+
+.profile-form input[aria-invalid='true']:focus,
+.profile-form textarea[aria-invalid='true']:focus {
+  outline-color: #dc2626;
+}

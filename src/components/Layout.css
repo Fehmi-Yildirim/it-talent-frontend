@@ -704,3 +704,8 @@
         animation-iteration-count: 1 !important;
     }
 }
+
+/* Center page content with a limited width */
+.app-content>* {
+    margin-inline: auto;
+}

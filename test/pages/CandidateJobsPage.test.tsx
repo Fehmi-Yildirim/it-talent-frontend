@@ -970,7 +970,7 @@ describe('CandidateJobsPage', () => {
     it('19.shows a generic API error for a 400 response', async () => {
         mockedGetCandidateJobs.mockRejectedValue(
             new Error(
-                'The search request is invalid. Please check your filters.',
+                'The search request is invalid. Check your filters.',
             ),
         )
 
@@ -979,7 +979,7 @@ describe('CandidateJobsPage', () => {
         expect(
             await screen.findByRole('alert'),
         ).toHaveTextContent(
-            'Unable to load jobs. Please try again.',
+            'Unable to load jobs. Try again.',
         )
 
         expect(
@@ -997,7 +997,7 @@ describe('CandidateJobsPage', () => {
         expect(
             await screen.findByRole('alert'),
         ).toHaveTextContent(
-            'Unable to load jobs. Please try again.',
+            'Unable to load jobs. Try again.',
         )
 
         expect(

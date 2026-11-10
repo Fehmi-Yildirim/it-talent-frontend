@@ -871,7 +871,7 @@ describe('CandidateJobsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to load jobs. Please try again.',
+                'Unable to load jobs. Try again.',
             ),
         ).toBeInTheDocument()
     })
@@ -885,7 +885,7 @@ describe('CandidateJobsPage', () => {
 
         expect(
             await screen.findByText(
-                'Unable to load jobs. Please try again.',
+                'Unable to load jobs. Try again.',
             ),
         ).toBeInTheDocument()
 

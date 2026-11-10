@@ -120,6 +120,8 @@ export const nl: DeepPartial<typeof en> = {
         categoryRequired: 'Categorie is verplicht.',
         deleteConfirmation:
             'Weet je zeker dat je deze skill wilt verwijderen?',
+        nameTooShort: 'De naam moet minimaal 2 tekens bevatten.',
+        nameTooLong: 'De naam mag maximaal 100 tekens bevatten.',
 
         categories: {
             frontend: 'Frontend',
@@ -454,6 +456,10 @@ export const nl: DeepPartial<typeof en> = {
         description: 'Beschrijving',
         website: 'Website',
         location: 'Locatie',
+        namePlaceholder: 'Bijv. Acme Technologies',
+        descriptionPlaceholder: 'Beschrijf kort je bedrijf...',
+        websitePlaceholder: 'Bijv. https://www.example.nl',
+        locationPlaceholder: 'Bijv. Amsterdam, Nederland',
         createdAt: 'Aangemaakt op',
         saving: 'Opslaan...',
         save: 'Opslaan',
@@ -774,6 +780,16 @@ export const nl: DeepPartial<typeof en> = {
             'bijv. Senior Recruiter',
         saveRecruiterProfile:
             'Profiel opslaan',
+
+        validation: {
+            required: 'Dit veld is verplicht.',
+            minLength: 'Dit veld bevat te weinig tekens.',
+            maxLength: 'Dit veld mag niet meer dan het toegestane aantal tekens bevatten.',
+            invalidSalary: 'Vul een geldig salaris van minimaal 0 in.',
+            invalidDate: 'Vul een geldige datum in.',
+            salaryRange: 'Het minimumsalaris mag niet hoger zijn dan het maximumsalaris.',
+            invalidValue: 'De ingevoerde waarde is ongeldig.',
+        },
     },
 
     recruiterJobs: {
@@ -884,7 +900,7 @@ export const nl: DeepPartial<typeof en> = {
         jobTitlePlaceholder:
             'bijv. Senior Frontend Developer',
         locationPlaceholder:
-            'bijv. Amsterdam, Nederland',
+            'bijv. Amsterdam, Nederland of Remote',
         salaryExpiration:
             'Salaris & einddatum',
         salaryMin:
@@ -1083,6 +1099,7 @@ export const nl: DeepPartial<typeof en> = {
 
         expirationPast:
             'De vervaldatum kan niet in het verleden liggen.',
+        "expirationRequired": "Vul een vervaldatum in.",
 
         invalidSkillIds:
             'Een of meer vaardigheids-ID’s zijn ongeldig.',
@@ -1096,6 +1113,10 @@ export const nl: DeepPartial<typeof en> = {
             'De vacature kan niet worden bijgewerkt.',
         unableToCreateJob:
             'De vacature kan niet worden aangemaakt.',
+        "locationRequired": "Locatie is verplicht.",
+        "descriptionMinLength": "Beschrijving moet minimaal 10 tekens bevatten.",
+        "descriptionMaxLength": "Beschrijving mag maximaal 10.000 tekens bevatten.",
+        descriptionCharacterCount: 'tekens',
     },
 
     recruiterApplications: {

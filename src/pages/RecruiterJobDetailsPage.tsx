@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import DOMPurify from 'dompurify'
 import {
     closeJob,
     getJobById,
@@ -526,7 +527,7 @@ export default function RecruiterJobDetailsPage() {
                     <div
                         className="recruiter-job-details-description"
                         dangerouslySetInnerHTML={{
-                            __html: job.description,
+                            __html: DOMPurify.sanitize(job.description),
                         }}
                     />
                 </section>
