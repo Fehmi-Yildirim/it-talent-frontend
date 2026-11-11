@@ -13,6 +13,7 @@ export const nl: DeepPartial<typeof en> = {
         active: 'Actief',
         admin: 'Beheerder',
         applied: 'Gesolliciteerd',
+        applications: 'Sollicitaties',
         backToDashboard: 'Terug naar dashboard',
         cancel: 'Annuleren',
         candidate: 'Kandidaat',
@@ -313,15 +314,21 @@ export const nl: DeepPartial<typeof en> = {
         backToJobs: 'Terug naar vacatures',
         jobOpportunity: 'Vacature',
         aboutTheJob: 'Over de vacature',
-
         applyForThisJob: 'Solliciteer op deze vacature',
+
         applicationSubmitted: 'Sollicitatie ingediend',
-        applicationSuccess:
-            'Je hebt succesvol gesolliciteerd op deze vacature.',
+        applicationSuccess: 'Je hebt succesvol gesolliciteerd op deze vacature.',
+        viewMyApplications: 'Mijn sollicitaties bekijken',
+
+        applicationSubmittedDemo: 'Demo sollicitatie',
+        applicationSuccessDemo:
+            'Dit is een demo. Je sollicitatie is niet daadwerkelijk verstuurd of verwerkt. Bedankt voor je interesse!',
+        viewMyApplicationsDemo: 'Mijn sollicitaties bekijken',
+
         alreadyApplied: 'Al gesolliciteerd',
         alreadyAppliedDescription:
             'Je hebt al gesolliciteerd op deze vacature.',
-        viewMyApplications: 'Mijn sollicitaties bekijken',
+
 
         coverLetter: 'Motivatiebrief',
         cvUpload: 'Cv / cv-bestand',

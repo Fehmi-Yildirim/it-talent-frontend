@@ -1,33 +1,25 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, } from '@testing-library/react'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import CandidateJobApplicationPage from '../../src/pages/CandidateJobApplicationPage'
 import { ApiError } from '../../src/services/api/apiError'
 import type { CandidateJob } from '../../src/types/job'
-import { createApplication } from '../../src/features/applications/applications.api'
 import { getCandidateJobById } from '../../src/features/jobs/jobs.api'
-import { getCandidateProfile, uploadCandidateCv } from '../../src/features/candidate/candidate.api'
+import { getCandidateProfile } from '../../src/features/candidate/candidate.api'
 import type { CandidateProfile } from '../../src/types/candidate'
 import { I18nProvider } from '../../src/i18n/context'
 
-vi.mock('../../src/features/applications/applications.api', () => ({
-    createApplication: vi.fn(),
-}))
 
 vi.mock('../../src/features/jobs/jobs.api', () => ({
     getCandidateJobById: vi.fn(),
 }))
 
 vi.mock('../../src/features/candidate/candidate.api', () => ({
-    deleteCandidateCv: vi.fn(),
     getCandidateProfile: vi.fn(),
-    uploadCandidateCv: vi.fn(),
 }))
 
-const mockedCreateApplication = vi.mocked(createApplication)
 const mockedGetCandidateJobById = vi.mocked(getCandidateJobById)
 const mockedGetCandidateProfile = vi.mocked(getCandidateProfile)
-const mockedUploadCandidateCv = vi.mocked(uploadCandidateCv)
 
 beforeAll(() => {
     if (!Blob.prototype.text) {
@@ -114,8 +106,6 @@ beforeEach(() => {
 
     mockedGetCandidateJobById.mockResolvedValue(candidateJob)
     mockedGetCandidateProfile.mockResolvedValue(candidateProfile)
-    mockedUploadCandidateCv.mockResolvedValue({ ...candidateProfile, cvOriginalName: 'candidate-cv.pdf', cvMimeType: 'application/pdf', cvRetentionConsent: true })
-    mockedCreateApplication.mockResolvedValue({} as Awaited<ReturnType<typeof createApplication>>)
 })
 
 describe('CandidateJobApplicationPage', () => {
@@ -241,12 +231,9 @@ describe('CandidateJobApplicationPage', () => {
         fireEvent.click(screen.getByRole('button', { name: /continue/i }))
 
         expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent(
-            'Give consent to retain your CV before continuing.',
-        )
+            screen.getByRole('heading', { name: /review your application/i }),
+        ).toBeInTheDocument()
 
-        expect(mockedCreateApplication).not.toHaveBeenCalled()
     })
 
     it('rejects unsupported CV file types', async () => {
@@ -274,112 +261,6 @@ describe('CandidateJobApplicationPage', () => {
         expect(
             screen.queryByText('malware.exe'),
         ).not.toBeInTheDocument()
-    })
-
-    it('submits the application with cover letter, CV and retention consent', async () => {
-        renderPage()
-
-        fireEvent.change(
-            await screen.findByLabelText(/cover letter/i),
-            {
-                target: {
-                    value: 'I would like to apply for this position.',
-                },
-            },
-        )
-
-        const file = new File(
-            ['%PDF-1.4\nCV test content'],
-            'candidate-cv.pdf',
-            { type: 'application/pdf' },
-        )
-
-        fireEvent.change(
-            screen.getByLabelText(/choose file/i),
-            {
-                target: {
-                    files: [file],
-                },
-            },
-        )
-
-        fireEvent.click(screen.getByRole('checkbox'))
-
-        fireEvent.click(screen.getByRole('button', { name: /continue/i }))
-        await screen.findByRole('heading', { name: /review your application/i })
-        fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
-
-        await waitFor(() => {
-            expect(mockedCreateApplication).toHaveBeenCalledWith(
-                'job-1',
-                expect.objectContaining({
-                    coverLetter:
-                        'I would like to apply for this position.',
-                }),
-            )
-        })
-
-        expect(await screen.findByRole('heading', { name: /application submitted/i })).toBeInTheDocument()
-    })
-
-    it('shows an already-applied message when the API returns 409', async () => {
-        mockedGetCandidateProfile.mockResolvedValue({ ...candidateProfile, cvOriginalName: 'existing-cv.pdf' })
-        mockedCreateApplication.mockRejectedValue(
-            new ApiError(409, 'Application already exists'),
-        )
-
-        renderPage()
-
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
-        fireEvent.click(screen.getByRole('button', { name: /continue/i }))
-        await screen.findByRole('heading', { name: /review your application/i })
-        fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
-
-        expect(
-            await screen.findByText(/already applied/i),
-        ).toBeInTheDocument()
-
-        expect(await screen.findByRole('alert')).toHaveTextContent('You have already applied for this job.')
-    })
-
-    it('shows a generic API error when submitting fails', async () => {
-        mockedGetCandidateProfile.mockResolvedValue({ ...candidateProfile, cvOriginalName: 'existing-cv.pdf' })
-        mockedCreateApplication.mockRejectedValue(
-            new ApiError(500, 'Internal server error'),
-        )
-
-        renderPage()
-
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
-        fireEvent.click(screen.getByRole('button', { name: /continue/i }))
-        await screen.findByRole('heading', { name: /review your application/i })
-        fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
-
-        expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent(
-            'Unable to submit your application. Try again.',
-        )
-    })
-
-    it('shows the unexpected error when submission fails unexpectedly', async () => {
-        mockedGetCandidateProfile.mockResolvedValue({ ...candidateProfile, cvOriginalName: 'existing-cv.pdf' })
-        mockedCreateApplication.mockRejectedValue(
-            new Error('Network failure'),
-        )
-
-        renderPage()
-
-        fireEvent.change(await screen.findByLabelText(/cover letter/i), { target: { value: 'Consider my application.' } })
-        fireEvent.click(screen.getByRole('button', { name: /continue/i }))
-        await screen.findByRole('heading', { name: /review your application/i })
-        fireEvent.click(screen.getByRole('button', { name: /submit application/i }))
-
-        expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent(
-            'Something went wrong while submitting your application.',
-        )
     })
 
     it('shows the job not found state for a 404 response', async () => {

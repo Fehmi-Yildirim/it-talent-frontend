@@ -5,6 +5,7 @@ export const en = {
         active: 'Active',
         admin: 'Admin',
         applied: 'Applied',
+        applications: 'Applications',
         backToDashboard: 'Back to dashboard',
         cancel: 'Cancel',
         candidate: 'Candidate',
@@ -256,16 +257,20 @@ export const en = {
         backToJobs: 'Back to jobs',
         jobOpportunity: 'Job opportunity',
         aboutTheJob: 'About the job',
-
         applyForThisJob: 'Apply for this job',
+
         applicationSubmitted: 'Application submitted',
-        applicationSuccess:
-            'You have successfully applied for this job.',
+        applicationSuccess: 'You have successfully applied for this job.',
+        viewMyApplications: 'View my applications',
+
+        applicationSubmittedDemo: 'Demo application',
+        applicationSuccessDemo:
+            'This is a demo. Your application has not actually been submitted or processed. Thank you for your interest!',
+        viewMyApplicationsDemo: 'View my applications',
+
         alreadyApplied: 'Already applied',
         alreadyAppliedDescription:
             'You have already applied for this job.',
-        viewMyApplications: 'View my applications',
-
         coverLetter: 'Cover letter',
         cvUpload: 'CV / resume',
         cvFileTypes:
@@ -351,6 +356,7 @@ export const en = {
             'Select a CV / resume before continuing.',
         cvRetentionConsentRequired:
             'Give consent to retain your CV before continuing.',
+
     },
 
     candidateSkills: {

@@ -8,11 +8,8 @@ import {
 } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import ConfirmDialog from '../components/ConfirmDialog/ConfirmDialog'
-import { createApplication } from '../features/applications/applications.api'
 import {
-    deleteCandidateCv,
     getCandidateProfile,
-    uploadCandidateCv,
 } from '../features/candidate/candidate.api'
 import { getCandidateJobById } from '../features/jobs/jobs.api'
 import { ApiError } from '../services/api/apiError'
@@ -86,44 +83,6 @@ function formatSalary(
     return `${upToLabel} ${formatAmount(salaryMax!)}${currencyLabel}`
 }
 
-function LoadingSpinner() {
-    return (
-        <svg
-            className="candidate-job-cv-loading-spinner"
-            width="22"
-            height="22"
-            viewBox="0 0 24 24"
-            role="presentation"
-            aria-hidden="true"
-        >
-            <circle
-                cx="12"
-                cy="12"
-                r="9"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                opacity="0.2"
-            />
-            <path
-                d="M21 12a9 9 0 0 0-9-9"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-            >
-                <animateTransform
-                    attributeName="transform"
-                    type="rotate"
-                    from="0 12 12"
-                    to="360 12 12"
-                    dur="0.8s"
-                    repeatCount="indefinite"
-                />
-            </path>
-        </svg>
-    )
-}
 
 export default function CandidateJobApplicationPage() {
     const { jobId } = useParams<{ jobId: string }>()
@@ -151,9 +110,7 @@ export default function CandidateJobApplicationPage() {
     const [isReplacingCv, setIsReplacingCv] = useState(false)
     const [isCvSettingsOpen, setIsCvSettingsOpen] = useState(false)
     const [isDeleteCvDialogOpen, setIsDeleteCvDialogOpen] = useState(false)
-    const [isDeletingCv, setIsDeletingCv] = useState(false)
     const [isLoadingExistingCv, setIsLoadingExistingCv] = useState(false)
-    const [isUploadingCv, setIsUploadingCv] = useState(false)
     const [isExistingCvPreviewOpen, setIsExistingCvPreviewOpen] = useState(false)
 
     const [existingCvPreviewUrl, setExistingCvPreviewUrl] =
@@ -165,7 +122,7 @@ export default function CandidateJobApplicationPage() {
     const [selectedCvPreviewUrl, setSelectedCvPreviewUrl] =
         useState<string | null>(null)
 
-    const [isSubmitting, setIsSubmitting] = useState(false)
+
     const [submitError, setSubmitError] = useState<string | null>(null)
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [isReviewing, setIsReviewing] = useState(false)
@@ -355,8 +312,7 @@ export default function CandidateJobApplicationPage() {
             return null
         })
 
-        // A PDF can be previewed locally immediately.
-        // DOC/DOCX files must first be converted by the backend.
+        // Demo only: PDF preview stays local in the browser.
         if (file.name.toLowerCase().endsWith('.pdf')) {
             if (await isPdfBlob(file)) {
                 setSelectedCvPreviewUrl(URL.createObjectURL(file))
@@ -389,129 +345,30 @@ export default function CandidateJobApplicationPage() {
         })
     }, [])
 
-    const handleDeleteCv = useCallback(async () => {
-        if (isDeletingCv || !hasExistingCv) {
+    // Demo only: do not delete the candidate's CV from the backend.
+    const handleDeleteCv = useCallback(() => {
+        if (!hasExistingCv) {
             return
         }
 
-        setIsDeletingCv(true)
+        setIsDeleteCvDialogOpen(false)
+        setIsCvSettingsOpen(false)
         setSubmitError(null)
-
-        try {
-            await deleteCandidateCv()
-
-            setCandidateCv(null)
-            setIsDeleteCvDialogOpen(false)
-            setIsCvSettingsOpen(false)
-            setIsReplacingCv(false)
-
-            resetCvSelection()
-
-            setExistingCvPreviewUrl((previousUrl) => {
-                if (previousUrl) {
-                    URL.revokeObjectURL(previousUrl)
-                }
-
-                return null
-            })
-
-            setExistingCvPreviewError(null)
-        } catch {
-            setSubmitError(t('candidateJobDetails.deleteCvError'))
-        } finally {
-            setIsDeletingCv(false)
-        }
-    }, [hasExistingCv, isDeletingCv, resetCvSelection, t])
+    }, [hasExistingCv])
 
     const handleOpenDeleteCvDialog = useCallback(() => {
-        if (isDeletingCv || !hasExistingCv) {
+        if (!hasExistingCv) {
             return
         }
 
         setIsCvSettingsOpen(false)
         setIsDeleteCvDialogOpen(true)
         setSubmitError(null)
-    }, [hasExistingCv, isDeletingCv])
+    }, [hasExistingCv])
 
     const handleCancelDeleteCv = useCallback(() => {
-        if (isDeletingCv) {
-            return
-        }
-
         setIsDeleteCvDialogOpen(false)
-    }, [isDeletingCv])
-
-    const uploadSelectedCv = useCallback(
-        async (
-            fileToUpload: File | null = cvFile,
-            retentionConsent: boolean = cvRetentionConsent,
-        ): Promise<boolean> => {
-            if (!fileToUpload) {
-                return true
-            }
-
-            if (!retentionConsent) {
-                setSubmitError(
-                    t('candidateJobDetails.cvRetentionConsentRequired'),
-                )
-                return false
-            }
-
-            setIsUploadingCv(true)
-            setSubmitError(null)
-
-            try {
-                const updatedCandidate = await uploadCandidateCv(
-                    fileToUpload,
-                    retentionConsent,
-                )
-
-                setCandidateCv({
-                    cvOriginalName:
-                        updatedCandidate.cvOriginalName ?? fileToUpload.name,
-                    cvMimeType:
-                        updatedCandidate.cvMimeType ?? fileToUpload.type,
-                    cvSize: updatedCandidate.cvSize ?? fileToUpload.size,
-                    cvExpiresAt: updatedCandidate.cvExpiresAt ?? null,
-                    cvRetentionConsent:
-                        updatedCandidate.cvRetentionConsent ??
-                        retentionConsent,
-                    cvConsentAt: updatedCandidate.cvConsentAt ?? null,
-                    cvUrl: updatedCandidate.cvUrl ?? null,
-                })
-
-                setIsReplacingCv(false)
-                resetCvSelection()
-
-                setExistingCvPreviewUrl((previousUrl) => {
-                    if (previousUrl) {
-                        URL.revokeObjectURL(previousUrl)
-                    }
-
-                    return null
-                })
-
-                setExistingCvPreviewError(null)
-
-                return true
-            } catch (caught) {
-                if (caught instanceof ApiError) {
-                    setSubmitError(
-                        caught.status === 400
-                            ? t('candidateJobDetails.invalidCvFile')
-                            : t('candidateJobDetails.cvUploadError'),
-                    )
-                } else {
-                    setSubmitError(t('candidateJobDetails.cvUploadError'))
-                }
-
-                return false
-            } finally {
-                setIsUploadingCv(false)
-            }
-        },
-        [cvFile, cvRetentionConsent, resetCvSelection, t],
-    )
+    }, [])
 
     const validateApplication = useCallback((): boolean => {
         if (!coverLetter.trim()) {
@@ -525,50 +382,20 @@ export default function CandidateJobApplicationPage() {
             return false
         }
 
-        if (!cvFile && !hasExistingCv) {
-            setSubmitError(t('candidateJobDetails.cvRequired'))
-            return false
-        }
-
-        if (cvFile && !cvRetentionConsent) {
-            setSubmitError(
-                t('candidateJobDetails.cvRetentionConsentRequired'),
-            )
-            return false
-        }
-
         setSubmitError(null)
         return true
-    }, [
-        coverLetter,
-        cvFile,
-        cvFileError,
-        cvRetentionConsent,
-        hasExistingCv,
-        t,
-    ])
+    }, [coverLetter, cvFileError, t])
 
-    const handleContinueToReview = async (
+    const handleContinueToReview = (
         event: FormEvent<HTMLFormElement>,
     ) => {
         event.preventDefault()
-
-        if (isUploadingCv || isSubmitting) {
-            return
-        }
 
         if (!validateApplication()) {
             return
         }
 
-        if (cvFile) {
-            const uploaded = await uploadSelectedCv()
-
-            if (!uploaded) {
-                return
-            }
-        }
-
+        // Demo only: do not upload a selected CV.
         setSubmitError(null)
         setIsReviewing(true)
     }
@@ -578,39 +405,17 @@ export default function CandidateJobApplicationPage() {
         setSubmitError(null)
     }, [])
 
-    const handleSubmitApplication = async () => {
-        if (!jobId || isSubmitting || !validateApplication()) {
+    const handleSubmitApplication = () => {
+        if (!validateApplication()) {
             return
         }
 
-        setIsSubmitting(true)
-        setSubmitError(null)
-
-        try {
-            await createApplication(jobId, {
-                coverLetter: coverLetter.trim(),
-            })
-
-            setIsSubmitted(true)
-            setCoverLetter('')
-            resetCvSelection()
-            setIsReplacingCv(false)
-            setIsReviewing(false)
-        } catch (caught) {
-            if (caught instanceof ApiError && caught.status === 409) {
-                setSubmitError(
-                    t('candidateJobDetails.alreadyAppliedDescription'),
-                )
-            } else if (caught instanceof ApiError) {
-                setSubmitError(t('candidateJobDetails.submitError'))
-            } else {
-                setSubmitError(
-                    t('candidateJobDetails.submitUnexpectedError'),
-                )
-            }
-        } finally {
-            setIsSubmitting(false)
-        }
+        // Demo only: do not submit the application to the backend.
+        setIsSubmitted(true)
+        setCoverLetter('')
+        resetCvSelection()
+        setIsReplacingCv(false)
+        setIsReviewing(false)
     }
 
     const cancelReplaceCv = useCallback(() => {
@@ -651,15 +456,16 @@ export default function CandidateJobApplicationPage() {
         )
     }
 
+    // Demo confirmation screen.
     if (isSubmitted) {
         return (
             <section className="candidate-job-application-card candidate-job-application-success">
                 <h1>
-                    {t('candidateJobDetails.applicationSubmitted')}
+                    {t('candidateJobDetails.applicationSubmittedDemo')}
                 </h1>
-                <p>{t('candidateJobDetails.applicationSuccess')}</p>
+                <p>{t('candidateJobDetails.applicationSuccessDemo')}</p>
                 <Link to="/applications">
-                    {t('candidateJobDetails.viewMyApplications')}
+                    {t('candidateJobDetails.viewMyApplicationsDemo')}
                 </Link>
             </section>
         )
@@ -757,6 +563,13 @@ export default function CandidateJobApplicationPage() {
                                         : t('candidateJobDetails.cvUploaded')}
                                 </span>
                             </div>
+                        ) : cvFile ? (
+                            <div className="candidate-job-application-review-value">
+                                <strong>{cvFile.name}</strong>
+                                <span>
+                                    {t('candidateJobDetails.selectedCv')}
+                                </span>
+                            </div>
                         ) : (
                             <p className="candidate-job-application-review-muted">
                                 {t('candidateJobDetails.noCv')}
@@ -792,19 +605,16 @@ export default function CandidateJobApplicationPage() {
                             type="button"
                             className="btn btn-secondary"
                             onClick={handleBackToEdit}
-                            disabled={isSubmitting}
                         >
                             {t('candidateJobDetails.editApplication')}
                         </button>
                         <button
                             type="button"
                             className="btn btn-primary btn-block"
-                            onClick={() => void handleSubmitApplication()}
-                            disabled={isSubmitting}
+                            onClick={handleSubmitApplication}
+
                         >
-                            {isSubmitting
-                                ? t('candidateJobDetails.submitting')
-                                : t('candidateJobDetails.submitApplication')}
+                            {t('candidateJobDetails.submitApplication')}
                         </button>
                     </div>
                 </section>
@@ -819,7 +629,7 @@ export default function CandidateJobApplicationPage() {
                     cancelLabel={t('common.cancel')}
                     destructive
                     onCancel={handleCancelDeleteCv}
-                    onConfirm={() => void handleDeleteCv()}
+                    onConfirm={handleDeleteCv}
                 />
             </div>
         )
@@ -887,18 +697,21 @@ export default function CandidateJobApplicationPage() {
 
                         {showExistingCv && candidateCv?.cvOriginalName && (
                             <div className="candidate-job-cv-file">
-                                {showExistingCv && (
-                                    <button
-                                        type="button"
-                                        className="btn btn-secondary"
-                                        onClick={() =>
-                                            setIsExistingCvPreviewOpen((previous) => !previous)
-                                        }
-                                        aria-expanded={isExistingCvPreviewOpen}
-                                    >
-                                        {isExistingCvPreviewOpen ? t('candidateJobDetails.hideCv') : t('candidateJobDetails.viewCv')}
-                                    </button>
-                                )}
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() =>
+                                        setIsExistingCvPreviewOpen(
+                                            (previous) => !previous,
+                                        )
+                                    }
+                                    aria-expanded={isExistingCvPreviewOpen}
+                                >
+                                    {isExistingCvPreviewOpen
+                                        ? t('candidateJobDetails.hideCv')
+                                        : t('candidateJobDetails.viewCv')}
+                                </button>
+
                                 <span className="candidate-job-cv-file-icon">
                                     📄
                                 </span>
@@ -908,11 +721,8 @@ export default function CandidateJobApplicationPage() {
                                 <span>
                                     {t('candidateJobDetails.cvUploaded')}
                                 </span>
-
-
                             </div>
                         )}
-
                     </div>
 
                     {showExistingCv && (
@@ -936,7 +746,6 @@ export default function CandidateJobApplicationPage() {
                             type="button"
                             className="candidate-job-cv-settings-action"
                             onClick={handleReplaceCv}
-                            disabled={isDeletingCv || isUploadingCv}
                         >
                             {t('candidateJobDetails.replaceCv')}
                         </button>
@@ -944,11 +753,8 @@ export default function CandidateJobApplicationPage() {
                             type="button"
                             className="candidate-job-cv-settings-action candidate-job-cv-delete-button"
                             onClick={handleOpenDeleteCvDialog}
-                            disabled={isDeletingCv || isUploadingCv}
                         >
-                            {isDeletingCv
-                                ? t('candidateJobDetails.deletingCv')
-                                : t('candidateJobDetails.deleteCv')}
+                            {t('candidateJobDetails.deleteCv')}
                         </button>
                     </div>
                 )}
@@ -990,30 +796,15 @@ export default function CandidateJobApplicationPage() {
                         </div>
                     )}
 
-
                 {showSelectedCv && cvFile && (
                     <div
                         className={
-                            selectedCvPreviewUrl && !isUploadingCv
+                            selectedCvPreviewUrl
                                 ? 'candidate-job-cv-preview'
                                 : 'candidate-job-cv-preview candidate-job-cv-compact-state'
                         }
                     >
-                        {isUploadingCv ? (
-                            <div
-                                className="candidate-job-cv-preview-state candidate-job-cv-conversion-state"
-                                role="status"
-                                aria-live="polite"
-                                aria-busy="true"
-                            >
-                                <LoadingSpinner />
-                                <strong>
-                                    {/\.docx?$/i.test(cvFile.name)
-                                        ? t('candidateJobDetails.cvConverting')
-                                        : t('candidateJobDetails.cvUploading')}
-                                </strong>
-                            </div>
-                        ) : selectedCvPreviewUrl ? (
+                        {selectedCvPreviewUrl ? (
                             <iframe
                                 src={selectedCvPreviewUrl}
                                 title={t('candidateJobDetails.selectedCv')}
@@ -1023,9 +814,7 @@ export default function CandidateJobApplicationPage() {
                             <div className="candidate-job-cv-preview-state">
                                 <strong>{cvFile.name}</strong>
                                 <span>
-                                    {cvRetentionConsent
-                                        ? t('candidateJobDetails.cvPdfPreviewOnly')
-                                        : t('candidateJobDetails.cvUploadConsentPrompt')}
+                                    {t('candidateJobDetails.cvPdfPreviewOnly')}
                                 </span>
                             </div>
                         )}
@@ -1053,9 +842,7 @@ export default function CandidateJobApplicationPage() {
                                     onChange={(event) =>
                                         void handleCvChange(event)
                                     }
-                                    disabled={
-                                        isSubmitting || isUploadingCv
-                                    }
+
                                 />
                             </label>
 
@@ -1064,9 +851,7 @@ export default function CandidateJobApplicationPage() {
                                     type="button"
                                     className="btn btn-secondary"
                                     onClick={cancelReplaceCv}
-                                    disabled={
-                                        isSubmitting || isUploadingCv
-                                    }
+
                                 >
                                     {t('common.cancel')}
                                 </button>
@@ -1092,7 +877,7 @@ export default function CandidateJobApplicationPage() {
                             onChange={(event) =>
                                 setCvRetentionConsent(event.target.checked)
                             }
-                            disabled={isSubmitting || isUploadingCv}
+
                         />
                         <span>
                             {t(
@@ -1113,9 +898,7 @@ export default function CandidateJobApplicationPage() {
 
                 <form
                     className="candidate-job-application-form"
-                    onSubmit={(event) =>
-                        void handleContinueToReview(event)
-                    }
+                    onSubmit={handleContinueToReview}
                 >
                     <div className="candidate-job-application-field">
                         <label htmlFor="cover-letter">
@@ -1133,7 +916,6 @@ export default function CandidateJobApplicationPage() {
                             placeholder={t(
                                 'candidateJobDetails.coverLetterPlaceholder',
                             )}
-                            disabled={isSubmitting || isUploadingCv}
                         />
                     </div>
 
@@ -1147,36 +929,14 @@ export default function CandidateJobApplicationPage() {
                     )}
 
                     <div className="candidate-job-application-form-actions">
-
-
                         <button
                             type="submit"
                             className="btn btn-primary btn-block"
                             disabled={
-                                isSubmitting ||
-                                isUploadingCv ||
                                 Boolean(cvFileError)
                             }
                         >
-                            {isUploadingCv ? (
-                                <>
-                                    <LoadingSpinner />
-                                    {isReplacingCv
-                                        ? t(
-                                            'candidateJobDetails.replacingCv',
-                                        )
-                                        : cvFile &&
-                                            /\.docx?$/i.test(cvFile.name)
-                                            ? t(
-                                                'candidateJobDetails.cvConverting',
-                                            )
-                                            : t(
-                                                'candidateJobDetails.cvUploading',
-                                            )}
-                                </>
-                            ) : (
-                                t('candidateJobDetails.continue')
-                            )}
+                            {t('candidateJobDetails.continue')}
                         </button>
                     </div>
                 </form>
@@ -1192,7 +952,7 @@ export default function CandidateJobApplicationPage() {
                 cancelLabel={t('common.cancel')}
                 destructive
                 onCancel={handleCancelDeleteCv}
-                onConfirm={() => void handleDeleteCv()}
+                onConfirm={handleDeleteCv}
             />
         </div>
     )

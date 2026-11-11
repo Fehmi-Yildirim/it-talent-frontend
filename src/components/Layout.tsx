@@ -330,7 +330,7 @@ function Layout() {
                             className={navLinkClass}
                             onClick={closeMobileNav}
                           >
-                            {t('candidateApplications.applications')}
+                            {t('common.applications')}
                           </NavLink>
                         </>
                       )}
@@ -358,7 +358,7 @@ function Layout() {
                             className={navLinkClass}
                             onClick={closeMobileNav}
                           >
-                            {t('dashboard.recruiter.applications')}
+                            {t('common.applications')}
                           </NavLink>
                         </>
                       )}
