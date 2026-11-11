@@ -19,8 +19,7 @@ import { ApiError } from '../services/api/apiError'
 import { useTranslation } from '../i18n/useTranslation'
 import type { CandidateJob } from '../types/job'
 import './CandidateJobApplicationPage.css'
-import { env } from '../config/env'
-import { authToken } from '../services/api/authToken'
+import { apiClient } from '../services/api/apiClient'
 
 const ACCEPTED_CV_EXTENSIONS = ['.pdf', '.doc', '.docx']
 
@@ -226,22 +225,7 @@ export default function CandidateJobApplicationPage() {
         let cancelled = false
 
         async function fetchCandidateCvBlob(): Promise<Blob> {
-            const token = authToken.get()
-
-            const response = await fetch(
-                `${env.apiBaseUrl.replace(/\/$/, '')}/candidates/me/cv`,
-                {
-                    headers: token
-                        ? { Authorization: `Bearer ${token}` }
-                        : {},
-                },
-            )
-
-            if (!response.ok) {
-                throw new Error('Failed to load candidate CV')
-            }
-
-            return response.blob()
+            return apiClient.getBlob('/candidates/me/cv')
         }
 
         async function loadExistingCv() {
