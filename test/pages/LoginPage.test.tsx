@@ -108,7 +108,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Login' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Invalid credentials',
+      'Login failed.',
     )
   })
 
@@ -136,5 +136,7 @@ describe('LoginPage', () => {
     expect(await screen.findByRole('alert')).toHaveTextContent(
       'Account is not active.',
     )
+
+    expect(localStorage.getItem('it-talent-access-token')).toBeNull()
   })
 })

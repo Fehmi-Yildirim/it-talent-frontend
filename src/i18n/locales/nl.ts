@@ -1,18 +1,19 @@
 import { en } from './en';
 
-type DeepPartial<T> = {
-    [K in keyof T]?: T[K] extends object
-    ? DeepPartial<T[K]>
+type DeepString<T> = {
+    [K in keyof T]: T[K] extends object
+    ? DeepString<T[K]>
     : string;
 };
 
-export const nl: DeepPartial<typeof en> = {
+export const nl: DeepString<typeof en> = {
     common: {
         accepted: 'Geaccepteerd',
         actions: 'Acties',
         active: 'Actief',
         admin: 'Beheerder',
         applied: 'Gesolliciteerd',
+        applications: 'Sollicitaties',
         backToDashboard: 'Terug naar dashboard',
         cancel: 'Annuleren',
         candidate: 'Kandidaat',
@@ -21,6 +22,7 @@ export const nl: DeepPartial<typeof en> = {
         closed: 'Gesloten',
         confirmDeleteTitle: 'Verwijdering bevestigen',
         contract: 'Contract',
+        continue: 'Doorgaan',
         created: 'Aangemaakt',
         currency: 'Valuta',
         dashboard: 'Dashboard',
@@ -81,6 +83,10 @@ export const nl: DeepPartial<typeof en> = {
     accessibility: {
         skipToMainContent: 'Ga naar hoofdinhoud',
         mainNavigation: 'Hoofdnavigatie',
+        closeNavigation: 'Navigatie sluiten',
+        openNavigation: 'Navigatie openen',
+        toggleNavigation: 'Navigatie in- of uitschakelen',
+        updateSuccessful: 'Bijwerken geslaagd',
     },
 
     adminUsers: {
@@ -313,26 +319,32 @@ export const nl: DeepPartial<typeof en> = {
         backToJobs: 'Terug naar vacatures',
         jobOpportunity: 'Vacature',
         aboutTheJob: 'Over de vacature',
-
         applyForThisJob: 'Solliciteer op deze vacature',
+
         applicationSubmitted: 'Sollicitatie ingediend',
-        applicationSuccess:
-            'Je hebt succesvol gesolliciteerd op deze vacature.',
+        applicationSuccess: 'Je hebt succesvol gesolliciteerd op deze vacature.',
+        viewMyApplications: 'Mijn sollicitaties bekijken',
+
+        applicationSubmittedDemo: 'Demo sollicitatie',
+        applicationSuccessDemo:
+            'Dit is een demo. Je sollicitatie is niet daadwerkelijk verstuurd of verwerkt. Bedankt voor je interesse!',
+        viewMyApplicationsDemo: 'Mijn sollicitaties bekijken',
+
         alreadyApplied: 'Al gesolliciteerd',
         alreadyAppliedDescription:
             'Je hebt al gesolliciteerd op deze vacature.',
-        viewMyApplications: 'Mijn sollicitaties bekijken',
+
 
         coverLetter: 'Motivatiebrief',
         cvUpload: 'Cv / cv-bestand',
         cvFileTypes:
-            'Toegestane bestandsformaten: PDF, DOC, DOCX. Als de server conversie ondersteunt, worden DOC- en DOCX-bestanden naar PDF omgezet.',
+            'Toegestane bestandsformaten: PDF, DOC, DOCX. Als de server dit ondersteunt, worden DOC- en DOCX-bestanden naar PDF omgezet.',
         selectedCv: 'Geselecteerd bestand',
         removeSelectedCv: 'Geselecteerd bestand verwijderen',
 
         existingCv: 'Huidig cv',
         viewCv: 'Cv bekijken',
-        hideCv: 'Cv Verbergen',
+        hideCv: 'Cv verbergen',
         replaceCv: 'Cv vervangen',
         replacingCv: 'Cv wordt vervangen',
         cancelCvReplacement: 'Cv vervangen annuleren',
@@ -489,6 +501,7 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     dashboard: {
+        jobIdMissing: 'Vacature-ID ontbreekt',
         loading:
             'Dashboard laden...',
         unavailable:
@@ -793,6 +806,8 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     recruiterJobs: {
+        noJobDescription: 'Geen vacatureomschrijving beschikbaar',
+        applicationDetails: 'Sollicitatiedetails',
         title:
             'Vacatures',
         description:
@@ -900,7 +915,7 @@ export const nl: DeepPartial<typeof en> = {
         jobTitlePlaceholder:
             'bijv. Senior Frontend Developer',
         locationPlaceholder:
-            'bijv. Amsterdam, Nederland of Remote',
+            'bijv. Amsterdam, Nederland of op afstand',
         salaryExpiration:
             'Salaris & einddatum',
         salaryMin:
@@ -927,7 +942,7 @@ export const nl: DeepPartial<typeof en> = {
         noRequirementsHaveBeenAdded:
             'Er zijn nog geen functie-eisen toegevoegd.',
         requirementsWillBeCreated:
-            'Deze functie-eisen worden via de Requirements API aangemaakt wanneer je de vacature opslaat.',
+            'De functie-eisen worden aangemaakt zodra je de vacature opslaat.',
         editJob:
             'Vacature bewerken',
         createJob:
@@ -990,6 +1005,7 @@ export const nl: DeepPartial<typeof en> = {
     },
 
     recruiterJobForm: {
+        currency: 'Valuta',
         loading:
             'Vacature laden...',
         backToJobs:
@@ -1046,7 +1062,7 @@ export const nl: DeepPartial<typeof en> = {
         noRequirementsAdded:
             'Er zijn nog geen functie-eisen toegevoegd.',
         requirementsWillBeCreated:
-            'Deze functie-eisen worden via de Requirements API aangemaakt wanneer je de vacature opslaat.',
+            'De functie-eisen worden aangemaakt zodra je de vacature opslaat.',
         noSkillsFound:
             'Geen skills gevonden',
         saveChanges:

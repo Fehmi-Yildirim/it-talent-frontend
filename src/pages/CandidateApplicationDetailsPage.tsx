@@ -6,14 +6,38 @@ import {
     withdrawApplication,
 } from '../features/applications/applications.api'
 import { ApiError } from '../services/api/apiError'
-import { LOCALES } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import {
+    LOCALES,
+    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+    WORK_MODE_TRANSLATION_KEYS,
+} from '../i18n'
 import { APPLICATION_STATUSES } from '../types/application'
 import type {
     ApplicationStatus,
     CandidateApplicationDetail,
 } from '../types/application'
 import './CandidateApplicationDetailsPage.css'
+
+function getWorkModeTranslationKey(value: string) {
+    if (value in WORK_MODE_TRANSLATION_KEYS) {
+        return WORK_MODE_TRANSLATION_KEYS[
+            value as keyof typeof WORK_MODE_TRANSLATION_KEYS
+        ]
+    }
+
+    return 'common.notSpecified'
+}
+
+function getEmploymentTypeTranslationKey(value: string) {
+    if (value in EMPLOYMENT_TYPE_TRANSLATION_KEYS) {
+        return EMPLOYMENT_TYPE_TRANSLATION_KEYS[
+            value as keyof typeof EMPLOYMENT_TYPE_TRANSLATION_KEYS
+        ]
+    }
+
+    return 'common.notSpecified'
+}
 
 function formatStatus(
     status: ApplicationStatus,
@@ -300,7 +324,7 @@ function CandidateApplicationDetailsPage() {
                         </dt>
 
                         <dd>
-                            {application.job.workMode}
+                            {t(getWorkModeTranslationKey(application.job.workMode))}
                         </dd>
 
                         <dt>
@@ -310,7 +334,7 @@ function CandidateApplicationDetailsPage() {
                         </dt>
 
                         <dd>
-                            {application.job.employmentType}
+                            {t(getEmploymentTypeTranslationKey(application.job.employmentType))}
                         </dd>
                     </dl>
                 </section>

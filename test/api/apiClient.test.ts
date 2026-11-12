@@ -342,4 +342,18 @@ describe('apiClient', () => {
 
     expect(result).toEqual({})
   })
+
+  it('handles successful 204 responses without a body', async () => {
+    const fetchMock = vi.fn().mockResolvedValue(
+      new Response(null, {
+        status: 204,
+      }),
+    )
+
+    vi.stubGlobal('fetch', fetchMock)
+
+    await expect(
+      apiClient.delete<void>('/users/123'),
+    ).resolves.toBeUndefined()
+  })
 })

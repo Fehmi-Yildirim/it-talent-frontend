@@ -65,12 +65,8 @@ function RegisterPage() {
       }
 
       navigate('/dashboard')
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : t('auth.registrationFailed'),
-      )
+    } catch {
+      setError(t('auth.registrationFailed'))
     } finally {
       setIsSubmitting(false)
     }

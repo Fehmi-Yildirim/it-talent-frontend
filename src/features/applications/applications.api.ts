@@ -61,14 +61,6 @@ export function updateApplicationStatus(
     )
 }
 
-export function deleteApplicationCv(
-    applicationId: string,
-): Promise<CandidateApplication> {
-    return apiClient.delete<CandidateApplication>(
-        `/applications/${applicationId}/cv`,
-    )
-}
-
 export function getApplicationCv(applicationId: string): Promise<Blob> {
     return apiClient.getBlob(`/applications/${applicationId}/cv`)
 }

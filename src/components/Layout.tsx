@@ -236,7 +236,7 @@ function Layout() {
             <button
               className="admin-sidebar__overlay"
               type="button"
-              aria-label="Close navigation"
+              aria-label={t('accessibility.closeNavigation')}
               onClick={closeAdminNav}
             />
           )}
@@ -246,7 +246,7 @@ function Layout() {
               <button
                 className="admin-topbar__menu"
                 type="button"
-                aria-label="Toggle navigation"
+                aria-label={t('accessibility.toggleNavigation')}
                 aria-expanded={isAdminNavOpen}
                 aria-controls="admin-navigation"
                 onClick={() =>
@@ -286,7 +286,9 @@ function Layout() {
                 className="main-nav__mobile-toggle"
                 type="button"
                 aria-label={
-                  isMobileNavOpen ? 'Close navigation' : 'Open navigation'
+                  isMobileNavOpen
+                    ? t('accessibility.closeNavigation')
+                    : t('accessibility.openNavigation')
                 }
                 aria-expanded={isMobileNavOpen}
                 aria-controls="main-mobile-navigation"
@@ -330,7 +332,7 @@ function Layout() {
                             className={navLinkClass}
                             onClick={closeMobileNav}
                           >
-                            {t('candidateApplications.applications')}
+                            {t('common.applications')}
                           </NavLink>
                         </>
                       )}
@@ -358,7 +360,7 @@ function Layout() {
                             className={navLinkClass}
                             onClick={closeMobileNav}
                           >
-                            {t('dashboard.recruiter.applications')}
+                            {t('common.applications')}
                           </NavLink>
                         </>
                       )}

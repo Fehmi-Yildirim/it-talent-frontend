@@ -21,8 +21,8 @@ async function request<T>(
         ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
         ...(token
           ? {
-              Authorization: `Bearer ${token}`,
-            }
+            Authorization: `Bearer ${token}`,
+          }
           : {}),
         ...options?.headers,
       },
@@ -52,6 +52,10 @@ async function request<T>(
     throw new ApiError(response.status, message, details)
   }
 
+  if (response.status === 204) {
+    return undefined as T
+  }
+
   return responseType === 'blob'
     ? (response.blob() as Promise<T>)
     : (response.json() as Promise<T>)
@@ -74,8 +78,8 @@ export const apiClient = {
       method: 'POST',
       ...(body !== undefined
         ? {
-            body: isFormData ? body : JSON.stringify(body),
-          }
+          body: isFormData ? body : JSON.stringify(body),
+        }
         : {}),
     })
   },
