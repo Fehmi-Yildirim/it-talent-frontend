@@ -250,8 +250,8 @@ function AdminUsersPage() {
                                                     updatedField.field === 'role' && (
                                                         <span
                                                             className="admin-users-update-success"
-                                                            aria-label="Update successful"
-                                                            title="Update successful"
+                                                            aria-label={t('accessibility.updateSuccessful')}
+                                                            title={t('accessibility.updateSuccessful')}
                                                         >
                                                             ✓
                                                         </span>

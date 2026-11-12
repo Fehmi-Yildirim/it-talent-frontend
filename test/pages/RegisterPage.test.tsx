@@ -243,7 +243,7 @@ describe('RegisterPage', () => {
     expect(
       await screen.findByRole('alert'),
     ).toHaveTextContent(
-      'Unable to create account',
+      'Registration failed.',
     )
   })
 })

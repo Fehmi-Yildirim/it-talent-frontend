@@ -108,7 +108,7 @@ describe('LoginPage', () => {
     await user.click(screen.getByRole('button', { name: 'Login' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Invalid credentials',
+      'Login failed.',
     )
   })
 

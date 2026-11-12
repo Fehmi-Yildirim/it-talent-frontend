@@ -48,12 +48,8 @@ function LoginPage() {
       } else {
         navigate('/dashboard')
       }
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : t('auth.loginFailed'),
-      )
+    } catch {
+      setError(t('auth.loginFailed'))
     }
   }
 

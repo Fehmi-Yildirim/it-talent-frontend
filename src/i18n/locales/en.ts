@@ -75,6 +75,10 @@ export const en = {
     accessibility: {
         skipToMainContent: 'Skip to main content',
         mainNavigation: 'Main navigation',
+        closeNavigation: 'Close navigation',
+        openNavigation: 'Open navigation',
+        toggleNavigation: 'Toggle navigation',
+        updateSuccessful: 'Update successful',
     },
 
     adminUsers: {
