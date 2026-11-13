@@ -15,9 +15,16 @@ export interface AuthResponse {
 }
 
 export interface RegisterRequest {
+  firstName: string
+  lastName: string
   email: string
   password: string
   role: 'CANDIDATE' | 'RECRUITER'
+}
+
+export interface RegisterResponse {
+  user: AuthUser
+  message: string
 }
 
 export interface LoginRequest {
