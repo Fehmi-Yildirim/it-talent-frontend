@@ -3,11 +3,14 @@ import type {
   AuthResponse,
   LoginRequest,
   RegisterRequest,
+  RegisterResponse,
 } from '../../types/auth'
 import type { CurrentUser } from '../../types/user'
 
-export function register(data: RegisterRequest): Promise<AuthResponse> {
-  return apiClient.post<AuthResponse>('/auth/register', data)
+export function register(
+  data: RegisterRequest,
+): Promise<RegisterResponse> {
+  return apiClient.post<RegisterResponse>('/auth/register', data)
 }
 
 export function login(data: LoginRequest): Promise<AuthResponse> {

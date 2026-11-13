@@ -1,3 +1,4 @@
+
 import {
   render,
   screen,
@@ -16,6 +17,45 @@ vi.mock('../../src/features/auth/auth.api', () => ({
 
 const mockedRegister = vi.mocked(register)
 
+const registrationResponse = {
+  user: {
+    id: 'user-1',
+    email: 'test@example.com',
+    firstName: 'Test',
+    lastName: 'User',
+    role: 'CANDIDATE' as const,
+    status: 'PENDING' as const,
+  },
+  message: 'Registration received',
+}
+
+async function fillRegistrationForm(
+  user: ReturnType<typeof userEvent.setup>,
+  options: {
+    firstName?: string
+    lastName?: string
+    email?: string
+    password?: string
+  } = {},
+) {
+  const firstName = options.firstName ?? 'Test'
+  if (firstName) {
+    await user.type(screen.getByLabelText('First name'), firstName)
+  }
+  await user.type(
+    screen.getByLabelText('Last name'),
+    options.lastName ?? 'User',
+  )
+  await user.type(
+    screen.getByLabelText('Email'),
+    options.email ?? 'test@example.com',
+  )
+  await user.type(
+    screen.getByLabelText('Password'),
+    options.password ?? 'password123',
+  )
+}
+
 describe('RegisterPage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
@@ -31,44 +71,26 @@ describe('RegisterPage', () => {
     expect(
       screen.getByRole('heading', { name: 'Register' }),
     ).toBeInTheDocument()
+    expect(screen.getByLabelText('First name')).toBeInTheDocument()
+    expect(screen.getByLabelText('Last name')).toBeInTheDocument()
     expect(screen.getByLabelText('Email')).toBeInTheDocument()
     expect(screen.getByLabelText('Password')).toBeInTheDocument()
+    expect(
+      screen.getByLabelText('Account type'),
+    ).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: 'Register' }),
     ).toBeInTheDocument()
   })
 
-  it('uses browser validation for an invalid email', async () => {
-    const user = userEvent.setup()
-
-    render(
-      <MemoryRouter>
-        <RegisterPage />
-      </MemoryRouter>,
-    )
-
-    await user.type(
-      screen.getByLabelText('Email'),
-      'invalid-email',
-    )
-
-    expect(screen.getByLabelText('Email')).toBeInvalid()
-    expect(mockedRegister).not.toHaveBeenCalled()
-  })
-
   it('submits recruiter registration data', async () => {
     const user = userEvent.setup()
-
     mockedRegister.mockResolvedValue({
+      ...registrationResponse,
       user: {
-        id: 'user-1',
-        email: 'recruiter@example.com',
-        firstName: 'Test',
-        lastName: 'Recruiter',
+        ...registrationResponse.user,
         role: 'RECRUITER',
-        status: 'PENDING',
       },
-      accessToken: 'test-token',
     })
 
     render(
@@ -77,24 +99,23 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(
-      screen.getByLabelText('Email'),
-      'recruiter@example.com',
-    )
-    await user.type(
-      screen.getByLabelText('Password'),
-      'password123',
-    )
+    await fillRegistrationForm(user, {
+      email: 'recruiter@example.com',
+    })
+
     await user.selectOptions(
       screen.getByLabelText('Account type'),
       'RECRUITER',
     )
+
     await user.click(
       screen.getByRole('button', { name: 'Register' }),
     )
 
     await waitFor(() => {
       expect(mockedRegister).toHaveBeenCalledWith({
+        firstName: 'Test',
+        lastName: 'User',
         email: 'recruiter@example.com',
         password: 'password123',
         role: 'RECRUITER',
@@ -102,7 +123,40 @@ describe('RegisterPage', () => {
     })
   })
 
-  it('shows validation error for a short password', async () => {
+  it('submits valid candidate registration data', async () => {
+    const user = userEvent.setup()
+    mockedRegister.mockResolvedValue(registrationResponse)
+
+    render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    )
+
+    await fillRegistrationForm(user, {
+      firstName: '  Test  ',
+      lastName: '  User  ',
+      email: '  test@example.com  ',
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
+
+    await waitFor(() => {
+      expect(mockedRegister).toHaveBeenCalledWith({
+        firstName: 'Test',
+        lastName: 'User',
+        email: 'test@example.com',
+        password: 'password123',
+        role: 'CANDIDATE',
+      })
+    })
+
+    expect(mockedRegister).toHaveBeenCalledTimes(1)
+  })
+
+  it('shows an error when the first name is missing', async () => {
     const user = userEvent.setup()
 
     render(
@@ -111,14 +165,56 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(
-      screen.getByLabelText('Email'),
-      'test@example.com',
+    await fillRegistrationForm(user, {
+      firstName: '',
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
     )
-    await user.type(
-      screen.getByLabelText('Password'),
-      'short',
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'First name is required.',
     )
+    expect(mockedRegister).not.toHaveBeenCalled()
+  })
+
+  it('shows an error for an invalid email', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    )
+
+    await fillRegistrationForm(user, {
+      email: 'invalid-email',
+    })
+
+    await user.click(
+      screen.getByRole('button', { name: 'Register' }),
+    )
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Enter a valid email address.',
+    )
+    expect(mockedRegister).not.toHaveBeenCalled()
+  })
+
+  it('shows a validation error for a short password', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <MemoryRouter>
+        <RegisterPage />
+      </MemoryRouter>,
+    )
+
+    await fillRegistrationForm(user, {
+      password: 'short',
+    })
+
     await user.click(
       screen.getByRole('button', { name: 'Register' }),
     )
@@ -129,20 +225,9 @@ describe('RegisterPage', () => {
     expect(mockedRegister).not.toHaveBeenCalled()
   })
 
-  it('submits valid registration data', async () => {
+  it('shows the pending approval confirmation without logging in', async () => {
     const user = userEvent.setup()
-
-    mockedRegister.mockResolvedValue({
-      user: {
-        id: 'user-1',
-        email: 'test@example.com',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'CANDIDATE',
-        status: 'PENDING',
-      },
-      accessToken: 'test-token',
-    })
+    mockedRegister.mockResolvedValue(registrationResponse)
 
     render(
       <MemoryRouter>
@@ -150,69 +235,31 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(
-      screen.getByLabelText('Email'),
-      '  test@example.com  ',
-    )
-    await user.type(
-      screen.getByLabelText('Password'),
-      'password123',
-    )
+    await fillRegistrationForm(user)
+
     await user.click(
       screen.getByRole('button', { name: 'Register' }),
     )
 
-    await waitFor(() => {
-      expect(mockedRegister).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-        role: 'CANDIDATE',
-      })
-    })
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Registration received',
+      }),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByText(/awaiting administrator approval/i),
+    ).toBeInTheDocument()
+
+    expect(
+      screen.getByRole('link', { name: 'Back to login' }),
+    ).toHaveAttribute('href', '/login')
+
+    expect(
+      screen.queryByRole('heading', { name: 'Register' }),
+    ).not.toBeInTheDocument()
 
     expect(mockedRegister).toHaveBeenCalledTimes(1)
-  })
-
-  it('redirects pending users to login without storing the access token', async () => {
-    const user = userEvent.setup()
-
-    mockedRegister.mockResolvedValue({
-      user: {
-        id: 'user-1',
-        email: 'test@example.com',
-        firstName: 'Test',
-        lastName: 'User',
-        role: 'CANDIDATE',
-        status: 'PENDING',
-      },
-      accessToken: 'test-token',
-    })
-
-    render(
-      <MemoryRouter>
-        <RegisterPage />
-      </MemoryRouter>,
-    )
-
-    await user.type(
-      screen.getByLabelText('Email'),
-      'test@example.com',
-    )
-    await user.type(
-      screen.getByLabelText('Password'),
-      'password123',
-    )
-    await user.click(
-      screen.getByRole('button', { name: 'Register' }),
-    )
-
-    await waitFor(() => {
-      expect(mockedRegister).toHaveBeenCalledWith({
-        email: 'test@example.com',
-        password: 'password123',
-        role: 'CANDIDATE',
-      })
-    })
   })
 
   it('shows an API error when registration fails', async () => {
@@ -228,22 +275,14 @@ describe('RegisterPage', () => {
       </MemoryRouter>,
     )
 
-    await user.type(
-      screen.getByLabelText('Email'),
-      'test@example.com',
-    )
-    await user.type(
-      screen.getByLabelText('Password'),
-      'password123',
-    )
+    await fillRegistrationForm(user)
+
     await user.click(
       screen.getByRole('button', { name: 'Register' }),
     )
 
     expect(
       await screen.findByRole('alert'),
-    ).toHaveTextContent(
-      'Registration failed.',
-    )
+    ).toHaveTextContent('Registration failed.')
   })
 })

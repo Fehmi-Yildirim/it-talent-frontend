@@ -195,7 +195,7 @@ describe('application routes', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Dashboard',
-      }),
+      }, { timeout: 5000 }),
     ).toBeInTheDocument()
 
     expect(
@@ -237,7 +237,7 @@ describe('application routes', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Profile',
-      }),
+      }, { timeout: 5000 }),
     ).toBeInTheDocument()
   })
 

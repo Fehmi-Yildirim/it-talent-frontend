@@ -162,6 +162,14 @@ export const nl: DeepString<typeof en> = {
             'Account wordt aangemaakt...',
         accountNotActive:
             'Account is niet actief.',
+        firstNameRequired: 'Voornaam is verplicht.',
+        lastNameRequired: 'Achternaam is verplicht.',
+        passwordRequired: 'Wachtwoord is verplicht.',
+        registrationFieldTooLong: 'Dit veld mag maximaal 100 tekens bevatten.',
+        registrationComplete: 'Registratie ontvangen',
+        registrationPendingApproval:
+            'Je account is aangemaakt en wacht op goedkeuring door een beheerder. Je kunt inloggen zodra je account is goedgekeurd.',
+        backToLogin: 'Terug naar inloggen',
     },
 
     candidateJobs: {

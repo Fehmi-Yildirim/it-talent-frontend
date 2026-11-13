@@ -145,6 +145,14 @@ export const en = {
         registrationFailed: 'Registration failed.',
         creatingAccount: 'Creating account...',
         accountNotActive: 'Account is not active.',
+        firstNameRequired: 'First name is required.',
+        lastNameRequired: 'Last name is required.',
+        passwordRequired: 'Password is required.',
+        registrationFieldTooLong: 'This field cannot exceed 100 characters.',
+        registrationComplete: 'Registration received',
+        registrationPendingApproval:
+            'Your account has been created and is awaiting administrator approval. You can log in once your account has been approved.',
+        backToLogin: 'Back to login',
     },
 
     candidateJobs: {
