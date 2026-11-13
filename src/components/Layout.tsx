@@ -195,6 +195,16 @@ function Layout() {
                 className="admin-sidebar__nav"
                 aria-label={t('accessibility.mainNavigation')}
               >
+                {/* Home navigation */}
+                <NavLink
+                  to="/"
+                  className={navLinkClass}
+                  onClick={closeAdminNav}
+                >
+                  <span aria-hidden="true">⌂</span>
+                  {t('common.home')}
+                </NavLink>
+
                 <NavLink
                   to="/admin/users"
                   className={navLinkClass}
@@ -302,13 +312,20 @@ function Layout() {
               </button>
 
               <div
-                className={`main-nav__mobile-panel${isMobileNavOpen ? ' is-open' : ''
-                  }`}
+                className={`main-nav__mobile-panel${isMobileNavOpen ? ' is-open' : ''}`}
                 id="main-mobile-navigation"
               >
                 {isAuthenticated ? (
                   <>
                     <div className="main-nav__links">
+                      <NavLink
+                        to="/"
+                        className={navLinkClass}
+                        onClick={closeMobileNav}
+                      >
+                        {t('common.home')}
+                      </NavLink>
+
                       <NavLink
                         to="/dashboard"
                         className={navLinkClass}
@@ -381,6 +398,14 @@ function Layout() {
                   </>
                 ) : (
                   <div className="main-nav__links">
+                    <NavLink
+                      to="/"
+                      className={navLinkClass}
+                      onClick={closeMobileNav}
+                    >
+                      {t('common.home')}
+                    </NavLink>
+
                     <NavLink
                       to="/login"
                       className={navLinkClass}

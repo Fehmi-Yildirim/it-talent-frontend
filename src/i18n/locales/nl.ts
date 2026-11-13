@@ -37,6 +37,7 @@ export const nl: DeepString<typeof en> = {
         freelance: 'Freelance',
         from: 'Vanaf',
         fullTime: 'Fulltime',
+        home: 'Home',
         hybrid: 'Hybride',
         internship: 'Stage',
         language: 'Taal',

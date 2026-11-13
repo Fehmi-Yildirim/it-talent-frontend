@@ -29,6 +29,7 @@ export const en = {
         freelance: 'Freelance',
         from: 'From',
         fullTime: 'Full-time',
+        home: 'Home',
         hybrid: 'Hybrid',
         internship: 'Internship',
         language: 'Language',
