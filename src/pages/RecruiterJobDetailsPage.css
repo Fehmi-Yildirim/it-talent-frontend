@@ -338,3 +338,13 @@
         width: 100%;
     }
 }
+
+.demo-disabled-link {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: auto;
+}
+
+.demo-disabled-link:hover {
+    cursor: not-allowed;
+}

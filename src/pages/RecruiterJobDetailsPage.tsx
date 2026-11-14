@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
@@ -9,11 +10,12 @@ import {
     reopenJob,
     resumeJob,
 } from '../features/jobs/jobs.api'
+import { useAuth } from '../features/auth/useAuth'
 import {
     EMPLOYMENT_TYPE_TRANSLATION_KEYS,
     LOCALES,
-    WORK_MODE_TRANSLATION_KEYS,
 } from '../i18n'
+import { WORK_MODE_TRANSLATION_KEYS } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job, JobRequirement } from '../types/job'
 import './RecruiterJobDetailsPage.css'
@@ -116,7 +118,10 @@ function RequirementRow({
 
 export default function RecruiterJobDetailsPage() {
     const { jobId } = useParams()
+    const { user } = useAuth()
     const { language, t } = useTranslation()
+
+    const isDemo = user?.isDemo === true
 
     const [job, setJob] = useState<Job | null>(null)
     const [loading, setLoading] = useState(true)
@@ -203,7 +208,7 @@ export default function RecruiterJobDetailsPage() {
     }
 
     async function handlePublish() {
-        if (!jobId || !job || actionLoading) {
+        if (isDemo || !jobId || !job || actionLoading) {
             return
         }
 
@@ -223,7 +228,7 @@ export default function RecruiterJobDetailsPage() {
     }
 
     async function handlePause() {
-        if (!jobId || !job || actionLoading) {
+        if (isDemo || !jobId || !job || actionLoading) {
             return
         }
 
@@ -243,7 +248,7 @@ export default function RecruiterJobDetailsPage() {
     }
 
     async function handleResume() {
-        if (!jobId || !job || actionLoading) {
+        if (isDemo || !jobId || !job || actionLoading) {
             return
         }
 
@@ -263,7 +268,7 @@ export default function RecruiterJobDetailsPage() {
     }
 
     async function handleClose() {
-        if (!jobId || !job || actionLoading) {
+        if (isDemo || !jobId || !job || actionLoading) {
             return
         }
 
@@ -283,7 +288,7 @@ export default function RecruiterJobDetailsPage() {
     }
 
     async function handleReopen() {
-        if (!jobId || !job || actionLoading) {
+        if (isDemo || !jobId || !job || actionLoading) {
             return
         }
 
@@ -356,7 +361,6 @@ export default function RecruiterJobDetailsPage() {
         <div className="recruiter-job-details-page">
             <header className="recruiter-job-details-header">
                 <div>
-
                     <h1>{job.title}</h1>
 
                     <div className="recruiter-job-details-meta">
@@ -393,8 +397,16 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'DRAFT' && (
                         <>
                             <Link
-                                className="btn btn-secondary"
-                                to={`/recruiter/jobs/${job.id}/edit`}
+                                className={`btn btn-secondary${isDemo ? ' demo-disabled-link' : ''}`}
+                                to={isDemo ? '#' : `/recruiter/jobs/${job.id}/edit`}
+                                aria-disabled={isDemo}
+                                tabIndex={isDemo ? -1 : undefined}
+                                onClick={(event) => {
+                                    if (isDemo) {
+                                        event.preventDefault()
+                                    }
+                                }}
+                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -403,7 +415,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handlePublish()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Publishing is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.publishing')
@@ -415,8 +428,16 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'PUBLISHED' && (
                         <>
                             <Link
-                                className="btn btn-secondary"
-                                to={`/recruiter/jobs/${job.id}/edit`}
+                                className={`btn btn-secondary${isDemo ? ' demo-disabled-link' : ''}`}
+                                to={isDemo ? '#' : `/recruiter/jobs/${job.id}/edit`}
+                                aria-disabled={isDemo}
+                                tabIndex={isDemo ? -1 : undefined}
+                                onClick={(event) => {
+                                    if (isDemo) {
+                                        event.preventDefault()
+                                    }
+                                }}
+                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -425,7 +446,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-secondary"
                                 type="button"
                                 onClick={() => void handlePause()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Pausing is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.pausing')
@@ -436,7 +458,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-danger"
                                 type="button"
                                 onClick={() => void handleClose()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Closing is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.closing')
@@ -448,8 +471,16 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'PAUSED' && (
                         <>
                             <Link
-                                className="btn btn-secondary"
-                                to={`/recruiter/jobs/${job.id}/edit`}
+                                className={`btn btn-secondary${isDemo ? ' demo-disabled-link' : ''}`}
+                                to={isDemo ? '#' : `/recruiter/jobs/${job.id}/edit`}
+                                aria-disabled={isDemo}
+                                tabIndex={isDemo ? -1 : undefined}
+                                onClick={(event) => {
+                                    if (isDemo) {
+                                        event.preventDefault()
+                                    }
+                                }}
+                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -458,7 +489,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handleResume()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Resuming is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.resuming')
@@ -469,7 +501,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-danger"
                                 type="button"
                                 onClick={() => void handleClose()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Closing is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.closing')
@@ -481,8 +514,16 @@ export default function RecruiterJobDetailsPage() {
                     {job.status === 'CLOSED' && (
                         <>
                             <Link
-                                className="btn btn-secondary"
-                                to={`/recruiter/jobs/${job.id}/edit`}
+                                className={`btn btn-secondary${isDemo ? ' demo-disabled-link' : ''}`}
+                                to={isDemo ? '#' : `/recruiter/jobs/${job.id}/edit`}
+                                aria-disabled={isDemo}
+                                tabIndex={isDemo ? -1 : undefined}
+                                onClick={(event) => {
+                                    if (isDemo) {
+                                        event.preventDefault()
+                                    }
+                                }}
+                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -491,7 +532,8 @@ export default function RecruiterJobDetailsPage() {
                                 className="btn btn-primary"
                                 type="button"
                                 onClick={() => void handleReopen()}
-                                disabled={actionLoading}
+                                disabled={isDemo || actionLoading}
+                                title={isDemo ? 'Reopening is disabled in demo mode.' : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.reopening')
@@ -611,8 +653,16 @@ export default function RecruiterJobDetailsPage() {
                         </div>
 
                         <Link
-                            className="btn btn-secondary"
-                            to={`/recruiter/jobs/${job.id}/edit`}
+                            className={`btn btn-secondary${isDemo ? ' demo-disabled-link' : ''}`}
+                            to={isDemo ? '#' : `/recruiter/jobs/${job.id}/edit`}
+                            aria-disabled={isDemo}
+                            tabIndex={isDemo ? -1 : undefined}
+                            onClick={(event) => {
+                                if (isDemo) {
+                                    event.preventDefault()
+                                }
+                            }}
+                            title={isDemo ? 'Managing requirements is disabled in demo mode.' : undefined}
                         >
                             {t('recruiterJobs.manageRequirements')}
                         </Link>
@@ -667,7 +717,6 @@ export default function RecruiterJobDetailsPage() {
                     )}
                 </section>
             </div>
-
         </div>
     )
 }

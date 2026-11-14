@@ -156,3 +156,39 @@
         width: 100%;
     }
 }
+
+
+.company-management__read-only {
+    display: grid;
+    gap: 20px;
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.company-management__read-only:disabled {
+    opacity: 0.75;
+}
+
+.company-management__read-only input:disabled,
+.company-management__read-only textarea:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
+}
+
+.company-form-actions button:disabled,
+.company-management>button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.company-management__demo-notice {
+    margin: 0 0 20px;
+    padding: 12px 16px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    color: var(--color-text-muted);
+    font-size: 0.9rem;
+}

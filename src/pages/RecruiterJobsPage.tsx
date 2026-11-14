@@ -15,6 +15,7 @@ import {
 } from '../i18n'
 import type { TranslationKey } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
+import { useAuth } from '../features/auth/useAuth'
 import type { Job, JobStatus } from '../types/job'
 import './RecruiterJobsPage.css'
 
@@ -93,6 +94,9 @@ function formatDate(date: string, language: string): string {
 }
 
 export default function RecruiterJobsPage() {
+    const { user } = useAuth()
+    const isDemo = user?.isDemo === true
+
     const { t, language } = useTranslation()
 
     const [jobs, setJobs] = useState<Job[]>([])
@@ -174,7 +178,7 @@ export default function RecruiterJobsPage() {
         job: Job,
         targetStatus: JobStatus,
     ) {
-        if (updatingAction) {
+        if (isDemo || updatingAction) {
             return
         }
 
@@ -245,12 +249,23 @@ export default function RecruiterJobsPage() {
                         <p>{t('recruiterJobs.description')}</p>
                     </div>
 
-                    <Link
-                        className="recruiter-jobs-primary-button"
-                        to="/recruiter/jobs/new"
-                    >
-                        {t('recruiterJobs.newJob')}
-                    </Link>
+                    {isDemo ? (
+                        <button
+                            type="button"
+                            className="recruiter-jobs-primary-button"
+                            disabled
+                            title="Creating jobs is disabled in demo mode."
+                        >
+                            {t('recruiterJobs.newJob')}
+                        </button>
+                    ) : (
+                        <Link
+                            className="recruiter-jobs-primary-button"
+                            to="/recruiter/jobs/new"
+                        >
+                            {t('recruiterJobs.newJob')}
+                        </Link>
+                    )}
                 </div>
 
                 <div className="recruiter-jobs-state recruiter-jobs-state-error">
@@ -276,12 +291,23 @@ export default function RecruiterJobsPage() {
                     <p>{t('recruiterJobs.description')}</p>
                 </div>
 
-                <Link
-                    className="recruiter-jobs-primary-button"
-                    to="/recruiter/jobs/new"
-                >
-                    {t('recruiterJobs.newJob')}
-                </Link>
+                {isDemo ? (
+                    <button
+                        type="button"
+                        className="recruiter-jobs-primary-button"
+                        disabled
+                        title="Creating jobs is disabled in demo mode."
+                    >
+                        {t('recruiterJobs.newJob')}
+                    </button>
+                ) : (
+                    <Link
+                        className="recruiter-jobs-primary-button"
+                        to="/recruiter/jobs/new"
+                    >
+                        {t('recruiterJobs.newJob')}
+                    </Link>
+                )}
             </div>
 
             {jobs.length === 0 ? (
@@ -289,12 +315,23 @@ export default function RecruiterJobsPage() {
                     <h2>{t('recruiterJobs.noJobs')}</h2>
                     <p>{t('recruiterJobs.noJobsDescription')}</p>
 
-                    <Link
-                        className="recruiter-jobs-primary-button"
-                        to="/recruiter/jobs/new"
-                    >
-                        {t('recruiterJobs.createFirstJob')}
-                    </Link>
+                    {isDemo ? (
+                        <button
+                            type="button"
+                            className="recruiter-jobs-primary-button"
+                            disabled
+                            title="Creating jobs is disabled in demo mode."
+                        >
+                            {t('recruiterJobs.createFirstJob')}
+                        </button>
+                    ) : (
+                        <Link
+                            className="recruiter-jobs-primary-button"
+                            to="/recruiter/jobs/new"
+                        >
+                            {t('recruiterJobs.createFirstJob')}
+                        </Link>
+                    )}
                 </section>
             ) : (
                 <>
@@ -323,7 +360,15 @@ export default function RecruiterJobsPage() {
                                                 className={`recruiter-job-status recruiter-job-status-${job.status.toLowerCase()}`}
                                                 aria-label={`${job.title} status`}
                                                 value={job.status}
-                                                disabled={updatingAction !== null}
+                                                disabled={
+                                                    isDemo ||
+                                                    updatingAction !== null
+                                                }
+                                                title={
+                                                    isDemo
+                                                        ? 'Changing job status is disabled in demo mode.'
+                                                        : undefined
+                                                }
                                                 onChange={(event) =>
                                                     void handleStatusChange(
                                                         job,
@@ -402,12 +447,23 @@ export default function RecruiterJobsPage() {
                                 </div>
 
                                 <div className="recruiter-job-card-actions">
-                                    <Link
-                                        className="recruiter-jobs-secondary-button"
-                                        to={`/recruiter/jobs/${job.id}/edit`}
-                                    >
-                                        {t('common.edit')}
-                                    </Link>
+                                    {isDemo ? (
+                                        <button
+                                            type="button"
+                                            className="recruiter-jobs-secondary-button"
+                                            disabled
+                                            title="Editing jobs is disabled in demo mode."
+                                        >
+                                            {t('common.edit')}
+                                        </button>
+                                    ) : (
+                                        <Link
+                                            className="recruiter-jobs-secondary-button"
+                                            to={`/recruiter/jobs/${job.id}/edit`}
+                                        >
+                                            {t('common.edit')}
+                                        </Link>
+                                    )}
                                 </div>
                             </article>
                         ))}

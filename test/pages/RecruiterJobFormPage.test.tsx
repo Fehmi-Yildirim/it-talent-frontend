@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RecruiterJobFormPage from '../../src/pages/RecruiterJobFormPage'
 import { I18nProvider } from '../../src/i18n/context'
+import { AuthProvider } from '../../src/features/auth/AuthProvider'
 
 import {
     createJob,
@@ -57,24 +58,26 @@ const requirement = {
 
 function renderPage(path: string) {
     return render(
-        <I18nProvider>
-            <MemoryRouter initialEntries={[path]}>
-                <Routes>
-                    <Route
-                        path="/recruiter/jobs/new"
-                        element={<RecruiterJobFormPage />}
-                    />
-                    <Route
-                        path="/recruiter/jobs/:jobId/edit"
-                        element={<RecruiterJobFormPage />}
-                    />
-                    <Route
-                        path="/recruiter/jobs"
-                        element={<div>Jobs page</div>}
-                    />
-                </Routes>
-            </MemoryRouter>
-        </I18nProvider>,
+        <AuthProvider>
+            <I18nProvider>
+                <MemoryRouter initialEntries={[path]}>
+                    <Routes>
+                        <Route
+                            path="/recruiter/jobs/new"
+                            element={<RecruiterJobFormPage />}
+                        />
+                        <Route
+                            path="/recruiter/jobs/:jobId/edit"
+                            element={<RecruiterJobFormPage />}
+                        />
+                        <Route
+                            path="/recruiter/jobs"
+                            element={<div>Jobs page</div>}
+                        />
+                    </Routes>
+                </MemoryRouter>
+            </I18nProvider>
+        </AuthProvider>,
     )
 }
 

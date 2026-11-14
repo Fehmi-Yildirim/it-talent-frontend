@@ -76,6 +76,7 @@ describe('LoginPage', () => {
         lastName: 'User',
         role: 'CANDIDATE',
         status: 'ACTIVE',
+      isDemo: false,
       },
       accessToken: 'test-token',
     })
@@ -123,6 +124,7 @@ describe('LoginPage', () => {
         lastName: 'User',
         role: 'CANDIDATE',
         status: 'PENDING',
+      isDemo: false,
       },
       accessToken: 'test-token',
     })

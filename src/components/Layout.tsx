@@ -52,6 +52,9 @@ function UserActions({
       <span className="main-nav__user">
         <span aria-hidden="true">👤</span>
         {user?.firstName} {user?.lastName}
+        {user?.isDemo && (
+          <span className="demo-badge">DEMO</span>
+        )}
       </span>
 
       <button

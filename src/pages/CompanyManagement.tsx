@@ -1,8 +1,10 @@
+
 import { useEffect, useState } from 'react'
 import type { FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import ErrorState from '../components/feedback/ErrorState'
 import LoadingState from '../components/feedback/LoadingState'
+import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
 import { ApiError } from '../services/api/apiError'
 import { apiClient } from '../services/api/apiClient'
@@ -14,7 +16,6 @@ import {
     url,
     validate,
 } from '../validation/validators'
-
 
 interface Company {
     id: string
@@ -39,7 +40,10 @@ type CompanyField = 'name' | 'description' | 'website' | 'location'
 type CompanyErrors = Partial<Record<CompanyField, string>>
 
 function CompanyManagement() {
+    const { user } = useAuth()
     const { t } = useTranslation()
+
+    const isDemo = user?.isDemo === true
 
     const [company, setCompany] = useState<Company | null>(null)
     const [name, setName] = useState('')
@@ -110,7 +114,6 @@ function CompanyManagement() {
             cancelled = true
         }
     }, [retryCount, t])
-
 
     function validateField(
         field: CompanyField,
@@ -225,6 +228,10 @@ function CompanyManagement() {
     }
 
     function handleFieldChange(field: CompanyField, value: string) {
+        if (isDemo) {
+            return
+        }
+
         switch (field) {
             case 'name':
                 setName(value)
@@ -253,6 +260,10 @@ function CompanyManagement() {
     }
 
     function handleFieldBlur(field: CompanyField, value: string) {
+        if (isDemo) {
+            return
+        }
+
         const message = validateField(field, value)
 
         setErrors((current) => ({
@@ -281,6 +292,10 @@ function CompanyManagement() {
 
     async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
+
+        if (isDemo || isSaving) {
+            return
+        }
 
         setError(null)
         setSuccess(null)
@@ -355,6 +370,23 @@ function CompanyManagement() {
         </Link>
     )
 
+    const createCompanyButton = (
+        <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => {
+                if (!isDemo) {
+                    setError(null)
+                    setIsCreating(true)
+                }
+            }}
+            disabled={isDemo}
+            title={isDemo ? 'Creating a company is disabled in demo mode.' : undefined}
+        >
+            {t('companyManagement.createCompany')}
+        </button>
+    )
+
     if (isLoading) {
         return (
             <div className="company-page">
@@ -382,16 +414,7 @@ function CompanyManagement() {
                             }}
                         />
 
-                        <button
-                            type="button"
-                            className="btn btn-primary"
-                            onClick={() => {
-                                setError(null)
-                                setIsCreating(true)
-                            }}
-                        >
-                            {t('companyManagement.createCompany')}
-                        </button>
+                        {createCompanyButton}
                     </section>
                 </div>
             )
@@ -406,13 +429,7 @@ function CompanyManagement() {
 
                     <p>{t('companyManagement.noCompany')}</p>
 
-                    <button
-                        type="button"
-                        className="btn btn-primary"
-                        onClick={() => setIsCreating(true)}
-                    >
-                        {t('companyManagement.createCompany')}
-                    </button>
+                    {createCompanyButton}
                 </section>
             </div>
         )
@@ -428,6 +445,12 @@ function CompanyManagement() {
                         ? t('companyManagement.information')
                         : t('companyManagement.createCompany')}
                 </h2>
+
+                {isDemo && (
+                    <p className="company-management__demo-notice">
+                        Company information is read-only in demo mode.
+                    </p>
+                )}
 
                 {error && (
                     <ErrorState
@@ -447,143 +470,149 @@ function CompanyManagement() {
                 )}
 
                 <form onSubmit={handleSubmit} noValidate>
-                    <div className="company-management__field">
-                        <label htmlFor="company-name">
-                            {t('companyManagement.name')}
-                        </label>
+                    <fieldset
+                        className="company-management__read-only"
+                        disabled={isDemo}
+                    >
+                        <div className="company-management__field">
+                            <label htmlFor="company-name">
+                                {t('companyManagement.name')}
+                            </label>
 
-                        <input
-                            id="company-name"
-                            type="text"
-                            className={`form-control ${errors.name ? 'form-control--invalid' : ''}`}
-                            value={name}
-                            placeholder={t('companyManagement.namePlaceholder')}
-                            onChange={(event) =>
-                                handleFieldChange('name', event.target.value)
-                            }
-                            onBlur={() => handleFieldBlur('name', name)}
-                            maxLength={150}
-                            required
-                            aria-invalid={Boolean(errors.name)}
-                            aria-describedby={
-                                errors.name ? 'company-name-error' : undefined
-                            }
-                        />
+                            <input
+                                id="company-name"
+                                type="text"
+                                className={`form-control ${errors.name ? 'form-control--invalid' : ''}`}
+                                value={name}
+                                placeholder={t('companyManagement.namePlaceholder')}
+                                onChange={(event) =>
+                                    handleFieldChange('name', event.target.value)
+                                }
+                                onBlur={() => handleFieldBlur('name', name)}
+                                maxLength={150}
+                                required
+                                aria-invalid={Boolean(errors.name)}
+                                aria-describedby={
+                                    errors.name ? 'company-name-error' : undefined
+                                }
+                            />
 
-                        {renderFieldError('name')}
-                    </div>
-
-                    <div className="company-management__field">
-                        <label htmlFor="company-description">
-                            {t('companyManagement.description')}
-                        </label>
-
-                        <textarea
-                            id="company-description"
-                            className={`form-control ${errors.description ? 'form-control--invalid' : ''}`}
-                            value={description}
-                            placeholder={t('companyManagement.descriptionPlaceholder')}
-                            onChange={(event) =>
-                                handleFieldChange(
-                                    'description',
-                                    event.target.value,
-                                )
-                            }
-                            onBlur={() =>
-                                handleFieldBlur('description', description)
-                            }
-                            maxLength={255}
-                            rows={5}
-                            required
-                            aria-invalid={Boolean(errors.description)}
-                            aria-describedby={
-                                errors.description
-                                    ? 'company-description-error'
-                                    : undefined
-                            }
-                        />
-
-                        {renderFieldError('description')}
-                    </div>
-
-                    <div className="company-management__field">
-                        <label htmlFor="company-website">
-                            {t('companyManagement.website')}
-                        </label>
-
-                        <input
-                            id="company-website"
-                            type="url"
-                            required
-                            className={`form-control ${errors.website ? 'form-control--invalid' : ''}`}
-                            value={website}
-                            placeholder={t('companyManagement.websitePlaceholder')}
-                            onChange={(event) =>
-                                handleFieldChange('website', event.target.value)
-                            }
-                            onBlur={() => handleFieldBlur('website', website)}
-                            maxLength={255}
-                            aria-invalid={Boolean(errors.website)}
-                            aria-describedby={
-                                errors.website
-                                    ? 'company-website-error'
-                                    : undefined
-                            }
-                        />
-
-                        {renderFieldError('website')}
-                    </div>
-
-                    <div className="company-management__field">
-                        <label htmlFor="company-location">
-                            {t('companyManagement.location')}
-                        </label>
-
-                        <input
-                            id="company-location"
-                            type="text"
-                            required
-                            className={`form-control ${errors.location ? 'form-control--invalid' : ''}`}
-                            value={location}
-                            placeholder={t('companyManagement.locationPlaceholder')}
-                            onChange={(event) =>
-                                handleFieldChange('location', event.target.value)
-                            }
-                            onBlur={() => handleFieldBlur('location', location)}
-                            maxLength={255}
-                            aria-invalid={Boolean(errors.location)}
-                            aria-describedby={
-                                errors.location
-                                    ? 'company-location-error'
-                                    : undefined
-                            }
-                        />
-
-                        {renderFieldError('location')}
-                    </div>
-
-                    {company && (
-                        <div className="company-management__meta">
-                            <span>{t('companyManagement.createdAt')}</span>
-                            <p>
-                                {new Date(company.createdAt).toLocaleDateString(
-                                    undefined,
-                                    {
-                                        day: '2-digit',
-                                        month: '2-digit',
-                                        year: 'numeric',
-                                        timeZone: 'UTC',
-                                    },
-                                )}
-                            </p>
+                            {renderFieldError('name')}
                         </div>
-                    )}
+
+                        <div className="company-management__field">
+                            <label htmlFor="company-description">
+                                {t('companyManagement.description')}
+                            </label>
+
+                            <textarea
+                                id="company-description"
+                                className={`form-control ${errors.description ? 'form-control--invalid' : ''}`}
+                                value={description}
+                                placeholder={t('companyManagement.descriptionPlaceholder')}
+                                onChange={(event) =>
+                                    handleFieldChange(
+                                        'description',
+                                        event.target.value,
+                                    )
+                                }
+                                onBlur={() =>
+                                    handleFieldBlur('description', description)
+                                }
+                                maxLength={255}
+                                rows={5}
+                                required
+                                aria-invalid={Boolean(errors.description)}
+                                aria-describedby={
+                                    errors.description
+                                        ? 'company-description-error'
+                                        : undefined
+                                }
+                            />
+
+                            {renderFieldError('description')}
+                        </div>
+
+                        <div className="company-management__field">
+                            <label htmlFor="company-website">
+                                {t('companyManagement.website')}
+                            </label>
+
+                            <input
+                                id="company-website"
+                                type="url"
+                                required
+                                className={`form-control ${errors.website ? 'form-control--invalid' : ''}`}
+                                value={website}
+                                placeholder={t('companyManagement.websitePlaceholder')}
+                                onChange={(event) =>
+                                    handleFieldChange('website', event.target.value)
+                                }
+                                onBlur={() => handleFieldBlur('website', website)}
+                                maxLength={255}
+                                aria-invalid={Boolean(errors.website)}
+                                aria-describedby={
+                                    errors.website
+                                        ? 'company-website-error'
+                                        : undefined
+                                }
+                            />
+
+                            {renderFieldError('website')}
+                        </div>
+
+                        <div className="company-management__field">
+                            <label htmlFor="company-location">
+                                {t('companyManagement.location')}
+                            </label>
+
+                            <input
+                                id="company-location"
+                                type="text"
+                                required
+                                className={`form-control ${errors.location ? 'form-control--invalid' : ''}`}
+                                value={location}
+                                placeholder={t('companyManagement.locationPlaceholder')}
+                                onChange={(event) =>
+                                    handleFieldChange('location', event.target.value)
+                                }
+                                onBlur={() => handleFieldBlur('location', location)}
+                                maxLength={255}
+                                aria-invalid={Boolean(errors.location)}
+                                aria-describedby={
+                                    errors.location
+                                        ? 'company-location-error'
+                                        : undefined
+                                }
+                            />
+
+                            {renderFieldError('location')}
+                        </div>
+
+                        {company && (
+                            <div className="company-management__meta">
+                                <span>{t('companyManagement.createdAt')}</span>
+                                <p>
+                                    {new Date(company.createdAt).toLocaleDateString(
+                                        undefined,
+                                        {
+                                            day: '2-digit',
+                                            month: '2-digit',
+                                            year: 'numeric',
+                                            timeZone: 'UTC',
+                                        },
+                                    )}
+                                </p>
+                            </div>
+                        )}
+                    </fieldset>
 
                     <div className="company-form-actions">
                         <button
                             type="submit"
                             className="btn btn-primary"
-                            disabled={isSaving}
+                            disabled={isSaving || isDemo}
+                            title={isDemo ? 'Saving is disabled in demo mode.' : undefined}
                         >
                             {isSaving
                                 ? t('companyManagement.saving')

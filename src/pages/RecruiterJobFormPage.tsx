@@ -1,3 +1,4 @@
+
 import {
     useEffect,
     useRef,
@@ -19,6 +20,7 @@ import {
     updateJobRequirement,
 } from '../features/jobs/jobs.api'
 import { getSkills } from '../features/skills/skills.api'
+import { useAuth } from '../features/auth/useAuth'
 import {
     EMPLOYMENT_TYPE_TRANSLATION_KEYS,
     WORK_MODE_TRANSLATION_KEYS,
@@ -52,9 +54,7 @@ type JobFormField =
     | 'salaryMax'
     | 'expiresAt'
 
-type JobFormErrors = Partial<
-    Record<JobFormField, string>
->
+type JobFormErrors = Partial<Record<JobFormField, string>>
 
 interface PendingRequirement {
     skillId: string
@@ -93,9 +93,7 @@ function getTodayString(): string {
 }
 
 function isValidUuid(value: string): boolean {
-    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
-        value,
-    )
+    return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
 }
 
 function getRichTextCharacterCount(value: string): number {
@@ -107,9 +105,14 @@ function getRichTextCharacterCount(value: string): number {
         .length
 }
 
-function normalizeSalary(
-    value: string,
-): number | undefined {
+function getRichTextPlainText(value: string): string {
+    const container = document.createElement('div')
+    container.innerHTML = value
+
+    return (container.textContent ?? '').trim()
+}
+
+function normalizeSalary(value: string): number | undefined {
     const trimmedValue = value.trim()
 
     if (!trimmedValue) {
@@ -136,6 +139,7 @@ function normalizeSalary(
 interface RequirementRowProps {
     requirement: JobRequirement
     saving: boolean
+    readOnly?: boolean
     onUpdate: (
         requirementId: string,
         data: RequirementUpdate,
@@ -146,17 +150,18 @@ interface RequirementRowProps {
 function RequirementRow({
     requirement,
     saving,
+    readOnly = false,
     onUpdate,
     onDelete,
 }: RequirementRowProps) {
     const { t } = useTranslation()
+    const disabled = saving || readOnly
 
     return (
         <div className="requirement-row">
             <div className="requirement-row__info">
                 <strong>
-                    {requirement.skill?.name ??
-                        requirement.skillId}
+                    {requirement.skill?.name ?? requirement.skillId}
                 </strong>
 
                 <span>
@@ -168,75 +173,46 @@ function RequirementRow({
 
             <div className="requirement-row__actions">
                 <label className="requirement-control">
-                    <span>
-                        {t('recruiterJobForm.type')}
-                    </span>
+                    <span>{t('recruiterJobForm.type')}</span>
 
                     <select
-                        value={
-                            requirement.required
-                                ? 'required'
-                                : 'preferred'
-                        }
-                        disabled={saving}
+                        value={requirement.required ? 'required' : 'preferred'}
+                        disabled={disabled}
                         onChange={(event) => {
-                            void onUpdate(
-                                requirement.id,
-                                {
-                                    required:
-                                        event.target
-                                            .value ===
-                                        'required',
-                                },
-                            )
+                            void onUpdate(requirement.id, {
+                                required: event.target.value === 'required',
+                            })
                         }}
                     >
                         <option value="required">
-                            {t(
-                                'common.required',
-                            )}
+                            {t('common.required')}
                         </option>
-
                         <option value="preferred">
-                            {t(
-                                'common.preferred',
-                            )}
+                            {t('common.preferred')}
                         </option>
                     </select>
                 </label>
 
                 <label className="requirement-control">
-                    <span>
-                        {t(
-                            'common.minimumLevel',
-                        )}
-                    </span>
+                    <span>{t('common.minimumLevel')}</span>
 
                     <input
                         type="number"
                         min={1}
                         max={5}
-                        value={
-                            requirement.minimumLevel
-                        }
-                        disabled={saving}
+                        value={requirement.minimumLevel}
+                        disabled={disabled}
                         onChange={(event) => {
-                            const value = Number(
-                                event.target.value,
-                            )
+                            const value = Number(event.target.value)
 
                             if (
                                 Number.isInteger(value) &&
                                 value >= 1 &&
                                 value <= 5
                             ) {
-                                void onUpdate(
-                                    requirement.id,
-                                    {
-                                        minimumLevel:
-                                            value,
-                                    },
-                                )
+                                void onUpdate(requirement.id, {
+                                    minimumLevel: value,
+                                })
                             }
                         }}
                     />
@@ -245,18 +221,10 @@ function RequirementRow({
                 <button
                     type="button"
                     className="btn btn-danger"
-                    disabled={saving}
-                    aria-label={t(
-                        'common.delete',
-                    )}
-                    title={t(
-                        'common.delete',
-                    )}
-                    onClick={() =>
-                        void onDelete(
-                            requirement.skillId,
-                        )
-                    }
+                    disabled={disabled}
+                    aria-label={t('common.delete')}
+                    title={t('common.delete')}
+                    onClick={() => void onDelete(requirement.skillId)}
                 >
                     −
                 </button>
@@ -268,15 +236,15 @@ function RequirementRow({
 interface PendingRequirementRowProps {
     requirement: PendingRequirement
     skillName: string
-    onUpdate: (
-        data: Partial<PendingRequirement>,
-    ) => void
+    disabled?: boolean
+    onUpdate: (data: Partial<PendingRequirement>) => void
     onDelete: () => void
 }
 
 function PendingRequirementRow({
     requirement,
     skillName,
+    disabled = false,
     onUpdate,
     onDelete,
 }: PendingRequirementRowProps) {
@@ -296,67 +264,44 @@ function PendingRequirementRow({
 
             <div className="requirement-row__actions">
                 <label className="requirement-control">
-                    <span>
-                        {t('recruiterJobForm.type')}
-                    </span>
+                    <span>{t('recruiterJobForm.type')}</span>
 
                     <select
-                        value={
-                            requirement.required
-                                ? 'required'
-                                : 'preferred'
-                        }
+                        value={requirement.required ? 'required' : 'preferred'}
+                        disabled={disabled}
                         onChange={(event) =>
                             onUpdate({
-                                required:
-                                    event.target
-                                        .value ===
-                                    'required',
+                                required: event.target.value === 'required',
                             })
                         }
                     >
                         <option value="required">
-                            {t(
-                                'common.required',
-                            )}
+                            {t('common.required')}
                         </option>
-
                         <option value="preferred">
-                            {t(
-                                'common.preferred',
-                            )}
+                            {t('common.preferred')}
                         </option>
                     </select>
                 </label>
 
                 <label className="requirement-control">
-                    <span>
-                        {t(
-                            'common.minimumLevel',
-                        )}
-                    </span>
+                    <span>{t('common.minimumLevel')}</span>
 
                     <input
                         type="number"
                         min={1}
                         max={5}
-                        value={
-                            requirement.minimumLevel
-                        }
+                        value={requirement.minimumLevel}
+                        disabled={disabled}
                         onChange={(event) => {
-                            const value = Number(
-                                event.target.value,
-                            )
+                            const value = Number(event.target.value)
 
                             if (
                                 Number.isInteger(value) &&
                                 value >= 1 &&
                                 value <= 5
                             ) {
-                                onUpdate({
-                                    minimumLevel:
-                                        value,
-                                })
+                                onUpdate({ minimumLevel: value })
                             }
                         }}
                     />
@@ -365,12 +310,9 @@ function PendingRequirementRow({
                 <button
                     type="button"
                     className="btn btn-danger"
-                    aria-label={t(
-                        'common.delete',
-                    )}
-                    title={t(
-                        'common.delete',
-                    )}
+                    disabled={disabled}
+                    aria-label={t('common.delete')}
+                    title={t('common.delete')}
                     onClick={onDelete}
                 >
                     −
@@ -381,14 +323,16 @@ function PendingRequirementRow({
 }
 
 export default function RecruiterJobFormPage() {
+    const { user } = useAuth()
+    const isDemo = user?.isDemo === true
+
     const { t } = useTranslation()
     const navigate = useNavigate()
     const { jobId } = useParams<{ jobId: string }>()
     const isEditMode = Boolean(jobId)
 
-    const employmentTypeLabel = (
-        type: EmploymentType,
-    ) => t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[type])
+    const employmentTypeLabel = (type: EmploymentType) =>
+        t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[type])
 
     const workModeLabel = (mode: WorkMode) =>
         t(WORK_MODE_TRANSLATION_KEYS[mode])
@@ -399,73 +343,42 @@ export default function RecruiterJobFormPage() {
     const [location, setLocation] = useState('')
     const [employmentType, setEmploymentType] =
         useState<EmploymentType>('FULL_TIME')
-    const [workMode, setWorkMode] =
-        useState<WorkMode>('ONSITE')
+    const [workMode, setWorkMode] = useState<WorkMode>('ONSITE')
     const [salaryMin, setSalaryMin] = useState('')
     const [salaryMax, setSalaryMax] = useState('')
     const [currency, setCurrency] = useState<string>(DEFAULT_CURRENCY)
-    const [expiresAt, setExpiresAt] =
-        useState(getInitialDate())
+    const [expiresAt, setExpiresAt] = useState(getInitialDate())
 
-    const [requirements, setRequirements] =
-        useState<JobRequirement[]>([])
+    const [requirements, setRequirements] = useState<JobRequirement[]>([])
+    const [pendingRequirements, setPendingRequirements] =
+        useState<PendingRequirement[]>([])
 
-    const [
-        pendingRequirements,
-        setPendingRequirements,
-    ] = useState<PendingRequirement[]>([])
+    const [selectedSkillId, setSelectedSkillId] = useState('')
+    const [skillSearch, setSkillSearch] = useState('')
+    const [selectedRequired, setSelectedRequired] = useState(true)
+    const [selectedMinimumLevel, setSelectedMinimumLevel] = useState(1)
 
-    const [selectedSkillId, setSelectedSkillId] =
-        useState('')
-    const [skillSearch, setSkillSearch] =
-        useState('')
-    const [selectedRequired, setSelectedRequired] =
-        useState(true)
-    const [
-        selectedMinimumLevel,
-        setSelectedMinimumLevel,
-    ] = useState(1)
-
-    const [loading, setLoading] =
-        useState(isEditMode)
-    const [skillsLoading, setSkillsLoading] =
-        useState(true)
-    const [
-        requirementsLoading,
-        setRequirementsLoading,
-    ] = useState(false)
+    const [loading, setLoading] = useState(isEditMode)
+    const [skillsLoading, setSkillsLoading] = useState(true)
+    const [requirementsLoading, setRequirementsLoading] = useState(false)
     const [saving, setSaving] = useState(false)
-    const [
-        requirementSaving,
-        setRequirementSaving,
-    ] = useState(false)
+    const [requirementSaving, setRequirementSaving] = useState(false)
 
-    const [isSkillDropdownOpen, setIsSkillDropdownOpen] =
-        useState(false)
-
-    const [error, setError] =
-        useState<string | null>(null)
-
+    const [isSkillDropdownOpen, setIsSkillDropdownOpen] = useState(false)
+    const [error, setError] = useState<string | null>(null)
     const [errors, setErrors] = useState<JobFormErrors>({})
-    const [
-        validationError,
-        setValidationError,
-    ] = useState<string | null>(null)
+    const [validationError, setValidationError] = useState<string | null>(null)
 
     const [submitted, setSubmitted] = useState(false)
     const [touchedFields, setTouchedFields] = useState<
         Partial<Record<JobFormField, boolean>>
     >({})
 
-    const [activeSection, setActiveSection] =
-        useState<FormSection | null>(null)
+    const [activeSection, setActiveSection] = useState<FormSection | null>(null)
 
-    const jobDetailsRef =
-        useRef<HTMLElement | null>(null)
-    const salaryExpirationRef =
-        useRef<HTMLElement | null>(null)
-    const jobRequirementsRef =
-        useRef<HTMLElement | null>(null)
+    const jobDetailsRef = useRef<HTMLElement | null>(null)
+    const salaryExpirationRef = useRef<HTMLElement | null>(null)
+    const jobRequirementsRef = useRef<HTMLElement | null>(null)
 
     const titleInputRef = useRef<HTMLInputElement | null>(null)
     const descriptionInputRef = useRef<HTMLDivElement | null>(null)
@@ -474,13 +387,9 @@ export default function RecruiterJobFormPage() {
     const salaryMaxInputRef = useRef<HTMLInputElement | null>(null)
     const expiresAtInputRef = useRef<HTMLInputElement | null>(null)
 
-    function getSkillName(
-        skillId: string,
-    ): string {
+    function getSkillName(skillId: string): string {
         return (
-            skills.find(
-                (skill) => skill.id === skillId,
-            )?.name ??
+            skills.find((skill) => skill.id === skillId)?.name ??
             t('recruiterJobForm.unknownSkill')
         )
     }
@@ -501,11 +410,7 @@ export default function RecruiterJobFormPage() {
                 console.error('Failed to load skills:', error)
 
                 if (active) {
-                    setError(
-                        t(
-                            'recruiterJobForm.unableToLoadSkills',
-                        ),
-                    )
+                    setError(t('recruiterJobForm.unableToLoadSkills'))
                 }
             } finally {
                 if (active) {
@@ -535,8 +440,7 @@ export default function RecruiterJobFormPage() {
             setError(null)
 
             try {
-                const response =
-                    await getJobById(currentJobId)
+                const response = await getJobById(currentJobId)
 
                 if (!active) {
                     return
@@ -544,46 +448,24 @@ export default function RecruiterJobFormPage() {
 
                 setTitle(response.title)
                 setDescription(response.description)
-                setLocation(
-                    response.location ?? '',
-                )
-                setEmploymentType(
-                    response.employmentType,
-                )
+                setLocation(response.location ?? '')
+                setEmploymentType(response.employmentType)
                 setWorkMode(response.workMode)
-
                 setSalaryMin(
                     response.salaryMin !== null
                         ? String(response.salaryMin)
                         : '',
                 )
-
                 setSalaryMax(
                     response.salaryMax !== null
                         ? String(response.salaryMax)
                         : '',
                 )
-
-                setCurrency(
-                    response.currency ??
-                    DEFAULT_CURRENCY,
-                )
-
-                setExpiresAt(
-                    response.expiresAt
-                        ? response.expiresAt.slice(
-                            0,
-                            10,
-                        )
-                        : '',
-                )
+                setCurrency(response.currency ?? DEFAULT_CURRENCY)
+                setExpiresAt(response.expiresAt ? response.expiresAt.slice(0, 10) : '')
             } catch {
                 if (active) {
-                    setError(
-                        t(
-                            'recruiterJobForm.unableToLoadJob',
-                        ),
-                    )
+                    setError(t('recruiterJobForm.unableToLoadJob'))
                 }
             } finally {
                 if (active) {
@@ -611,23 +493,14 @@ export default function RecruiterJobFormPage() {
             setRequirementsLoading(true)
 
             try {
-                const response =
-                    await getJobRequirements(
-                        currentJobId,
-                    )
+                const response = await getJobRequirements(currentJobId)
 
-                if (!active) {
-                    return
+                if (active) {
+                    setRequirements(response)
                 }
-
-                setRequirements(response)
             } catch {
                 if (active) {
-                    setError(
-                        t(
-                            'recruiterJobForm.unableToLoadRequirements',
-                        ),
-                    )
+                    setError(t('recruiterJobForm.unableToLoadRequirements'))
                 }
             } finally {
                 if (active) {
@@ -644,28 +517,18 @@ export default function RecruiterJobFormPage() {
     }, [jobId, t])
 
     const usedSkillIds = new Set([
-        ...requirements.map(
-            (requirement) =>
-                requirement.skillId,
-        ),
-        ...pendingRequirements.map(
-            (requirement) =>
-                requirement.skillId,
-        ),
+        ...requirements.map((requirement) => requirement.skillId),
+        ...pendingRequirements.map((requirement) => requirement.skillId),
     ])
 
-    const normalizedSkillSearch =
-        skillSearch.trim().toLowerCase()
+    const normalizedSkillSearch = skillSearch.trim().toLowerCase()
 
-    const descriptionCharacterCount =
-        getRichTextCharacterCount(description)
+    const descriptionCharacterCount = getRichTextCharacterCount(description)
 
     const filteredSkills = skills.filter(
         (skill) =>
             !usedSkillIds.has(skill.id) &&
-            skill.name
-                .toLowerCase()
-                .includes(normalizedSkillSearch),
+            skill.name.toLowerCase().includes(normalizedSkillSearch),
     )
 
     const showSkillResults =
@@ -675,6 +538,8 @@ export default function RecruiterJobFormPage() {
         filteredSkills.length > 0
 
     function selectSkill(skill: Skill) {
+        if (isDemo) return
+
         setSelectedSkillId(skill.id)
         setSkillSearch(skill.name)
         setIsSkillDropdownOpen(false)
@@ -683,21 +548,21 @@ export default function RecruiterJobFormPage() {
     }
 
     function clearSkillSelection() {
+        if (isDemo) return
+
         setSelectedSkillId('')
         setSkillSearch('')
         setIsSkillDropdownOpen(false)
     }
 
     function handleSkillSearchChange(value: string) {
-        const skillById = skills.find(
-            (skill) => skill.id === value,
-        )
+        if (isDemo) return
+
+        const skillById = skills.find((skill) => skill.id === value)
 
         if (skillById) {
             if (usedSkillIds.has(skillById.id)) {
-                setError(
-                    t('recruiterJobForm.duplicateSkillError'),
-                )
+                setError(t('recruiterJobForm.duplicateSkillError'))
                 return
             }
 
@@ -713,48 +578,32 @@ export default function RecruiterJobFormPage() {
     }
 
     function addPendingRequirement() {
+        if (isDemo) return
+
         setError(null)
         setValidationError(null)
 
         if (!selectedSkillId) {
-            setError(
-                t(
-                    'recruiterJobForm.selectSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.selectSkillError'))
             return
         }
 
         if (!isValidUuid(selectedSkillId)) {
-            setError(
-                t(
-                    'recruiterJobForm.invalidSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.invalidSkillError'))
             return
         }
 
         if (
             selectedMinimumLevel < 1 ||
             selectedMinimumLevel > 5 ||
-            !Number.isInteger(
-                selectedMinimumLevel,
-            )
+            !Number.isInteger(selectedMinimumLevel)
         ) {
-            setError(
-                t(
-                    'recruiterJobForm.minimumLevelError',
-                ),
-            )
+            setError(t('recruiterJobForm.minimumLevelError'))
             return
         }
 
         if (usedSkillIds.has(selectedSkillId)) {
-            setError(
-                t(
-                    'recruiterJobForm.duplicateSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.duplicateSkillError'))
             return
         }
 
@@ -763,8 +612,7 @@ export default function RecruiterJobFormPage() {
             {
                 skillId: selectedSkillId,
                 required: selectedRequired,
-                minimumLevel:
-                    selectedMinimumLevel,
+                minimumLevel: selectedMinimumLevel,
             },
         ])
 
@@ -777,75 +625,54 @@ export default function RecruiterJobFormPage() {
         index: number,
         data: Partial<PendingRequirement>,
     ) {
+        if (isDemo) return
+
         setPendingRequirements((current) =>
-            current.map(
-                (requirement, currentIndex) =>
-                    currentIndex === index
-                        ? {
-                            ...requirement,
-                            ...data,
-                        }
-                        : requirement,
+            current.map((requirement, currentIndex) =>
+                currentIndex === index
+                    ? { ...requirement, ...data }
+                    : requirement,
             ),
         )
     }
 
-    function deletePendingRequirement(
-        index: number,
-    ) {
+    function deletePendingRequirement(index: number) {
+        if (isDemo) return
+
         setPendingRequirements((current) =>
-            current.filter(
-                (_, currentIndex) =>
-                    currentIndex !== index,
-            ),
+            current.filter((_, currentIndex) => currentIndex !== index),
         )
     }
 
     async function handleAddRequirement() {
+        if (isDemo) return
+
         if (!jobId) {
             addPendingRequirement()
             return
         }
 
         if (!selectedSkillId) {
-            setError(
-                t(
-                    'recruiterJobForm.selectSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.selectSkillError'))
             return
         }
 
         if (!isValidUuid(selectedSkillId)) {
-            setError(
-                t(
-                    'recruiterJobForm.invalidSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.invalidSkillError'))
             return
         }
 
         if (
             selectedMinimumLevel < 1 ||
             selectedMinimumLevel > 5 ||
-            !Number.isInteger(
-                selectedMinimumLevel,
-            )
+            !Number.isInteger(selectedMinimumLevel)
         ) {
-            setError(
-                t(
-                    'recruiterJobForm.minimumLevelError',
-                ),
-            )
+            setError(t('recruiterJobForm.minimumLevelError'))
             return
         }
 
         if (usedSkillIds.has(selectedSkillId)) {
-            setError(
-                t(
-                    'recruiterJobForm.duplicateSkillError',
-                ),
-            )
+            setError(t('recruiterJobForm.duplicateSkillError'))
             return
         }
 
@@ -854,32 +681,18 @@ export default function RecruiterJobFormPage() {
         setValidationError(null)
 
         try {
-            const response =
-                await createJobRequirement(
-                    jobId,
-                    {
-                        skillId: selectedSkillId,
-                        required:
-                            selectedRequired,
-                        minimumLevel:
-                            selectedMinimumLevel,
-                    },
-                )
+            const response = await createJobRequirement(jobId, {
+                skillId: selectedSkillId,
+                required: selectedRequired,
+                minimumLevel: selectedMinimumLevel,
+            })
 
-            setRequirements((current) => [
-                ...current,
-                response,
-            ])
-
+            setRequirements((current) => [...current, response])
             clearSkillSelection()
             setSelectedRequired(true)
             setSelectedMinimumLevel(1)
         } catch {
-            setError(
-                t(
-                    'recruiterJobForm.unableToAddRequirement',
-                ),
-            )
+            setError(t('recruiterJobForm.unableToAddRequirement'))
         } finally {
             setRequirementSaving(false)
         }
@@ -889,23 +702,17 @@ export default function RecruiterJobFormPage() {
         requirementId: string,
         data: RequirementUpdate,
     ) {
-        if (!jobId) {
-            return
-        }
+        if (isDemo || !jobId) return
 
         if (
             data.minimumLevel !== undefined &&
-            (data.minimumLevel < 1 ||
+            (
+                data.minimumLevel < 1 ||
                 data.minimumLevel > 5 ||
-                !Number.isInteger(
-                    data.minimumLevel,
-                ))
-        ) {
-            setError(
-                t(
-                    'recruiterJobForm.minimumLevelError',
-                ),
+                !Number.isInteger(data.minimumLevel)
             )
+        ) {
+            setError(t('recruiterJobForm.minimumLevelError'))
             return
         }
 
@@ -913,61 +720,34 @@ export default function RecruiterJobFormPage() {
         setError(null)
 
         try {
-            const response =
-                await updateJobRequirement(
-                    jobId,
-                    requirementId,
-                    data,
-                )
+            const response = await updateJobRequirement(jobId, requirementId, data)
 
             setRequirements((current) =>
                 current.map((requirement) =>
-                    requirement.id ===
-                        requirementId
-                        ? response
-                        : requirement,
+                    requirement.id === requirementId ? response : requirement,
                 ),
             )
         } catch {
-            setError(
-                t(
-                    'recruiterJobForm.unableToUpdateRequirement',
-                ),
-            )
+            setError(t('recruiterJobForm.unableToUpdateRequirement'))
         } finally {
             setRequirementSaving(false)
         }
     }
 
-    async function handleDeleteRequirement(
-        skillId: string,
-    ) {
-        if (!jobId) {
-            return
-        }
+    async function handleDeleteRequirement(skillId: string) {
+        if (isDemo || !jobId) return
 
         setRequirementSaving(true)
         setError(null)
 
         try {
-            await removeJobRequirement(
-                jobId,
-                skillId,
-            )
+            await removeJobRequirement(jobId, skillId)
 
             setRequirements((current) =>
-                current.filter(
-                    (requirement) =>
-                        requirement.skillId !==
-                        skillId,
-                ),
+                current.filter((requirement) => requirement.skillId !== skillId),
             )
         } catch {
-            setError(
-                t(
-                    'recruiterJobForm.unableToDeleteRequirement',
-                ),
-            )
+            setError(t('recruiterJobForm.unableToDeleteRequirement'))
         } finally {
             setRequirementSaving(false)
         }
@@ -1068,18 +848,12 @@ export default function RecruiterJobFormPage() {
 
     function getFieldValue(field: JobFormField): string {
         switch (field) {
-            case 'title':
-                return title
-            case 'description':
-                return description
-            case 'location':
-                return location
-            case 'salaryMin':
-                return salaryMin
-            case 'salaryMax':
-                return salaryMax
-            case 'expiresAt':
-                return expiresAt
+            case 'title': return title
+            case 'description': return description
+            case 'location': return location
+            case 'salaryMin': return salaryMin
+            case 'salaryMax': return salaryMax
+            case 'expiresAt': return expiresAt
         }
     }
 
@@ -1110,22 +884,14 @@ export default function RecruiterJobFormPage() {
         const min = normalizeSalary(salaryMin)
         const max = normalizeSalary(salaryMax)
 
-        if (
-            min !== undefined &&
-            max !== undefined &&
-            min > max
-        ) {
-            nextErrors.salaryMin = t(
-                'recruiterJobForm.minimumSalaryGreater',
-            )
+        if (min !== undefined && max !== undefined && min > max) {
+            nextErrors.salaryMin = t('recruiterJobForm.minimumSalaryGreater')
         }
 
         return nextErrors
     }
 
-    function focusFirstInvalidField(
-        fieldErrors: JobFormErrors,
-    ) {
+    function focusFirstInvalidField(fieldErrors: JobFormErrors) {
         const fieldOrder: JobFormField[] = [
             'title',
             'description',
@@ -1144,9 +910,7 @@ export default function RecruiterJobFormPage() {
             expiresAt: expiresAtInputRef,
         }
 
-        const firstInvalidField = fieldOrder.find(
-            (field) => fieldErrors[field],
-        )
+        const firstInvalidField = fieldOrder.find((field) => fieldErrors[field])
 
         if (firstInvalidField) {
             const element = refs[firstInvalidField].current
@@ -1161,6 +925,8 @@ export default function RecruiterJobFormPage() {
     }
 
     function handleFieldBlur(field: JobFormField) {
+        if (isDemo) return
+
         const value = getFieldValue(field)
         const message = validateFieldValue(field, value)
 
@@ -1187,17 +953,11 @@ export default function RecruiterJobFormPage() {
                 )
 
                 if (min !== undefined && max !== undefined && min > max) {
-                    next.salaryMin = t(
-                        'recruiterJobForm.minimumSalaryGreater',
-                    )
+                    next.salaryMin = t('recruiterJobForm.minimumSalaryGreater')
                 } else if (
-                    next.salaryMin ===
-                    t('recruiterJobForm.minimumSalaryGreater')
+                    next.salaryMin === t('recruiterJobForm.minimumSalaryGreater')
                 ) {
-                    const minError = validateFieldValue(
-                        'salaryMin',
-                        salaryMin,
-                    )
+                    const minError = validateFieldValue('salaryMin', salaryMin)
 
                     if (minError) {
                         next.salaryMin = minError
@@ -1211,10 +971,9 @@ export default function RecruiterJobFormPage() {
         })
     }
 
-    function handleFieldChange(
-        field: JobFormField,
-        value: string,
-    ) {
+    function handleFieldChange(field: JobFormField, value: string) {
+        if (isDemo) return
+
         switch (field) {
             case 'title':
                 setTitle(value)
@@ -1250,31 +1009,18 @@ export default function RecruiterJobFormPage() {
             }
 
             if (field === 'salaryMin' || field === 'salaryMax') {
-                const nextMinValue =
-                    field === 'salaryMin' ? value : salaryMin
-
-                const nextMaxValue =
-                    field === 'salaryMax' ? value : salaryMax
+                const nextMinValue = field === 'salaryMin' ? value : salaryMin
+                const nextMaxValue = field === 'salaryMax' ? value : salaryMax
 
                 const min = normalizeSalary(nextMinValue)
                 const max = normalizeSalary(nextMaxValue)
 
-                if (
-                    min !== undefined &&
-                    max !== undefined &&
-                    min > max
-                ) {
-                    next.salaryMin = t(
-                        'recruiterJobForm.minimumSalaryGreater',
-                    )
+                if (min !== undefined && max !== undefined && min > max) {
+                    next.salaryMin = t('recruiterJobForm.minimumSalaryGreater')
                 } else if (
-                    next.salaryMin ===
-                    t('recruiterJobForm.minimumSalaryGreater')
+                    next.salaryMin === t('recruiterJobForm.minimumSalaryGreater')
                 ) {
-                    const minError = validateFieldValue(
-                        'salaryMin',
-                        nextMinValue,
-                    )
+                    const minError = validateFieldValue('salaryMin', nextMinValue)
 
                     if (minError) {
                         next.salaryMin = minError
@@ -1301,34 +1047,26 @@ export default function RecruiterJobFormPage() {
         }
     }
 
-    async function handleSubmit(
-        event: FormEvent<HTMLFormElement>,
-    ) {
+    async function handleSubmit(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
-        if (saving) {
+        if (isDemo || saving) {
             return
         }
 
         setSubmitted(true)
-
         setValidationError(null)
         setErrors({})
         setError(null)
 
-        // Validate a selected skill that has not yet been added.
         if (selectedSkillId) {
             if (!isValidUuid(selectedSkillId)) {
-                setError(
-                    t('recruiterJobForm.invalidSkillError'),
-                )
+                setError(t('recruiterJobForm.invalidSkillError'))
                 return
             }
 
             if (usedSkillIds.has(selectedSkillId)) {
-                setError(
-                    t('recruiterJobForm.duplicateSkillError'),
-                )
+                setError(t('recruiterJobForm.duplicateSkillError'))
                 return
             }
 
@@ -1337,14 +1075,11 @@ export default function RecruiterJobFormPage() {
                 selectedMinimumLevel < 1 ||
                 selectedMinimumLevel > 5
             ) {
-                setError(
-                    t('recruiterJobForm.minimumLevelError'),
-                )
+                setError(t('recruiterJobForm.minimumLevelError'))
                 return
             }
         }
 
-        // Include a selected skill even if the user forgot to click +.
         const requirementsToSave: PendingRequirement[] = [
             ...pendingRequirements,
         ]
@@ -1357,7 +1092,6 @@ export default function RecruiterJobFormPage() {
             })
         }
 
-        // Validate regular form fields.
         const nextErrors = validateForm()
         setErrors(nextErrors)
 
@@ -1366,31 +1100,22 @@ export default function RecruiterJobFormPage() {
             return
         }
 
-        // Validate employment type and work mode.
         if (!EMPLOYMENT_TYPES.includes(employmentType)) {
-            setValidationError(
-                t('recruiterJobForm.invalidEmploymentType'),
-            )
+            setValidationError(t('recruiterJobForm.invalidEmploymentType'))
             return
         }
 
         if (!WORK_MODES.includes(workMode)) {
-            setValidationError(
-                t('recruiterJobForm.invalidWorkMode'),
-            )
+            setValidationError(t('recruiterJobForm.invalidWorkMode'))
             return
         }
 
-        // Validate pending requirements.
         if (
             requirementsToSave.some(
-                (requirement) =>
-                    !isValidUuid(requirement.skillId),
+                (requirement) => !isValidUuid(requirement.skillId),
             )
         ) {
-            setValidationError(
-                t('recruiterJobForm.invalidSkillIds'),
-            )
+            setValidationError(t('recruiterJobForm.invalidSkillIds'))
             return
         }
 
@@ -1402,20 +1127,15 @@ export default function RecruiterJobFormPage() {
                     !Number.isInteger(requirement.minimumLevel),
             )
         ) {
-            setValidationError(
-                t('recruiterJobForm.minimumSkillLevel'),
-            )
+            setValidationError(t('recruiterJobForm.minimumSkillLevel'))
             return
         }
 
         setSaving(true)
 
         try {
-            const normalizedSalaryMin =
-                normalizeSalary(salaryMin)
-
-            const normalizedSalaryMax =
-                normalizeSalary(salaryMax)
+            const normalizedSalaryMin = normalizeSalary(salaryMin)
+            const normalizedSalaryMax = normalizeSalary(salaryMax)
 
             if (jobId) {
                 const data: UpdateJobRequest = {
@@ -1432,7 +1152,6 @@ export default function RecruiterJobFormPage() {
 
                 await updateJob(jobId, data)
 
-                // Save a selected skill in edit mode.
                 if (selectedSkillId) {
                     try {
                         await createJobRequirement(jobId, {
@@ -1441,11 +1160,7 @@ export default function RecruiterJobFormPage() {
                             minimumLevel: selectedMinimumLevel,
                         })
                     } catch {
-                        setError(
-                            t(
-                                'recruiterJobForm.unableToAddRequirement',
-                            ),
-                        )
+                        setError(t('recruiterJobForm.unableToAddRequirement'))
                         return
                     }
                 }
@@ -1468,7 +1183,6 @@ export default function RecruiterJobFormPage() {
 
             const createdJob = await createJob(data)
 
-            // Save all requirements, including the unconfirmed selection.
             if (requirementsToSave.length > 0) {
                 try {
                     await createPendingRequirements(
@@ -1477,9 +1191,7 @@ export default function RecruiterJobFormPage() {
                     )
                 } catch {
                     setError(
-                        t(
-                            'recruiterJobForm.jobCreatedRequirementsFailed',
-                        ),
+                        t('recruiterJobForm.jobCreatedRequirementsFailed'),
                     )
                     return
                 }
@@ -1497,17 +1209,13 @@ export default function RecruiterJobFormPage() {
         }
     }
 
-    function scrollToSection(
-        section: FormSection,
-    ) {
+    function scrollToSection(section: FormSection) {
         setActiveSection(section)
 
         const refs = {
             'job-details': jobDetailsRef,
-            'salary-expiration':
-                salaryExpirationRef,
-            'job-requirements':
-                jobRequirementsRef,
+            'salary-expiration': salaryExpirationRef,
+            'job-requirements': jobRequirementsRef,
         }
 
         refs[section].current?.scrollIntoView({
@@ -1520,9 +1228,7 @@ export default function RecruiterJobFormPage() {
         return (
             <div className="recruiter-job-form-page">
                 <div className="form-state">
-                    {t(
-                        'recruiterJobForm.loading',
-                    )}
+                    {t('recruiterJobForm.loading')}
                 </div>
             </div>
         )
@@ -1531,788 +1237,662 @@ export default function RecruiterJobFormPage() {
     return (
         <div className="recruiter-job-form-page">
             <header className="page-header">
-                <Link
-                    to="/recruiter/jobs"
-                    className="back-link"
-                >
-                    {t(
-                        'recruiterJobForm.backToJobs',
-                    )}
+                <Link to="/recruiter/jobs" className="back-link">
+                    {t('recruiterJobForm.backToJobs')}
                 </Link>
 
                 <h1>
                     {isEditMode
-                        ? t(
-                            'recruiterJobForm.editTitle',
-                        )
-                        : t(
-                            'recruiterJobForm.createTitle',
-                        )}
+                        ? t('recruiterJobForm.editTitle')
+                        : t('recruiterJobForm.createTitle')}
                 </h1>
 
                 <p>
-                    {isEditMode
-                        ? t(
-                            'recruiterJobForm.editDescription',
-                        )
-                        : t(
-                            'recruiterJobForm.createDescription',
-                        )}
+                    {isDemo
+                        ? 'Demo mode: this page is read-only.'
+                        : isEditMode
+                            ? t('recruiterJobForm.editDescription')
+                            : t('recruiterJobForm.createDescription')}
                 </p>
             </header>
 
+            {isDemo && (
+                <div className="form-help" role="status">
+                    Demo accounts can view this information, but cannot make changes.
+                </div>
+            )}
+
             {error && (
-                <div
-                    className="alert alert--error"
-                    role="alert"
-                >
+                <div className="alert alert--error" role="alert">
                     {error}
                 </div>
             )}
 
             {validationError && (
-                <div
-                    className="alert alert--error"
-                    role="alert"
-                >
+                <div className="alert alert--error" role="alert">
                     {validationError}
                 </div>
             )}
 
             <nav
                 className="job-form-tabs"
-                aria-label={t(
-                    'recruiterJobForm.jobDetails',
-                )}
+                aria-label={t('recruiterJobForm.jobDetails')}
             >
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection === 'job-details'
-                        ? 'job-form-tab--active'
-                        : ''
+                            ? 'job-form-tab--active'
+                            : ''
                         }`}
                     aria-current={
-                        activeSection ===
-                            'job-details'
-                            ? 'true'
-                            : undefined
+                        activeSection === 'job-details' ? 'true' : undefined
                     }
-                    onClick={() =>
-                        scrollToSection(
-                            'job-details',
-                        )
-                    }
+                    onClick={() => scrollToSection('job-details')}
                 >
-                    {t(
-                        'recruiterJobForm.jobDetails',
-                    )}
+                    {t('recruiterJobForm.jobDetails')}
                 </button>
 
                 <button
                     type="button"
-                    className={`job-form-tab ${activeSection ===
-                        'salary-expiration'
-                        ? 'job-form-tab--active'
-                        : ''
+                    className={`job-form-tab ${activeSection === 'salary-expiration'
+                            ? 'job-form-tab--active'
+                            : ''
                         }`}
                     aria-current={
-                        activeSection ===
-                            'salary-expiration'
+                        activeSection === 'salary-expiration'
                             ? 'true'
                             : undefined
                     }
-                    onClick={() =>
-                        scrollToSection(
-                            'salary-expiration',
-                        )
-                    }
+                    onClick={() => scrollToSection('salary-expiration')}
                 >
-                    {t(
-                        'recruiterJobForm.salaryAndExpiration',
-                    )}
+                    {t('recruiterJobForm.salaryAndExpiration')}
                 </button>
 
                 <button
                     type="button"
-                    className={`job-form-tab ${activeSection ===
-                        'job-requirements'
-                        ? 'job-form-tab--active'
-                        : ''
+                    className={`job-form-tab ${activeSection === 'job-requirements'
+                            ? 'job-form-tab--active'
+                            : ''
                         }`}
                     aria-current={
-                        activeSection ===
-                            'job-requirements'
+                        activeSection === 'job-requirements'
                             ? 'true'
                             : undefined
                     }
-                    onClick={() =>
-                        scrollToSection(
-                            'job-requirements',
-                        )
-                    }
+                    onClick={() => scrollToSection('job-requirements')}
                 >
-                    {t(
-                        'recruiterJobForm.jobRequirements',
-                    )}
+                    {t('recruiterJobForm.jobRequirements')}
                 </button>
             </nav>
 
-            <form
-                className="job-form"
-                noValidate
-                onSubmit={handleSubmit}
-            >
-                <section
-                    ref={jobDetailsRef}
-                    id="job-details"
-                    className={`form-card ${activeSection === 'job-details'
-                        ? 'form-card--active'
-                        : ''
-                        }`}
-                >
-                    <div className="form-card__header">
-                        <h2>
-                            {t(
-                                'recruiterJobForm.jobDetails',
-                            )}
-                        </h2>
-                    </div>
-
-                    <div className="form-grid">
-                        <div className="form-field form-field--full">
-                            <label htmlFor="title">
-                                {t(
-                                    'recruiterJobForm.jobTitle',
-                                )}
-                            </label>
-
-                            <input
-                                ref={titleInputRef}
-                                id="title"
-                                type="text"
-                                maxLength={150}
-                                value={title}
-                                onChange={(event) =>
-                                    handleFieldChange('title', event.target.value)
-                                }
-                                onBlur={() => handleFieldBlur('title')}
-                                aria-invalid={Boolean(errors.title)}
-                                aria-describedby={errors.title ? 'title-error' : undefined}
-                                placeholder={t(
-                                    'recruiterJobForm.jobTitlePlaceholder',
-                                )}
-                                required
-                            />
-                            {errors.title && (
-                                <span id="title-error" className="field-error" role="alert">
-                                    {errors.title}
-                                </span>
-                            )}
+            <form className="job-form" noValidate onSubmit={handleSubmit}>
+                <fieldset className="demo-read-only" disabled={isDemo}>
+                    <section
+                        ref={jobDetailsRef}
+                        id="job-details"
+                        className={`form-card ${activeSection === 'job-details'
+                                ? 'form-card--active'
+                                : ''
+                            }`}
+                    >
+                        <div className="form-card__header">
+                            <h2>{t('recruiterJobForm.jobDetails')}</h2>
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="employmentType">
-                                {t(
-                                    'common.employmentType',
-                                )}
-                            </label>
+                        <div className="form-grid">
+                            <div className="form-field form-field--full">
+                                <label htmlFor="title">
+                                    {t('recruiterJobForm.jobTitle')}
+                                </label>
 
-                            <select
-                                id="employmentType"
-                                value={
-                                    employmentType
-                                }
-                                onChange={(event) =>
-                                    setEmploymentType(
-                                        event.target
-                                            .value as EmploymentType,
-                                    )
-                                }
-                            >
-                                {EMPLOYMENT_TYPES.map(
-                                    (type) => (
-                                        <option
-                                            key={type}
-                                            value={type}
-                                        >
-                                            {employmentTypeLabel(
-                                                type,
-                                            )}
-                                        </option>
-                                    ),
-                                )}
-                            </select>
-                        </div>
-
-                        <div className="form-field">
-                            <label htmlFor="workMode">
-                                {t(
-                                    'common.workMode',
-                                )}
-                            </label>
-
-                            <select
-                                id="workMode"
-                                value={workMode}
-                                onChange={(event) =>
-                                    setWorkMode(
-                                        event.target
-                                            .value as WorkMode,
-                                    )
-                                }
-                            >
-                                {WORK_MODES.map(
-                                    (mode) => (
-                                        <option
-                                            key={mode}
-                                            value={mode}
-                                        >
-                                            {workModeLabel(
-                                                mode,
-                                            )}
-                                        </option>
-                                    ),
-                                )}
-                            </select>
-                        </div>
-
-                        <div className="form-field form-field--full">
-                            <label htmlFor="location">
-                                {t(
-                                    'common.location',
-                                )}
-                            </label>
-
-                            <input
-                                ref={locationInputRef}
-                                id="location"
-                                type="text"
-                                maxLength={255}
-                                value={location}
-                                onChange={(event) =>
-                                    handleFieldChange('location', event.target.value)
-                                }
-                                onBlur={() => handleFieldBlur('location')}
-                                aria-invalid={Boolean(errors.location)}
-                                aria-describedby={errors.location ? 'location-error' : undefined}
-                                required
-                                placeholder={t(
-                                    'recruiterJobForm.locationPlaceholder',
-                                )}
-                            />
-                            {errors.location && (
-                                <span id="location-error" className="field-error" role="alert">
-                                    {errors.location}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-field form-field--full">
-                            <label id="description-label">
-                                {t(
-                                    'recruiterJobForm.description',
-                                )}
-                            </label>
-
-                            <div
-                                ref={descriptionInputRef}
-                                tabIndex={-1}
-                                onBlurCapture={(event) => {
-                                    if (
-                                        !event.currentTarget.contains(
-                                            event.relatedTarget as Node | null,
-                                        )
-                                    ) {
-                                        handleFieldBlur('description')
-                                    }
-                                }}
-                            >
-                                <RichTextEditor
-                                    id="description"
-                                    value={description}
-                                    onChange={(value) =>
-                                        handleFieldChange('description', value)
-                                    }
-                                    aria-labelledby="description-label"
-                                    aria-invalid={Boolean(errors.description)}
-                                    aria-describedby={
-                                        errors.description ? 'description-error' : undefined
-                                    }
-                                />
-                            </div>
-                            {errors.description && (
-                                <span id="description-error" className="field-error" role="alert">
-                                    {errors.description}
-                                </span>
-                            )}
-                            {descriptionCharacterCount > 0 && (
-                                <p className="form-help" aria-live="polite">
-                                    {descriptionCharacterCount.toLocaleString()} / 10,000{' '}
-                                    {t('recruiterJobForm.descriptionCharacterCount')}
-                                </p>
-                            )}
-                        </div>
-                    </div>
-                </section>
-
-                <section
-                    ref={salaryExpirationRef}
-                    id="salary-and-expiration"
-                    className={`form-card ${activeSection ===
-                        'salary-expiration'
-                        ? 'form-card--active'
-                        : ''
-                        }`}
-                >
-                    <div className="form-card__header">
-                        <h2>
-                            {t(
-                                'recruiterJobForm.salaryAndExpiration',
-                            )}
-                        </h2>
-                    </div>
-
-                    <div className="form-grid">
-                        <div className="form-field">
-                            <label htmlFor="salaryMin">
-                                {t(
-                                    'recruiterJobForm.minimumSalary',
-                                )}
-                            </label>
-
-                            <input
-                                ref={salaryMinInputRef}
-                                id="salaryMin"
-                                type="text"
-                                inputMode="numeric"
-                                value={salaryMin}
-                                onChange={(event) =>
-                                    handleFieldChange('salaryMin', event.target.value)
-                                }
-                                onBlur={() => handleFieldBlur('salaryMin')}
-                                aria-invalid={Boolean(errors.salaryMin)}
-                                aria-describedby={errors.salaryMin ? 'salaryMin-error' : undefined}
-                                placeholder="2500"
-                            />
-                            {errors.salaryMin && (
-                                <span id="salaryMin-error" className="field-error" role="alert">
-                                    {errors.salaryMin}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-field">
-                            <label htmlFor="salaryMax">
-                                {t(
-                                    'recruiterJobForm.maximumSalary',
-                                )}
-                            </label>
-
-                            <input
-                                ref={salaryMaxInputRef}
-                                id="salaryMax"
-                                type="text"
-                                inputMode="numeric"
-                                value={salaryMax}
-                                onChange={(event) =>
-                                    handleFieldChange('salaryMax', event.target.value)
-                                }
-                                onBlur={() => handleFieldBlur('salaryMax')}
-                                aria-invalid={Boolean(errors.salaryMax)}
-                                aria-describedby={errors.salaryMax ? 'salaryMax-error' : undefined}
-                                placeholder="4500"
-                            />
-                            {errors.salaryMax && (
-                                <span id="salaryMax-error" className="field-error" role="alert">
-                                    {errors.salaryMax}
-                                </span>
-                            )}
-                        </div>
-
-                        <div className="form-field">
-                            <label htmlFor="currency">
-                                {t(
-                                    'recruiterJobForm.currency',
-                                )}
-                            </label>
-
-                            <select
-                                id="currency"
-                                value={currency}
-                                onChange={(event) =>
-                                    setCurrency(
-                                        event.target
-                                            .value,
-                                    )
-                                }
-                            >
-                                <option value="EUR">
-                                    EUR
-                                </option>
-
-                                <option value="USD">
-                                    USD
-                                </option>
-
-                                <option value="GBP">
-                                    GBP
-                                </option>
-                            </select>
-                        </div>
-
-                        <div className="form-field">
-                            <label htmlFor="expiresAt">
-                                {t(
-                                    'recruiterJobForm.expirationDate',
-                                )}
-                            </label>
-
-                            <input
-                                ref={expiresAtInputRef}
-                                id="expiresAt"
-                                type="date"
-                                value={expiresAt}
-                                onChange={(event) =>
-                                    handleFieldChange('expiresAt', event.target.value)
-                                }
-                                onBlur={() => handleFieldBlur('expiresAt')}
-                                aria-invalid={Boolean(errors.expiresAt)}
-                                aria-describedby={errors.expiresAt ? 'expiresAt-error' : undefined}
-                                required
-                            />
-                            {errors.expiresAt && (
-                                <span id="expiresAt-error" className="field-error" role="alert">
-                                    {errors.expiresAt}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                </section>
-
-                <section
-                    ref={jobRequirementsRef}
-                    id="job-requirements"
-                    className={`form-card ${activeSection ===
-                        'job-requirements'
-                        ? 'form-card--active'
-                        : ''
-                        }`}
-                >
-                    <div className="form-card__header">
-                        <div>
-                            <h2>
-                                {t(
-                                    'recruiterJobForm.jobRequirements',
-                                )}
-                            </h2>
-
-                            <p>
-                                {t(
-                                    'recruiterJobForm.requirementsDescription',
-                                )}
-                            </p>
-                        </div>
-                    </div>
-
-                    <div className="requirement-create">
-                        <div className="form-field skill-search-field">
-                            <label htmlFor="skill-search">
-                                {t('common.skill')}
-                            </label>
-
-                            <div className="skill-search">
                                 <input
-                                    id="skill-search"
+                                    ref={titleInputRef}
+                                    id="title"
                                     type="text"
-                                    role="combobox"
-                                    aria-autocomplete="list"
-                                    aria-expanded={showSkillResults}
-                                    aria-controls="skill-results"
-                                    autoComplete="off"
-                                    value={skillSearch}
-                                    disabled={skillsLoading || requirementSaving}
-                                    placeholder={t('recruiterJobForm.selectSkill')}
-                                    onFocus={() => setIsSkillDropdownOpen(true)}
-                                    onClick={() => setIsSkillDropdownOpen(true)}
-                                    onChange={(event) => {
-                                        handleSkillSearchChange(event.target.value)
-                                    }}
+                                    maxLength={150}
+                                    value={title}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        handleFieldChange('title', event.target.value)
+                                    }
+                                    onBlur={() => handleFieldBlur('title')}
+                                    aria-invalid={Boolean(errors.title)}
+                                    aria-describedby={
+                                        errors.title ? 'title-error' : undefined
+                                    }
+                                    placeholder={t(
+                                        'recruiterJobForm.jobTitlePlaceholder',
+                                    )}
+                                    required
                                 />
 
-                                {selectedSkillId && (
-                                    <button
-                                        type="button"
-                                        className="skill-search__clear"
-                                        aria-label={t('recruiterJobForm.selectSkill')}
-                                        title={t('recruiterJobForm.selectSkill')}
-                                        disabled={requirementSaving}
-                                        onClick={clearSkillSelection}
+                                {errors.title && (
+                                    <span
+                                        id="title-error"
+                                        className="field-error"
+                                        role="alert"
                                     >
-                                        ×
-                                    </button>
+                                        {errors.title}
+                                    </span>
                                 )}
+                            </div>
 
-                                {showSkillResults && (
-                                    <div
-                                        id="skill-results"
-                                        className="skill-search__results"
-                                        role="listbox"
+                            <div className="form-field">
+                                <label htmlFor="employmentType">
+                                    {t('common.employmentType')}
+                                </label>
+
+                                <select
+                                    id="employmentType"
+                                    value={employmentType}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        setEmploymentType(
+                                            event.target.value as EmploymentType,
+                                        )
+                                    }
+                                >
+                                    {EMPLOYMENT_TYPES.map((type) => (
+                                        <option key={type} value={type}>
+                                            {employmentTypeLabel(type)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-field">
+                                <label htmlFor="workMode">
+                                    {t('common.workMode')}
+                                </label>
+
+                                <select
+                                    id="workMode"
+                                    value={workMode}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        setWorkMode(event.target.value as WorkMode)
+                                    }
+                                >
+                                    {WORK_MODES.map((mode) => (
+                                        <option key={mode} value={mode}>
+                                            {workModeLabel(mode)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="form-field form-field--full">
+                                <label htmlFor="location">
+                                    {t('common.location')}
+                                </label>
+
+                                <input
+                                    ref={locationInputRef}
+                                    id="location"
+                                    type="text"
+                                    maxLength={255}
+                                    value={location}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        handleFieldChange('location', event.target.value)
+                                    }
+                                    onBlur={() => handleFieldBlur('location')}
+                                    aria-invalid={Boolean(errors.location)}
+                                    aria-describedby={
+                                        errors.location ? 'location-error' : undefined
+                                    }
+                                    required
+                                    placeholder={t(
+                                        'recruiterJobForm.locationPlaceholder',
+                                    )}
+                                />
+
+                                {errors.location && (
+                                    <span
+                                        id="location-error"
+                                        className="field-error"
+                                        role="alert"
                                     >
-                                        {filteredSkills.map((skill) => (
-                                            <button
-                                                key={skill.id}
-                                                type="button"
-                                                role="option"
-                                                aria-selected={false}
-                                                className="skill-search__option"
-                                                onClick={() => selectSkill(skill)}
-                                            >
-                                                {skill.name}
-                                            </button>
-                                        ))}
+                                        {errors.location}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-field form-field--full">
+                                <label id="description-label">
+                                    {t('recruiterJobForm.description')}
+                                </label>
+
+                                {isDemo ? (
+                                    <div
+                                        ref={descriptionInputRef}
+                                        className="demo-read-only__description"
+                                        aria-labelledby="description-label"
+                                    >
+                                        {getRichTextPlainText(description)}
+                                    </div>
+                                ) : (
+                                    <div
+                                        ref={descriptionInputRef}
+                                        tabIndex={-1}
+                                        onBlurCapture={(event) => {
+                                            if (
+                                                !event.currentTarget.contains(
+                                                    event.relatedTarget as Node | null,
+                                                )
+                                            ) {
+                                                handleFieldBlur('description')
+                                            }
+                                        }}
+                                    >
+                                        <RichTextEditor
+                                            id="description"
+                                            value={description}
+                                            onChange={(value) =>
+                                                handleFieldChange('description', value)
+                                            }
+                                            aria-labelledby="description-label"
+                                            aria-invalid={Boolean(errors.description)}
+                                            aria-describedby={
+                                                errors.description
+                                                    ? 'description-error'
+                                                    : undefined
+                                            }
+                                        />
                                     </div>
                                 )}
 
-                                {isSkillDropdownOpen &&
-                                    !selectedSkillId &&
-                                    !skillsLoading &&
-                                    filteredSkills.length === 0 && (
-                                        <div
-                                            className="skill-search__empty"
-                                            role="status"
+                                {errors.description && (
+                                    <span
+                                        id="description-error"
+                                        className="field-error"
+                                        role="alert"
+                                    >
+                                        {errors.description}
+                                    </span>
+                                )}
+
+                                {descriptionCharacterCount > 0 && (
+                                    <p className="form-help" aria-live="polite">
+                                        {descriptionCharacterCount.toLocaleString()} / 10,000{' '}
+                                        {t('recruiterJobForm.descriptionCharacterCount')}
+                                    </p>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section
+                        ref={salaryExpirationRef}
+                        id="salary-and-expiration"
+                        className={`form-card ${activeSection === 'salary-expiration'
+                                ? 'form-card--active'
+                                : ''
+                            }`}
+                    >
+                        <div className="form-card__header">
+                            <h2>{t('recruiterJobForm.salaryAndExpiration')}</h2>
+                        </div>
+
+                        <div className="form-grid">
+                            <div className="form-field">
+                                <label htmlFor="salaryMin">
+                                    {t('recruiterJobForm.minimumSalary')}
+                                </label>
+
+                                <input
+                                    ref={salaryMinInputRef}
+                                    id="salaryMin"
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={salaryMin}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        handleFieldChange('salaryMin', event.target.value)
+                                    }
+                                    onBlur={() => handleFieldBlur('salaryMin')}
+                                    aria-invalid={Boolean(errors.salaryMin)}
+                                    aria-describedby={
+                                        errors.salaryMin ? 'salaryMin-error' : undefined
+                                    }
+                                    placeholder="2500"
+                                />
+
+                                {errors.salaryMin && (
+                                    <span
+                                        id="salaryMin-error"
+                                        className="field-error"
+                                        role="alert"
+                                    >
+                                        {errors.salaryMin}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-field">
+                                <label htmlFor="salaryMax">
+                                    {t('recruiterJobForm.maximumSalary')}
+                                </label>
+
+                                <input
+                                    ref={salaryMaxInputRef}
+                                    id="salaryMax"
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={salaryMax}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        handleFieldChange('salaryMax', event.target.value)
+                                    }
+                                    onBlur={() => handleFieldBlur('salaryMax')}
+                                    aria-invalid={Boolean(errors.salaryMax)}
+                                    aria-describedby={
+                                        errors.salaryMax ? 'salaryMax-error' : undefined
+                                    }
+                                    placeholder="4500"
+                                />
+
+                                {errors.salaryMax && (
+                                    <span
+                                        id="salaryMax-error"
+                                        className="field-error"
+                                        role="alert"
+                                    >
+                                        {errors.salaryMax}
+                                    </span>
+                                )}
+                            </div>
+
+                            <div className="form-field">
+                                <label htmlFor="currency">
+                                    {t('recruiterJobForm.currency')}
+                                </label>
+
+                                <select
+                                    id="currency"
+                                    value={currency}
+                                    disabled={isDemo}
+                                    onChange={(event) => setCurrency(event.target.value)}
+                                >
+                                    <option value="EUR">EUR</option>
+                                    <option value="USD">USD</option>
+                                    <option value="GBP">GBP</option>
+                                </select>
+                            </div>
+
+                            <div className="form-field">
+                                <label htmlFor="expiresAt">
+                                    {t('recruiterJobForm.expirationDate')}
+                                </label>
+
+                                <input
+                                    ref={expiresAtInputRef}
+                                    id="expiresAt"
+                                    type="date"
+                                    value={expiresAt}
+                                    disabled={isDemo}
+                                    onChange={(event) =>
+                                        handleFieldChange('expiresAt', event.target.value)
+                                    }
+                                    onBlur={() => handleFieldBlur('expiresAt')}
+                                    aria-invalid={Boolean(errors.expiresAt)}
+                                    aria-describedby={
+                                        errors.expiresAt ? 'expiresAt-error' : undefined
+                                    }
+                                    required
+                                />
+
+                                {errors.expiresAt && (
+                                    <span
+                                        id="expiresAt-error"
+                                        className="field-error"
+                                        role="alert"
+                                    >
+                                        {errors.expiresAt}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </section>
+
+                    <section
+                        ref={jobRequirementsRef}
+                        id="job-requirements"
+                        className={`form-card ${activeSection === 'job-requirements'
+                                ? 'form-card--active'
+                                : ''
+                            }`}
+                    >
+                        <div className="form-card__header">
+                            <div>
+                                <h2>{t('recruiterJobForm.jobRequirements')}</h2>
+                                <p>{t('recruiterJobForm.requirementsDescription')}</p>
+                            </div>
+                        </div>
+
+                        <div className="requirement-create">
+                            <div className="form-field skill-search-field">
+                                <label htmlFor="skill-search">
+                                    {t('common.skill')}
+                                </label>
+
+                                <div className="skill-search">
+                                    <input
+                                        id="skill-search"
+                                        type="text"
+                                        role="combobox"
+                                        aria-autocomplete="list"
+                                        aria-expanded={showSkillResults}
+                                        aria-controls="skill-results"
+                                        autoComplete="off"
+                                        value={skillSearch}
+                                        disabled={
+                                            isDemo ||
+                                            skillsLoading ||
+                                            requirementSaving
+                                        }
+                                        placeholder={t('recruiterJobForm.selectSkill')}
+                                        onFocus={() => setIsSkillDropdownOpen(true)}
+                                        onClick={() => setIsSkillDropdownOpen(true)}
+                                        onChange={(event) =>
+                                            handleSkillSearchChange(event.target.value)
+                                        }
+                                    />
+
+                                    {selectedSkillId && (
+                                        <button
+                                            type="button"
+                                            className="skill-search__clear"
+                                            aria-label={t('recruiterJobForm.selectSkill')}
+                                            title={t('recruiterJobForm.selectSkill')}
+                                            disabled={isDemo || requirementSaving}
+                                            onClick={clearSkillSelection}
                                         >
-                                            {skills.length === 0
-                                                ? 'No skills available.'
-                                                : t('recruiterJobForm.noSkillsFound')}
+                                            ×
+                                        </button>
+                                    )}
+
+                                    {showSkillResults && (
+                                        <div
+                                            id="skill-results"
+                                            className="skill-search__results"
+                                            role="listbox"
+                                        >
+                                            {filteredSkills.map((skill) => (
+                                                <button
+                                                    key={skill.id}
+                                                    type="button"
+                                                    role="option"
+                                                    aria-selected={false}
+                                                    className="skill-search__option"
+                                                    disabled={isDemo}
+                                                    onClick={() => selectSkill(skill)}
+                                                >
+                                                    {skill.name}
+                                                </button>
+                                            ))}
                                         </div>
                                     )}
+
+                                    {isSkillDropdownOpen &&
+                                        !selectedSkillId &&
+                                        !skillsLoading &&
+                                        filteredSkills.length === 0 && (
+                                            <div
+                                                className="skill-search__empty"
+                                                role="status"
+                                            >
+                                                {skills.length === 0
+                                                    ? 'No skills available.'
+                                                    : t('recruiterJobForm.noSkillsFound')}
+                                            </div>
+                                        )}
+                                </div>
                             </div>
-                        </div>
 
-                        <div className="form-field">
-                            <label htmlFor="requirementType">
-                                {t(
-                                    'recruiterJobForm.type',
-                                )}
-                            </label>
+                            <div className="form-field">
+                                <label htmlFor="requirementType">
+                                    {t('recruiterJobForm.type')}
+                                </label>
 
-                            <select
-                                id="requirementType"
-                                value={
-                                    selectedRequired
-                                        ? 'required'
-                                        : 'preferred'
-                                }
+                                <select
+                                    id="requirementType"
+                                    value={selectedRequired ? 'required' : 'preferred'}
+                                    disabled={isDemo || requirementSaving}
+                                    onChange={(event) =>
+                                        setSelectedRequired(
+                                            event.target.value === 'required',
+                                        )
+                                    }
+                                >
+                                    <option value="required">
+                                        {t('common.required')}
+                                    </option>
+                                    <option value="preferred">
+                                        {t('common.preferred')}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <div className="form-field">
+                                <label htmlFor="minimumLevel">
+                                    {t('common.minimumLevel')}
+                                </label>
+
+                                <input
+                                    id="minimumLevel"
+                                    type="number"
+                                    min="1"
+                                    max="5"
+                                    value={selectedMinimumLevel}
+                                    disabled={isDemo || requirementSaving}
+                                    onChange={(event) =>
+                                        setSelectedMinimumLevel(Number(event.target.value))
+                                    }
+                                />
+                            </div>
+
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
                                 disabled={
-                                    requirementSaving
+                                    isDemo ||
+                                    requirementSaving ||
+                                    skillsLoading ||
+                                    !selectedSkillId
                                 }
-                                onChange={(event) =>
-                                    setSelectedRequired(
-                                        event.target
-                                            .value ===
-                                        'required',
-                                    )
-                                }
+                                aria-label={t('recruiterJobForm.addRequirement')}
+                                title={t('recruiterJobForm.addRequirement')}
+                                onClick={() => void handleAddRequirement()}
                             >
-                                <option value="required">
-                                    {t(
-                                        'common.required',
-                                    )}
-                                </option>
-
-                                <option value="preferred">
-                                    {t(
-                                        'common.preferred',
-                                    )}
-                                </option>
-                            </select>
+                                +
+                            </button>
                         </div>
 
-                        <div className="form-field">
-                            <label htmlFor="minimumLevel">
-                                {t(
-                                    'common.minimumLevel',
-                                )}
-                            </label>
+                        {isEditMode && requirementsLoading && (
+                            <div className="requirements-state">
+                                {t('recruiterJobForm.loadingRequirements')}
+                            </div>
+                        )}
 
-                            <input
-                                id="minimumLevel"
-                                type="number"
-                                min="1"
-                                max="5"
-                                value={
-                                    selectedMinimumLevel
-                                }
-                                disabled={
-                                    requirementSaving
-                                }
-                                onChange={(event) =>
-                                    setSelectedMinimumLevel(
-                                        Number(
-                                            event.target
-                                                .value,
-                                        ),
-                                    )
-                                }
-                            />
-                        </div>
+                        {!isEditMode && pendingRequirements.length === 0 && (
+                            <div className="requirements-state">
+                                {t('recruiterJobForm.noRequirementsYet')}
+                            </div>
+                        )}
 
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            disabled={
-                                requirementSaving ||
-                                skillsLoading ||
-                                !selectedSkillId
-                            }
-                            aria-label={t(
-                                'recruiterJobForm.addRequirement',
+                        {isEditMode &&
+                            !requirementsLoading &&
+                            requirements.length === 0 && (
+                                <div className="requirements-state">
+                                    {t('recruiterJobForm.noRequirementsAdded')}
+                                </div>
                             )}
-                            title={t(
-                                'recruiterJobForm.addRequirement',
-                            )}
-                            onClick={() =>
-                                void handleAddRequirement()
-                            }
-                        >
-                            +
-                        </button>
-                    </div>
 
-                    {isEditMode &&
-                        requirementsLoading && (
-                            <div className="requirements-state">
-                                {t(
-                                    'recruiterJobForm.loadingRequirements',
-                                )}
-                            </div>
-                        )}
-
-                    {!isEditMode &&
-                        pendingRequirements.length ===
-                        0 && (
-                            <div className="requirements-state">
-                                {t(
-                                    'recruiterJobForm.noRequirementsYet',
-                                )}
-                            </div>
-                        )}
-
-                    {isEditMode &&
-                        !requirementsLoading &&
-                        requirements.length ===
-                        0 && (
-                            <div className="requirements-state">
-                                {t(
-                                    'recruiterJobForm.noRequirementsAdded',
-                                )}
-                            </div>
-                        )}
-
-                    {!isEditMode &&
-                        pendingRequirements.length >
-                        0 && (
+                        {!isEditMode && pendingRequirements.length > 0 && (
                             <div className="requirements-list">
-                                {pendingRequirements.map(
-                                    (
-                                        requirement,
-                                        index,
-                                    ) => (
-                                        <PendingRequirementRow
-                                            key={`${requirement.skillId}-${index}`}
-                                            requirement={
-                                                requirement
-                                            }
-                                            skillName={getSkillName(
-                                                requirement.skillId,
-                                            )}
-                                            onUpdate={(
-                                                data,
-                                            ) =>
-                                                updatePendingRequirement(
-                                                    index,
-                                                    data,
-                                                )
-                                            }
-                                            onDelete={() =>
-                                                deletePendingRequirement(
-                                                    index,
-                                                )
-                                            }
-                                        />
-                                    ),
-                                )}
+                                {pendingRequirements.map((requirement, index) => (
+                                    <PendingRequirementRow
+                                        key={`${requirement.skillId}-${index}`}
+                                        requirement={requirement}
+                                        skillName={getSkillName(requirement.skillId)}
+                                        disabled={isDemo}
+                                        onUpdate={(data) =>
+                                            updatePendingRequirement(index, data)
+                                        }
+                                        onDelete={() =>
+                                            deletePendingRequirement(index)
+                                        }
+                                    />
+                                ))}
                             </div>
                         )}
 
-                    {isEditMode &&
-                        !requirementsLoading &&
-                        requirements.length >
-                        0 && (
-                            <div className="requirements-list">
-                                {requirements.map(
-                                    (
-                                        requirement,
-                                    ) => (
+                        {isEditMode &&
+                            !requirementsLoading &&
+                            requirements.length > 0 && (
+                                <div className="requirements-list">
+                                    {requirements.map((requirement) => (
                                         <RequirementRow
-                                            key={
-                                                requirement.id
-                                            }
-                                            requirement={
-                                                requirement
-                                            }
-                                            saving={
-                                                requirementSaving
-                                            }
-                                            onUpdate={
-                                                handleUpdateRequirement
-                                            }
-                                            onDelete={
-                                                handleDeleteRequirement
-                                            }
+                                            key={requirement.id}
+                                            requirement={requirement}
+                                            saving={requirementSaving}
+                                            readOnly={isDemo}
+                                            onUpdate={handleUpdateRequirement}
+                                            onDelete={handleDeleteRequirement}
                                         />
-                                    ),
-                                )}
-                            </div>
-                        )}
+                                    ))}
+                                </div>
+                            )}
 
-                    {!isEditMode &&
-                        pendingRequirements.length >
-                        0 && (
+                        {!isEditMode && pendingRequirements.length > 0 && (
                             <p className="form-help">
-                                {t(
-                                    'recruiterJobForm.requirementsWillBeCreated',
-                                )}
+                                {t('recruiterJobForm.requirementsWillBeCreated')}
                             </p>
                         )}
-                </section>
+                    </section>
+                </fieldset>
 
                 <div className="form-actions">
-                    <Link
-                        to="/recruiter/jobs"
-                        className="btn btn-secondary"
-                    >
-                        {t(
-                            'common.cancel',
-                        )}
+                    <Link to="/recruiter/jobs" className="btn btn-secondary">
+                        {t('common.cancel')}
                     </Link>
 
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        disabled={saving}
+                        disabled={isDemo || saving}
+                        title={
+                            isDemo
+                                ? 'Saving is disabled in demo mode.'
+                                : undefined
+                        }
                     >
                         {saving
-                            ? t(
-                                'common.saving',
-                            )
+                            ? t('common.saving')
                             : isEditMode
-                                ? t(
-                                    'recruiterJobForm.saveChanges',
-                                )
-                                : t(
-                                    'recruiterJobForm.createJob',
-                                )}
+                                ? t('recruiterJobForm.saveChanges')
+                                : t('recruiterJobForm.createJob')}
                     </button>
                 </div>
             </form>

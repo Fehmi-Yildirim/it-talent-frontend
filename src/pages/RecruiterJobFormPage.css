@@ -467,3 +467,56 @@
         padding: 14px 18px;
     }
 }
+
+.demo-read-only {
+    border: 0;
+    margin: 0;
+    min-width: 0;
+    padding: 0;
+}
+
+.demo-read-only__description {
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f9fafb;
+    color: #374151;
+    overflow-wrap: anywhere;
+}
+
+.demo-read-only__description p:first-child {
+    margin-top: 0;
+}
+
+.demo-read-only__description p:last-child {
+    margin-bottom: 0;
+}
+
+.job-form-tab:disabled,
+.skill-search__clear:disabled,
+.skill-search__option:disabled,
+.requirement-create button:disabled,
+.requirement-row button:disabled,
+.form-actions button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.job-form-tab:disabled:hover,
+.skill-search__clear:disabled:hover,
+.skill-search__option:disabled:hover {
+    background: transparent;
+    color: var(--color-text-muted);
+}
+
+.demo-read-only__description {
+    min-height: 120px;
+    padding: 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: #f9fafb;
+    color: #374151;
+    overflow-wrap: anywhere;
+    white-space: pre-wrap;
+}

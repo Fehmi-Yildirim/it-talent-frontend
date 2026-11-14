@@ -583,6 +583,7 @@ function RecruiterProfileForm({
 
 function ProfilePage() {
   const { user, updateUser } = useAuth()
+  const isDemo = user?.isDemo === true
   const { language, t } = useTranslation()
 
   const [candidateProfile, setCandidateProfile] =
@@ -845,6 +846,8 @@ function ProfilePage() {
   }
 
   async function handleSubmit() {
+    if (isDemo) return
+
     if (!validateCandidateForm()) {
       return
     }
@@ -913,6 +916,8 @@ function ProfilePage() {
   }
 
   async function handleProfileSubmit() {
+    if (isDemo) return
+
     const accountIsValid = validateAccountForm()
 
     const recruiterIsValid =
@@ -987,6 +992,8 @@ function ProfilePage() {
   }
 
   function startEditing() {
+    if (isDemo) return
+
     setFormValue(toInput(candidateProfile))
     setCandidateErrors({})
     setError(null)
@@ -1003,6 +1010,8 @@ function ProfilePage() {
   }
 
   function startProfileEditing() {
+    if (isDemo) return
+
     setAccountForm({
       firstName: user?.firstName ?? '',
       lastName: user?.lastName ?? '',
@@ -1063,7 +1072,17 @@ function ProfilePage() {
               </div>
 
               {!recruiterLoading &&
-                !recruiterError && (
+                !recruiterError &&
+                (isDemo ? (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    disabled
+                    title="Editing the profile is disabled in demo mode."
+                  >
+                    {t('profile.editProfile')}
+                  </button>
+                ) : (
                   <button
                     type="button"
                     className="btn btn-secondary"
@@ -1071,7 +1090,7 @@ function ProfilePage() {
                   >
                     {t('profile.editProfile')}
                   </button>
-                )}
+                ))}
             </div>
           )}
 
@@ -1095,6 +1114,7 @@ function ProfilePage() {
           )}
 
           {editingProfile &&
+            !isDemo &&
             !recruiterLoading &&
             !recruiterError && (
               <RecruiterProfileForm
@@ -1185,18 +1205,28 @@ function ProfilePage() {
               </h2>
             </div>
 
-            {!editingProfile && (
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={startProfileEditing}
-              >
-                {t('profile.editProfile')}
-              </button>
-            )}
+            {!editingProfile &&
+              (isDemo ? (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  disabled
+                  title="Editing the profile is disabled in demo mode."
+                >
+                  {t('profile.editProfile')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={startProfileEditing}
+                >
+                  {t('profile.editProfile')}
+                </button>
+              ))}
           </div>
 
-          {editingProfile ? (
+          {editingProfile && !isDemo ? (
             <form
               className="profile-form"
               onSubmit={(event) => {
@@ -1341,16 +1371,27 @@ function ProfilePage() {
             </div>
 
             {!loading &&
-              candidateProfile &&
-              !editing && (
+              !editing &&
+              (isDemo ? (
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={startEditing}
+                  disabled
+                  title="Editing the profile is disabled in demo mode."
                 >
                   {t('profile.editProfile')}
                 </button>
-              )}
+              ) : (
+                candidateProfile && (
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={startEditing}
+                  >
+                    {t('profile.editProfile')}
+                  </button>
+                )
+              ))}
           </div>
 
           {loading && (
@@ -1370,7 +1411,7 @@ function ProfilePage() {
             />
           )}
 
-          {!loading && editing && (
+          {!loading && !isDemo && editing && (
             <ProfileForm
               value={formValue}
               errors={candidateErrors}
@@ -1461,7 +1502,8 @@ function ProfilePage() {
               </>
             )}
 
-          {!loading &&
+          {!isDemo &&
+            !loading &&
             !editing &&
             !candidateProfile &&
             !error && (
