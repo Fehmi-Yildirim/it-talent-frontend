@@ -254,7 +254,7 @@ export default function RecruiterJobsPage() {
                             type="button"
                             className="recruiter-jobs-primary-button"
                             disabled
-                            title="Creating jobs is disabled in demo mode."
+                            title={t('demo.jobCreateDisabled')}
                         >
                             {t('recruiterJobs.newJob')}
                         </button>
@@ -296,7 +296,7 @@ export default function RecruiterJobsPage() {
                         type="button"
                         className="recruiter-jobs-primary-button"
                         disabled
-                        title="Creating jobs is disabled in demo mode."
+                        title={t('demo.jobCreateDisabled')}
                     >
                         {t('recruiterJobs.newJob')}
                     </button>
@@ -320,7 +320,7 @@ export default function RecruiterJobsPage() {
                             type="button"
                             className="recruiter-jobs-primary-button"
                             disabled
-                            title="Creating jobs is disabled in demo mode."
+                            title={t('demo.jobCreateDisabled')}
                         >
                             {t('recruiterJobs.createFirstJob')}
                         </button>
@@ -366,7 +366,7 @@ export default function RecruiterJobsPage() {
                                                 }
                                                 title={
                                                     isDemo
-                                                        ? 'Changing job status is disabled in demo mode.'
+                                                        ? t('demo.jobStatusDisabled')
                                                         : undefined
                                                 }
                                                 onChange={(event) =>
@@ -452,7 +452,7 @@ export default function RecruiterJobsPage() {
                                             type="button"
                                             className="recruiter-jobs-secondary-button"
                                             disabled
-                                            title="Editing jobs is disabled in demo mode."
+                                            title={t('demo.jobEditDisabled')}
                                         >
                                             {t('common.edit')}
                                         </button>

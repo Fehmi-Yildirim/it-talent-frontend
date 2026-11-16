@@ -381,7 +381,7 @@ function CompanyManagement() {
                 }
             }}
             disabled={isDemo}
-            title={isDemo ? 'Creating a company is disabled in demo mode.' : undefined}
+            title={isDemo ? t('demo.companyCreateDisabled') : undefined}
         >
             {t('companyManagement.createCompany')}
         </button>
@@ -448,7 +448,7 @@ function CompanyManagement() {
 
                 {isDemo && (
                     <p className="company-management__demo-notice">
-                        Company information is read-only in demo mode.
+                        {t('demo.companyReadOnly')}
                     </p>
                 )}
 
@@ -612,7 +612,7 @@ function CompanyManagement() {
                             type="submit"
                             className="btn btn-primary"
                             disabled={isSaving || isDemo}
-                            title={isDemo ? 'Saving is disabled in demo mode.' : undefined}
+                            title={isDemo ? t('demo.companySaveDisabled') : undefined}
                         >
                             {isSaving
                                 ? t('companyManagement.saving')

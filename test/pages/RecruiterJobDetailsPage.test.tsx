@@ -20,6 +20,18 @@ const {
     reopenJobMock: vi.fn(),
 }))
 
+const { authUserMock } = vi.hoisted(() => ({
+    authUserMock: {
+        current: { isDemo: false as boolean },
+    },
+}))
+
+vi.mock('../../src/features/auth/useAuth', () => ({
+    useAuth: () => ({
+        user: { isDemo: authUserMock.current.isDemo },
+    }),
+}))
+
 vi.mock('../../src/features/jobs/jobs.api', () => ({
     getJobById: getJobByIdMock,
     publishJob: publishJobMock,
@@ -88,6 +100,7 @@ function renderPage(jobId = 'job-1') {
 describe('RecruiterJobDetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        authUserMock.current.isDemo = false
     })
 
     it('shows loading state while loading the job', () => {
@@ -578,5 +591,29 @@ describe('RecruiterJobDetailsPage', () => {
         ).toBeInTheDocument()
 
         expect(getJobByIdMock).toHaveBeenCalledTimes(1)
+    })
+
+    it('disables job management actions for demo accounts', async () => {
+        authUserMock.current.isDemo = true
+        getJobByIdMock.mockResolvedValue(baseJob)
+
+        renderPage()
+
+        const publishButton = await screen.findByRole('button', {
+            name: 'Publish job',
+        })
+
+        expect(publishButton).toBeDisabled()
+
+        const editLink = screen.getByRole('link', { name: 'Edit' })
+        expect(editLink).toHaveAttribute('aria-disabled', 'true')
+
+        fireEvent.click(publishButton)
+
+        expect(publishJobMock).not.toHaveBeenCalled()
+        expect(pauseJobMock).not.toHaveBeenCalled()
+        expect(resumeJobMock).not.toHaveBeenCalled()
+        expect(closeJobMock).not.toHaveBeenCalled()
+        expect(reopenJobMock).not.toHaveBeenCalled()
     })
 })

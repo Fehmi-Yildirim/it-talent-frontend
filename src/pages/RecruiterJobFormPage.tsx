@@ -1249,7 +1249,7 @@ export default function RecruiterJobFormPage() {
 
                 <p>
                     {isDemo
-                        ? 'Demo mode: this page is read-only.'
+                        ? t('demo.readOnlyTitle')
                         : isEditMode
                             ? t('recruiterJobForm.editDescription')
                             : t('recruiterJobForm.createDescription')}
@@ -1258,7 +1258,7 @@ export default function RecruiterJobFormPage() {
 
             {isDemo && (
                 <div className="form-help" role="status">
-                    Demo accounts can view this information, but cannot make changes.
+                    {t('demo.readOnlyDescription')}
                 </div>
             )}
 
@@ -1281,8 +1281,8 @@ export default function RecruiterJobFormPage() {
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection === 'job-details'
-                            ? 'job-form-tab--active'
-                            : ''
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection === 'job-details' ? 'true' : undefined
@@ -1295,8 +1295,8 @@ export default function RecruiterJobFormPage() {
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection === 'salary-expiration'
-                            ? 'job-form-tab--active'
-                            : ''
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection === 'salary-expiration'
@@ -1311,8 +1311,8 @@ export default function RecruiterJobFormPage() {
                 <button
                     type="button"
                     className={`job-form-tab ${activeSection === 'job-requirements'
-                            ? 'job-form-tab--active'
-                            : ''
+                        ? 'job-form-tab--active'
+                        : ''
                         }`}
                     aria-current={
                         activeSection === 'job-requirements'
@@ -1331,8 +1331,8 @@ export default function RecruiterJobFormPage() {
                         ref={jobDetailsRef}
                         id="job-details"
                         className={`form-card ${activeSection === 'job-details'
-                                ? 'form-card--active'
-                                : ''
+                            ? 'form-card--active'
+                            : ''
                             }`}
                     >
                         <div className="form-card__header">
@@ -1526,8 +1526,8 @@ export default function RecruiterJobFormPage() {
                         ref={salaryExpirationRef}
                         id="salary-and-expiration"
                         className={`form-card ${activeSection === 'salary-expiration'
-                                ? 'form-card--active'
-                                : ''
+                            ? 'form-card--active'
+                            : ''
                             }`}
                     >
                         <div className="form-card__header">
@@ -1659,8 +1659,8 @@ export default function RecruiterJobFormPage() {
                         ref={jobRequirementsRef}
                         id="job-requirements"
                         className={`form-card ${activeSection === 'job-requirements'
-                                ? 'form-card--active'
-                                : ''
+                            ? 'form-card--active'
+                            : ''
                             }`}
                     >
                         <div className="form-card__header">
@@ -1743,7 +1743,7 @@ export default function RecruiterJobFormPage() {
                                                 role="status"
                                             >
                                                 {skills.length === 0
-                                                    ? 'No skills available.'
+                                                    ? t('demo.noSkillsAvailable')
                                                     : t('recruiterJobForm.noSkillsFound')}
                                             </div>
                                         )}
@@ -1884,7 +1884,7 @@ export default function RecruiterJobFormPage() {
                         disabled={isDemo || saving}
                         title={
                             isDemo
-                                ? 'Saving is disabled in demo mode.'
+                                ? t('demo.jobSaveDisabled')
                                 : undefined
                         }
                     >

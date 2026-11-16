@@ -406,7 +406,7 @@ export default function RecruiterJobDetailsPage() {
                                         event.preventDefault()
                                     }
                                 }}
-                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobEditDisabled') : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -416,7 +416,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handlePublish()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Publishing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobPublishDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.publishing')
@@ -437,7 +437,7 @@ export default function RecruiterJobDetailsPage() {
                                         event.preventDefault()
                                     }
                                 }}
-                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobEditDisabled') : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -447,7 +447,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handlePause()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Pausing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobPauseDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.pausing')
@@ -459,7 +459,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handleClose()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Closing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobCloseDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.closing')
@@ -480,7 +480,7 @@ export default function RecruiterJobDetailsPage() {
                                         event.preventDefault()
                                     }
                                 }}
-                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobEditDisabled') : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -490,7 +490,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handleResume()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Resuming is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobResumeDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.resuming')
@@ -502,7 +502,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handleClose()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Closing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobCloseDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.closing')
@@ -523,7 +523,7 @@ export default function RecruiterJobDetailsPage() {
                                         event.preventDefault()
                                     }
                                 }}
-                                title={isDemo ? 'Editing is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobEditDisabled') : undefined}
                             >
                                 {t('common.edit')}
                             </Link>
@@ -533,7 +533,7 @@ export default function RecruiterJobDetailsPage() {
                                 type="button"
                                 onClick={() => void handleReopen()}
                                 disabled={isDemo || actionLoading}
-                                title={isDemo ? 'Reopening is disabled in demo mode.' : undefined}
+                                title={isDemo ? t('demo.jobReopenDisabled') : undefined}
                             >
                                 {actionLoading
                                     ? t('recruiterJobs.reopening')
@@ -662,7 +662,7 @@ export default function RecruiterJobDetailsPage() {
                                     event.preventDefault()
                                 }
                             }}
-                            title={isDemo ? 'Managing requirements is disabled in demo mode.' : undefined}
+                            title={isDemo ? t('demo.jobRequirementsDisabled') : undefined}
                         >
                             {t('recruiterJobs.manageRequirements')}
                         </Link>

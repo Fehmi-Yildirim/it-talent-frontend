@@ -1078,7 +1078,7 @@ function ProfilePage() {
                     type="button"
                     className="btn btn-secondary"
                     disabled
-                    title="Editing the profile is disabled in demo mode."
+                    title={t('demo.profileEditDisabled')}
                   >
                     {t('profile.editProfile')}
                   </button>
@@ -1211,7 +1211,7 @@ function ProfilePage() {
                   type="button"
                   className="btn btn-secondary"
                   disabled
-                  title="Editing the profile is disabled in demo mode."
+                  title={t('demo.profileEditDisabled')}
                 >
                   {t('profile.editProfile')}
                 </button>
@@ -1377,7 +1377,7 @@ function ProfilePage() {
                   type="button"
                   className="btn btn-secondary"
                   disabled
-                  title="Editing the profile is disabled in demo mode."
+                  title={t('demo.profileEditDisabled')}
                 >
                   {t('profile.editProfile')}
                 </button>

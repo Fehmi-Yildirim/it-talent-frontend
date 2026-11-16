@@ -1,3 +1,4 @@
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { fireEvent, render, screen, waitFor } from '../test-utils'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
@@ -8,16 +9,26 @@ const {
     getApplicationCvMock,
     getRecruiterApplicationMock,
     updateApplicationStatusMock,
+    authUserMock,
 } = vi.hoisted(() => ({
     getApplicationCvMock: vi.fn(),
     getRecruiterApplicationMock: vi.fn(),
     updateApplicationStatusMock: vi.fn(),
+    authUserMock: {
+        current: { isDemo: false as boolean },
+    },
 }))
 
 vi.mock('../../src/features/applications/applications.api', () => ({
     getApplicationCv: getApplicationCvMock,
     getRecruiterApplication: getRecruiterApplicationMock,
     updateApplicationStatus: updateApplicationStatusMock,
+}))
+
+vi.mock('../../src/features/auth/useAuth', () => ({
+    useAuth: () => ({
+        user: { isDemo: authUserMock.current.isDemo },
+    }),
 }))
 
 const baseApplication: RecruiterApplicationDetail = {
@@ -76,6 +87,7 @@ function renderPage(applicationId = 'application-1') {
 describe('RecruiterApplicationDetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        authUserMock.current.isDemo = false
     })
 
     it('shows loading state while loading the application', () => {
@@ -91,9 +103,7 @@ describe('RecruiterApplicationDetailsPage', () => {
     })
 
     it('renders application and candidate details', async () => {
-        getRecruiterApplicationMock.mockResolvedValue(
-            baseApplication,
-        )
+        getRecruiterApplicationMock.mockResolvedValue(baseApplication)
 
         renderPage()
 
@@ -104,31 +114,25 @@ describe('RecruiterApplicationDetailsPage', () => {
         ).toBeInTheDocument()
 
         expect(screen.getAllByText('John Doe')).toHaveLength(2)
-        expect(screen.getByRole('link', { name: 'john.doe@example.com' })).toHaveAttribute(
-            'href',
-            'mailto:john.doe@example.com',
-        )
+        expect(
+            screen.getByRole('link', { name: 'john.doe@example.com' }),
+        ).toHaveAttribute('href', 'mailto:john.doe@example.com')
         expect(screen.getByText('Senior engineer')).toBeInTheDocument()
-        expect(screen.getByText('Experienced frontend engineer.')).toBeInTheDocument()
+        expect(
+            screen.getByText('Experienced frontend engineer.'),
+        ).toBeInTheDocument()
         expect(screen.getByText('Amsterdam')).toBeInTheDocument()
-        expect(screen.getByRole('button', { name: 'Pending' })).toBeInTheDocument()
-
         expect(
-            screen.getByText(
-                'I am very interested in this position.',
-            ),
+            screen.getByRole('button', { name: 'Pending' }),
         ).toBeInTheDocument()
-
         expect(
-            screen.getByRole('button', {
-                name: 'Accept',
-            }),
+            screen.getByText('I am very interested in this position.'),
         ).toBeInTheDocument()
-
         expect(
-            screen.getByRole('button', {
-                name: 'Reject',
-            }),
+            screen.getByRole('button', { name: 'Accept' }),
+        ).toBeInTheDocument()
+        expect(
+            screen.getByRole('button', { name: 'Reject' }),
         ).toBeInTheDocument()
     })
 
@@ -141,16 +145,12 @@ describe('RecruiterApplicationDetailsPage', () => {
         renderPage()
 
         expect(
-            await screen.findByRole('button', {
-                name: 'View CV',
-            }),
+            await screen.findByRole('button', { name: 'View CV' }),
         ).toBeInTheDocument()
     })
 
-    it('updates the application status', async () => {
-        getRecruiterApplicationMock.mockResolvedValue(
-            baseApplication,
-        )
+    it('updates the application status for a normal user', async () => {
+        getRecruiterApplicationMock.mockResolvedValue(baseApplication)
 
         const updatedApplication: RecruiterApplicationDetail = {
             ...baseApplication,
@@ -159,9 +159,7 @@ describe('RecruiterApplicationDetailsPage', () => {
             job: undefined as unknown as RecruiterApplicationDetail['job'],
         }
 
-        updateApplicationStatusMock.mockResolvedValue(
-            updatedApplication,
-        )
+        updateApplicationStatusMock.mockResolvedValue(updatedApplication)
 
         renderPage()
 
@@ -172,24 +170,54 @@ describe('RecruiterApplicationDetailsPage', () => {
         fireEvent.click(acceptButton)
 
         await waitFor(() => {
-            expect(
-                updateApplicationStatusMock,
-            ).toHaveBeenCalledWith('application-1', {
-                status: 'ACCEPTED',
-            })
+            expect(updateApplicationStatusMock).toHaveBeenCalledWith(
+                'application-1',
+                { status: 'ACCEPTED' },
+            )
         })
 
-        expect(
-            await screen.findAllByText('Accepted'),
-        ).toHaveLength(2)
+        expect(await screen.findAllByText('Accepted')).toHaveLength(2)
         expect(screen.getAllByText('John Doe')).toHaveLength(2)
-        expect(screen.getByText('Experienced frontend engineer.')).toBeInTheDocument()
+        expect(
+            screen.getByText('Experienced frontend engineer.'),
+        ).toBeInTheDocument()
+    })
+
+    it('disables status changes and prevents API calls for demo users', async () => {
+        authUserMock.current.isDemo = true
+        getRecruiterApplicationMock.mockResolvedValue(baseApplication)
+
+        renderPage()
+
+        const acceptButton = await screen.findByRole('button', {
+            name: 'Accept',
+        })
+        const rejectButton = screen.getByRole('button', {
+            name: 'Reject',
+        })
+        const reviewingButton = screen.getByRole('button', {
+            name: 'Reviewing',
+        })
+
+        expect(acceptButton).toBeDisabled()
+        expect(rejectButton).toBeDisabled()
+        expect(reviewingButton).toBeDisabled()
+
+        expect(
+            screen.getByText(
+                'This action is disabled for demo accounts. You can only view applications.',
+            ),
+        ).toBeInTheDocument()
+
+        fireEvent.click(acceptButton)
+        fireEvent.click(rejectButton)
+        fireEvent.click(reviewingButton)
+
+        expect(updateApplicationStatusMock).not.toHaveBeenCalled()
     })
 
     it('shows an API error when loading fails', async () => {
-        getRecruiterApplicationMock.mockRejectedValue(
-            new Error('API error'),
-        )
+        getRecruiterApplicationMock.mockRejectedValue(new Error('API error'))
 
         renderPage()
 
@@ -200,16 +228,12 @@ describe('RecruiterApplicationDetailsPage', () => {
         ).toBeInTheDocument()
 
         expect(
-            screen.getByRole('link', {
-                name: 'Back to applications',
-            }),
+            screen.getByRole('link', { name: 'Back to applications' }),
         ).toBeInTheDocument()
     })
 
     it('shows access denied when loading is unauthorized', async () => {
-        getRecruiterApplicationMock.mockRejectedValue({
-            status: 403,
-        })
+        getRecruiterApplicationMock.mockRejectedValue({ status: 403 })
 
         renderPage()
 
@@ -221,12 +245,8 @@ describe('RecruiterApplicationDetailsPage', () => {
     })
 
     it('shows an error when updating the status fails', async () => {
-        getRecruiterApplicationMock.mockResolvedValue(
-            baseApplication,
-        )
-        updateApplicationStatusMock.mockRejectedValue(
-            new Error('API error'),
-        )
+        getRecruiterApplicationMock.mockResolvedValue(baseApplication)
+        updateApplicationStatusMock.mockRejectedValue(new Error('API error'))
 
         renderPage()
 
@@ -236,9 +256,7 @@ describe('RecruiterApplicationDetailsPage', () => {
 
         fireEvent.click(rejectButton)
 
-        expect(
-            await screen.findByRole('alert'),
-        ).toHaveTextContent(
+        expect(await screen.findByRole('alert')).toHaveTextContent(
             'Unable to update the application status.',
         )
     })
@@ -256,15 +274,11 @@ describe('RecruiterApplicationDetailsPage', () => {
         })
 
         expect(
-            screen.queryByRole('button', {
-                name: 'Accept',
-            }),
+            screen.queryByRole('button', { name: 'Accept' }),
         ).not.toBeInTheDocument()
 
         expect(
-            screen.queryByRole('button', {
-                name: 'Reject',
-            }),
+            screen.queryByRole('button', { name: 'Reject' }),
         ).not.toBeInTheDocument()
     })
 })

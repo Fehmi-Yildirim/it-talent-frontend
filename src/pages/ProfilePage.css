@@ -28,6 +28,7 @@
 }
 
 .profile-section {
+  min-width: 0;
   padding: 28px;
   margin-bottom: 24px;
   border: 1px solid var(--color-border);
@@ -215,6 +216,7 @@
 @media (max-width: 640px) {
   .profile-page {
     width: calc(100% - 32px);
+    box-sizing: border-box;
     padding: 28px 0 40px;
   }
 
@@ -226,6 +228,7 @@
   }
 
   .profile-section {
+    min-width: 0;
     padding: 20px;
     margin-bottom: 16px;
   }
