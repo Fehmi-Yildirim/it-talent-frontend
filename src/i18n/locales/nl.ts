@@ -706,6 +706,8 @@ export const nl: DeepString<typeof en> = {
             'Ga naar dashboard',
         getStarted:
             'Aan de slag',
+        demoLoading: 'Demo-account openen...',
+        demoLoginError: 'Demo-toegang is momenteel niet beschikbaar. Probeer het later opnieuw.',
 
         candidates: {
             label:
@@ -716,6 +718,7 @@ export const nl: DeepString<typeof en> = {
                 'Maak je profiel aan en presenteer je vaardigheden en ervaring aan potentiële werkgevers.',
             createAccount:
                 'Maak je account aan',
+            demoAccess: 'Bekijk als kandidaat',
         },
 
         recruiters: {
@@ -727,6 +730,7 @@ export const nl: DeepString<typeof en> = {
                 'Maak je recruiterprofiel aan en kom in contact met professionals voor je wervingsbehoeften.',
             getStarted:
                 'Aan de slag',
+            demoAccess: 'Bekijk als recruiter',
         },
     },
 

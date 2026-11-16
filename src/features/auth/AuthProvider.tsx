@@ -2,6 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react'
 import {
   getCurrentUser,
   login,
+  demoLogin,
   updateCurrentUser,
 } from './auth.api'
 import {
@@ -10,7 +11,7 @@ import {
   clearAccessToken,
 } from './auth.storage'
 import { AuthContext, type AuthContextValue } from './auth.context'
-import type { AuthUser } from '../../types/auth'
+import type { AuthUser, DemoLoginRole } from '../../types/auth'
 import type { CurrentUser } from '../../types/user'
 
 interface AuthProviderProps {
@@ -91,6 +92,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
     setUser(null)
   }
 
+  const handleDemoLogin = async (
+    role: DemoLoginRole,
+  ): Promise<AuthUser> => {
+    setIsLoading(true)
+
+    try {
+      const response = await demoLogin(role)
+
+      setAccessToken(response.accessToken)
+      setToken(response.accessToken)
+
+      const currentUser = await getCurrentUser()
+      setUser(currentUser)
+
+      return response.user
+    } catch (error) {
+      clearAccessToken()
+      setToken(null)
+      setUser(null)
+
+      throw error
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
   const value: AuthContextValue = {
     user,
     accessToken,
@@ -99,6 +126,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     login: handleLogin,
     logout,
     updateUser: handleUpdateUser,
+    demoLogin: handleDemoLogin,
   }
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

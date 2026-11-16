@@ -57,6 +57,7 @@ describe('Layout', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     renderLayout()
@@ -84,6 +85,7 @@ describe('Layout', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     renderLayout()
@@ -117,6 +119,7 @@ describe('Layout', () => {
       login: vi.fn(),
       logout,
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     renderLayout()

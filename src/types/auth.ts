@@ -32,3 +32,5 @@ export interface LoginRequest {
   email: string
   password: string
 }
+
+export type DemoLoginRole = Extract<UserRole, 'CANDIDATE' | 'RECRUITER'>
