@@ -16,6 +16,18 @@ import { apiClient } from '../../src/services/api/apiClient'
 import { ApiError } from '../../src/services/api/apiError'
 import { MemoryRouter } from 'react-router-dom'
 
+const { authUserMock } = vi.hoisted(() => ({
+    authUserMock: {
+        current: { isDemo: false as boolean },
+    },
+}))
+
+vi.mock('../../src/features/auth/useAuth', () => ({
+    useAuth: () => ({
+        user: { isDemo: authUserMock.current.isDemo },
+    }),
+}))
+
 vi.mock('../../src/services/api/apiClient', () => ({
     apiClient: {
         get: vi.fn(),
@@ -46,6 +58,7 @@ function renderCompanyManagement() {
 describe('CompanyManagement', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        authUserMock.current.isDemo = false
     })
 
     it('shows loading state', () => {
@@ -463,5 +476,46 @@ describe('CompanyManagement', () => {
         ).toHaveTextContent(
             'Unable to save company information.',
         )
+    })
+
+    it('keeps existing company information read-only for demo accounts', async () => {
+        authUserMock.current.isDemo = true
+        vi.mocked(apiClient.get).mockResolvedValue(company)
+
+        renderCompanyManagement()
+
+        const nameInput = await screen.findByDisplayValue('Tech Company')
+
+        expect(nameInput).toBeDisabled()
+        expect(screen.getByLabelText('Description')).toBeDisabled()
+        expect(screen.getByLabelText('Website')).toBeDisabled()
+        expect(screen.getByLabelText('Location')).toBeDisabled()
+
+        const saveButton = screen.getByRole('button', { name: 'Save' })
+        expect(saveButton).toBeDisabled()
+
+        fireEvent.click(saveButton)
+
+        expect(apiClient.patch).not.toHaveBeenCalled()
+        expect(apiClient.post).not.toHaveBeenCalled()
+    })
+
+    it('does not allow demo accounts to create a company', async () => {
+        authUserMock.current.isDemo = true
+        vi.mocked(apiClient.get).mockRejectedValue(
+            new ApiError(404, 'Company not found'),
+        )
+
+        renderCompanyManagement()
+
+        const createButton = await screen.findByRole('button', {
+            name: 'Create company',
+        })
+
+        expect(createButton).toBeDisabled()
+
+        fireEvent.click(createButton)
+
+        expect(apiClient.post).not.toHaveBeenCalled()
     })
 })

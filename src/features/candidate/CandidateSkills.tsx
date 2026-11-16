@@ -1,8 +1,10 @@
 
 import { useEffect, useId, useState } from 'react'
 import type { FormEvent } from 'react'
+import ConfirmDialog from '../../components/ConfirmDialog/ConfirmDialog'
 import ErrorState from '../../components/feedback/ErrorState'
 import LoadingState from '../../components/feedback/LoadingState'
+import { useAuth } from '../auth/useAuth'
 import { useTranslation } from '../../i18n/useTranslation'
 import { ApiError } from '../../services/api/apiError'
 import type {
@@ -24,6 +26,9 @@ interface CandidateSkillsProps {
 }
 
 function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
+    const { user } = useAuth()
+    const isDemo = user?.isDemo === true
+
     const { t } = useTranslation()
     const headingId = useId()
 
@@ -38,6 +43,8 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
     const [selectedSkillId, setSelectedSkillId] = useState('')
     const [proficiencyLevel, setProficiencyLevel] = useState(1)
     const [yearsOfExperience, setYearsOfExperience] = useState(0)
+
+    const [skillToDelete, setSkillToDelete] = useState<CandidateSkill | null>(null)
 
     const [error, setError] = useState<string | null>(null)
     const [success, setSuccess] = useState<string | null>(null)
@@ -93,6 +100,8 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
     async function handleAdd(event: FormEvent<HTMLFormElement>) {
         event.preventDefault()
 
+        if (isDemo) return
+
         if (!selectedSkillId) {
             setError(t('candidateSkills.selectRequired'))
             return
@@ -128,6 +137,8 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
     }
 
     function startEditing(skill: CandidateSkill) {
+        if (isDemo) return
+
         setEditingId(skill.id)
         setProficiencyLevel(skill.proficiencyLevel)
         setYearsOfExperience(skill.yearsOfExperience)
@@ -140,6 +151,8 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
         id: string,
     ) {
         event.preventDefault()
+
+        if (isDemo) return
 
         setSubmitting(true)
         setError(null)
@@ -166,20 +179,21 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
         }
     }
 
-    async function handleDelete(id: string) {
-        if (!window.confirm(t('candidateSkills.deleteConfirmation'))) {
-            return
-        }
+    async function handleDelete() {
+        if (isDemo || !skillToDelete) return
 
+        const skillId = skillToDelete.id
+
+        setSkillToDelete(null)
         setSubmitting(true)
         setError(null)
         setSuccess(null)
 
         try {
-            await deleteCandidateSkill(id)
+            await deleteCandidateSkill(skillId)
 
             setCandidateSkills((current) =>
-                current.filter((skill) => skill.id !== id),
+                current.filter((skill) => skill.id !== skillId),
             )
 
             showSuccess(t('candidateSkills.removed'))
@@ -234,74 +248,76 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
 
             {!loading && !error && (
                 <>
-                    <form
-                        className="profile-form"
-                        onSubmit={(event) => void handleAdd(event)}
-                    >
-                        <label>
-                            {t('candidateSkills.selectSkill')}
-                            <select
-                                value={selectedSkillId}
-                                onChange={(event) =>
-                                    setSelectedSkillId(event.target.value)
-                                }
-                                disabled={submitting}
-                            >
-                                <option value="">
-                                    {t('candidateSkills.selectPlaceholder')}
-                                </option>
-
-                                {availableSkills.map((skill) => (
-                                    <option key={skill.id} value={skill.id}>
-                                        {skill.name}
+                    {!isDemo && (
+                        <form
+                            className="profile-form"
+                            onSubmit={(event) => void handleAdd(event)}
+                        >
+                            <label>
+                                {t('candidateSkills.selectSkill')}
+                                <select
+                                    value={selectedSkillId}
+                                    onChange={(event) =>
+                                        setSelectedSkillId(event.target.value)
+                                    }
+                                    disabled={submitting}
+                                >
+                                    <option value="">
+                                        {t('candidateSkills.selectPlaceholder')}
                                     </option>
-                                ))}
-                            </select>
-                        </label>
 
-                        <label>
-                            {t('candidateSkills.proficiency')}
-                            <select
-                                value={proficiencyLevel}
-                                onChange={(event) =>
-                                    setProficiencyLevel(Number(event.target.value))
-                                }
-                                disabled={submitting}
-                            >
-                                {[1, 2, 3, 4, 5].map((level) => (
-                                    <option key={level} value={level}>
-                                        {level}
-                                    </option>
-                                ))}
-                            </select>
-                        </label>
+                                    {availableSkills.map((skill) => (
+                                        <option key={skill.id} value={skill.id}>
+                                            {skill.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
 
-                        <label>
-                            {t('candidateSkills.experience')}
-                            <input
-                                type="number"
-                                min="0"
-                                step="0.1"
-                                value={yearsOfExperience}
-                                onChange={(event) =>
-                                    setYearsOfExperience(Number(event.target.value))
-                                }
-                                disabled={submitting}
-                            />
-                        </label>
+                            <label>
+                                {t('candidateSkills.proficiency')}
+                                <select
+                                    value={proficiencyLevel}
+                                    onChange={(event) =>
+                                        setProficiencyLevel(Number(event.target.value))
+                                    }
+                                    disabled={submitting}
+                                >
+                                    {[1, 2, 3, 4, 5].map((level) => (
+                                        <option key={level} value={level}>
+                                            {level}
+                                        </option>
+                                    ))}
+                                </select>
+                            </label>
 
-                        <div className="profile-actions">
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={submitting || !selectedSkillId}
-                            >
-                                {submitting
-                                    ? t('candidateSkills.saving')
-                                    : t('candidateSkills.add')}
-                            </button>
-                        </div>
-                    </form>
+                            <label>
+                                {t('candidateSkills.experience')}
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.1"
+                                    value={yearsOfExperience}
+                                    onChange={(event) =>
+                                        setYearsOfExperience(Number(event.target.value))
+                                    }
+                                    disabled={submitting}
+                                />
+                            </label>
+
+                            <div className="profile-actions">
+                                <button
+                                    type="submit"
+                                    className="btn btn-primary"
+                                    disabled={submitting || !selectedSkillId}
+                                >
+                                    {submitting
+                                        ? t('candidateSkills.saving')
+                                        : t('candidateSkills.add')}
+                                </button>
+                            </div>
+                        </form>
+                    )}
 
                     {candidateSkills.length === 0 ? (
                         <p>{t('candidateSkills.empty')}</p>
@@ -309,7 +325,7 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                         <div className="profile-details">
                             {candidateSkills.map((candidateSkill) => (
                                 <article key={candidateSkill.id}>
-                                    {editingId === candidateSkill.id ? (
+                                    {!isDemo && editingId === candidateSkill.id ? (
                                         <form
                                             className="profile-form"
                                             onSubmit={(event) =>
@@ -388,29 +404,31 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                                                 </div>
                                             </div>
 
-                                            <div className="profile-actions">
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-secondary"
-                                                    onClick={() =>
-                                                        startEditing(candidateSkill)
-                                                    }
-                                                    disabled={submitting}
-                                                >
-                                                    {t('candidateSkills.edit')}
-                                                </button>
+                                            {!isDemo && (
+                                                <div className="profile-actions">
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-secondary"
+                                                        onClick={() =>
+                                                            startEditing(candidateSkill)
+                                                        }
+                                                        disabled={submitting}
+                                                    >
+                                                        {t('candidateSkills.edit')}
+                                                    </button>
 
-                                                <button
-                                                    type="button"
-                                                    className="btn btn-danger"
-                                                    onClick={() =>
-                                                        void handleDelete(candidateSkill.id)
-                                                    }
-                                                    disabled={submitting}
-                                                >
-                                                    {t('candidateSkills.remove')}
-                                                </button>
-                                            </div>
+                                                    <button
+                                                        type="button"
+                                                        className="btn btn-danger"
+                                                        onClick={() =>
+                                                            setSkillToDelete(candidateSkill)
+                                                        }
+                                                        disabled={submitting}
+                                                    >
+                                                        {t('candidateSkills.remove')}
+                                                    </button>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </article>
@@ -418,6 +436,23 @@ function CandidateSkills({ onSuccess }: CandidateSkillsProps) {
                         </div>
                     )}
                 </>
+            )}
+
+            {!isDemo && (
+                <ConfirmDialog
+                    open={skillToDelete !== null}
+                    title={t('common.confirmDeleteTitle')}
+                    message={
+                        skillToDelete
+                            ? `${t('candidateSkills.deleteConfirmation')} ${skillToDelete.skill.name}`
+                            : ''
+                    }
+                    confirmLabel={t('common.delete')}
+                    cancelLabel={t('common.cancel')}
+                    onConfirm={() => void handleDelete()}
+                    onCancel={() => setSkillToDelete(null)}
+                    destructive
+                />
             )}
         </section>
     )

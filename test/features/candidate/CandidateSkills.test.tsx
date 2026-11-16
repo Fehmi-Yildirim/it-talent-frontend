@@ -205,8 +205,6 @@ describe('CandidateSkills', () => {
     })
 
     it('removes a skill after confirmation', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(true)
-
         renderSkills()
 
         await waitFor(() => {
@@ -214,6 +212,7 @@ describe('CandidateSkills', () => {
         })
 
         fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
+        fireEvent.click(await screen.findByRole('button', { name: 'Delete' }))
 
         await waitFor(() => {
             expect(mockedDeleteCandidateSkill).toHaveBeenCalledWith(
@@ -231,8 +230,6 @@ describe('CandidateSkills', () => {
     })
 
     it('does not remove a skill when confirmation is cancelled', async () => {
-        vi.spyOn(window, 'confirm').mockReturnValue(false)
-
         renderSkills()
 
         await waitFor(() => {
@@ -240,6 +237,7 @@ describe('CandidateSkills', () => {
         })
 
         fireEvent.click(screen.getByRole('button', { name: 'Remove' }))
+        fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }))
 
         expect(mockedDeleteCandidateSkill).not.toHaveBeenCalled()
     })

@@ -23,6 +23,7 @@ const candidateUser = {
   lastName: 'User',
   role: 'CANDIDATE' as const,
   status: 'ACTIVE' as const,
+  isDemo: false,
   candidate: null,
   recruiter: null,
   createdAt: '2026-01-01T00:00:00.000Z',

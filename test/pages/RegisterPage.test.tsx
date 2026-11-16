@@ -25,6 +25,7 @@ const registrationResponse = {
     lastName: 'User',
     role: 'CANDIDATE' as const,
     status: 'PENDING' as const,
+    isDemo: false,
   },
   message: 'Registration received',
 }

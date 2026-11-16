@@ -1,3 +1,4 @@
+
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import {
     fireEvent,
@@ -12,14 +13,24 @@ import type { CandidateApplicationDetail } from '../../src/types/application'
 const {
     getMyApplicationMock,
     withdrawApplicationMock,
+    authUserMock,
 } = vi.hoisted(() => ({
     getMyApplicationMock: vi.fn(),
     withdrawApplicationMock: vi.fn(),
+    authUserMock: {
+        current: { isDemo: false as boolean },
+    },
 }))
 
 vi.mock('../../src/features/applications/applications.api', () => ({
     getMyApplication: getMyApplicationMock,
     withdrawApplication: withdrawApplicationMock,
+}))
+
+vi.mock('../../src/features/auth/useAuth', () => ({
+    useAuth: () => ({
+        user: { isDemo: authUserMock.current.isDemo },
+    }),
 }))
 
 const baseApplication: CandidateApplicationDetail = {
@@ -69,6 +80,7 @@ function renderPage(applicationId = 'application-1') {
 describe('CandidateApplicationDetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
+        authUserMock.current.isDemo = false
     })
 
     it('shows loading state while loading the application', () => {
@@ -94,18 +106,12 @@ describe('CandidateApplicationDetailsPage', () => {
             }),
         ).toBeInTheDocument()
 
-        expect(
-            screen.getByText('Tech Company'),
-        ).toBeInTheDocument()
+        expect(screen.getByText('Tech Company')).toBeInTheDocument()
+
+        expect(screen.getAllByText('Pending').length).toBeGreaterThan(0)
 
         expect(
-            screen.getAllByText('Pending').length,
-        ).toBeGreaterThan(0)
-
-        expect(
-            screen.getByText(
-                'I am very interested in this position.',
-            ),
+            screen.getByText('I am very interested in this position.'),
         ).toBeInTheDocument()
 
         expect(
@@ -115,7 +121,7 @@ describe('CandidateApplicationDetailsPage', () => {
         ).toBeInTheDocument()
     })
 
-    it('withdraws a pending application', async () => {
+    it('withdraws a pending application for a normal user', async () => {
         getMyApplicationMock
             .mockResolvedValueOnce(baseApplication)
             .mockResolvedValueOnce({
@@ -132,10 +138,9 @@ describe('CandidateApplicationDetailsPage', () => {
 
         renderPage()
 
-        const withdrawButton =
-            await screen.findByRole('button', {
-                name: 'Withdraw application',
-            })
+        const withdrawButton = await screen.findByRole('button', {
+            name: 'Withdraw application',
+        })
 
         fireEvent.click(withdrawButton)
 
@@ -159,16 +164,38 @@ describe('CandidateApplicationDetailsPage', () => {
 
         renderPage()
 
-        const withdrawButton =
-            await screen.findByRole('button', {
-                name: 'Withdraw application',
-            })
+        const withdrawButton = await screen.findByRole('button', {
+            name: 'Withdraw application',
+        })
 
         fireEvent.click(withdrawButton)
 
         expect(withdrawApplicationMock).not.toHaveBeenCalled()
 
         vi.restoreAllMocks()
+    })
+
+    it('disables withdrawal and prevents API calls for demo users', async () => {
+        authUserMock.current.isDemo = true
+        getMyApplicationMock.mockResolvedValue(baseApplication)
+
+        renderPage()
+
+        const withdrawButton = await screen.findByRole('button', {
+            name: 'Withdraw application',
+        })
+
+        expect(withdrawButton).toBeDisabled()
+
+        expect(
+            screen.getByText(
+                'This action is disabled for demo accounts. You can only view the application.',
+            ),
+        ).toBeInTheDocument()
+
+        fireEvent.click(withdrawButton)
+
+        expect(withdrawApplicationMock).not.toHaveBeenCalled()
     })
 
     it('does not show withdraw action for a withdrawn application', async () => {
@@ -191,9 +218,7 @@ describe('CandidateApplicationDetailsPage', () => {
     })
 
     it('shows an error when loading the application fails', async () => {
-        getMyApplicationMock.mockRejectedValue(
-            new Error('API error'),
-        )
+        getMyApplicationMock.mockRejectedValue(new Error('API error'))
 
         renderPage()
 

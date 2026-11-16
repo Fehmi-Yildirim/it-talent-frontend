@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
@@ -5,6 +6,7 @@ import {
     getRecruiterApplication,
     updateApplicationStatus,
 } from '../features/applications/applications.api'
+import { useAuth } from '../features/auth/useAuth'
 import { ApiError } from '../services/api/apiError'
 import type {
     ApplicationStatus,
@@ -17,6 +19,9 @@ import './RecruiterApplicationDetailsPage.css'
 
 function RecruiterApplicationDetailsPage() {
     const { applicationId } = useParams<{ applicationId: string }>()
+    const { user } = useAuth()
+    const isDemo = user?.isDemo === true
+
     const { language, t } = useTranslation()
 
     const [application, setApplication] =
@@ -107,7 +112,7 @@ function RecruiterApplicationDetailsPage() {
     }, [applicationId])
 
     async function handleStatusChange(status: ApplicationStatus) {
-        if (!applicationId || updating) {
+        if (isDemo || !applicationId || updating) {
             return
         }
 
@@ -119,12 +124,12 @@ function RecruiterApplicationDetailsPage() {
             setApplication((current) =>
                 current
                     ? {
-                          ...current,
-                          ...result,
-                          candidate: current.candidate,
-                          job: current.job,
-                          company: current.company,
-                      }
+                        ...current,
+                        ...result,
+                        candidate: current.candidate,
+                        job: current.job,
+                        company: current.company,
+                    }
                     : current,
             )
         } catch (caught) {
@@ -409,6 +414,12 @@ function RecruiterApplicationDetailsPage() {
                                 {t('recruiterApplications.details.eyebrow')}
                             </p>
 
+                            {isDemo && (
+                                <p className="recruiter-details-muted" role="note">
+                                    {t('recruiterApplications.details.demoReadOnly')}
+                                </p>
+                            )}
+
                             {updateError && (
                                 <p className="recruiter-details-update-error" role="alert">
                                     {updateError}
@@ -419,7 +430,8 @@ function RecruiterApplicationDetailsPage() {
                                 <button
                                     className="recruiter-details-button recruiter-details-button--neutral"
                                     type="button"
-                                    disabled={updating || application.status === APPLICATION_STATUSES.PENDING}
+                                    disabled={isDemo || updating || application.status === APPLICATION_STATUSES.PENDING}
+                                    title={isDemo ? t('recruiterApplications.details.demoReadOnly') : undefined}
                                     onClick={() => void handleStatusChange(APPLICATION_STATUSES.PENDING)}
                                 >
                                     {t('common.pending')}
@@ -427,7 +439,8 @@ function RecruiterApplicationDetailsPage() {
                                 <button
                                     className="recruiter-details-button recruiter-details-button--primary"
                                     type="button"
-                                    disabled={updating || application.status === APPLICATION_STATUSES.REVIEWING}
+                                    disabled={isDemo || updating || application.status === APPLICATION_STATUSES.REVIEWING}
+                                    title={isDemo ? t('recruiterApplications.details.demoReadOnly') : undefined}
                                     onClick={() => void handleStatusChange(APPLICATION_STATUSES.REVIEWING)}
                                 >
                                     {t('common.reviewing')}
@@ -435,7 +448,8 @@ function RecruiterApplicationDetailsPage() {
                                 <button
                                     className="recruiter-details-button recruiter-details-button--success"
                                     type="button"
-                                    disabled={updating || application.status === APPLICATION_STATUSES.ACCEPTED}
+                                    disabled={isDemo || updating || application.status === APPLICATION_STATUSES.ACCEPTED}
+                                    title={isDemo ? t('recruiterApplications.details.demoReadOnly') : undefined}
                                     onClick={() => void handleStatusChange(APPLICATION_STATUSES.ACCEPTED)}
                                 >
                                     {t('recruiterApplications.details.accept')}
@@ -443,7 +457,8 @@ function RecruiterApplicationDetailsPage() {
                                 <button
                                     className="recruiter-details-button recruiter-details-button--danger"
                                     type="button"
-                                    disabled={updating || application.status === APPLICATION_STATUSES.REJECTED}
+                                    disabled={isDemo || updating || application.status === APPLICATION_STATUSES.REJECTED}
+                                    title={isDemo ? t('recruiterApplications.details.demoReadOnly') : undefined}
                                     onClick={() => void handleStatusChange(APPLICATION_STATUSES.REJECTED)}
                                 >
                                     {t('recruiterApplications.details.reject')}

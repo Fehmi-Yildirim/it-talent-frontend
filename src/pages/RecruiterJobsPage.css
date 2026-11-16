@@ -390,3 +390,20 @@
         transform: none;
     }
 }
+
+.recruiter-jobs-primary-button:disabled,
+.recruiter-jobs-secondary-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: none;
+}
+
+.recruiter-jobs-primary-button:disabled:hover,
+.recruiter-jobs-secondary-button:disabled:hover {
+    border-color: transparent;
+    background: var(--color-surface);
+    color: var(--color-text);
+    transform: none;
+}

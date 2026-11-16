@@ -254,6 +254,7 @@ export const en = {
                 'The application could not be found.',
             withdrawError:
                 'Unable to withdraw the application. Try again.',
+            demoReadOnly: 'This action is disabled for demo accounts. You can only view the application.',
         },
     },
 
@@ -445,6 +446,28 @@ export const en = {
         validationLocationMaxLength: 'Location cannot exceed 255 characters.',
         validationWebsiteRequired: 'Company website is required.',
         validationLocationRequired: 'Company location is required.',
+    },
+
+    demo: {
+        readOnlyTitle: 'Demo mode: this page is read-only.',
+        readOnlyDescription:
+            'Demo accounts can view this information, but cannot make changes.',
+        profileEditDisabled: 'Editing the profile is disabled in demo mode.',
+        companyCreateDisabled: 'Creating a company is disabled in demo mode.',
+        companySaveDisabled: 'Saving is disabled in demo mode.',
+        companyReadOnly: 'Company information is read-only in demo mode.',
+        jobCreateDisabled: 'Creating jobs is disabled in demo mode.',
+        jobEditDisabled: 'Editing jobs is disabled in demo mode.',
+        jobStatusDisabled: 'Changing job status is disabled in demo mode.',
+        jobPublishDisabled: 'Publishing is disabled in demo mode.',
+        jobPauseDisabled: 'Pausing is disabled in demo mode.',
+        jobCloseDisabled: 'Closing is disabled in demo mode.',
+        jobResumeDisabled: 'Resuming is disabled in demo mode.',
+        jobReopenDisabled: 'Reopening is disabled in demo mode.',
+        jobRequirementsDisabled:
+            'Managing requirements is disabled in demo mode.',
+        jobSaveDisabled: 'Saving is disabled in demo mode.',
+        noSkillsAvailable: 'No skills available.',
     },
 
     dashboard: {
@@ -945,6 +968,7 @@ export const en = {
                 'This application status is not valid.',
             updateError:
                 'Unable to update the application status.',
+            demoReadOnly: 'This action is disabled for demo accounts. You can only view applications.',
         },
     },
 

@@ -21,6 +21,7 @@ export interface User {
   lastName: string
   role: UserRole
   status: UserStatus
+  isDemo: boolean
   createdAt: string
   updatedAt: string
 }

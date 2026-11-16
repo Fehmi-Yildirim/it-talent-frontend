@@ -312,6 +312,7 @@ export const nl: DeepString<typeof en> = {
                 'De sollicitatie kon niet worden gevonden.',
             withdrawError:
                 'De sollicitatie kon niet worden ingetrokken. Probeer het opnieuw.',
+            demoReadOnly: 'Deze actie is uitgeschakeld voor demo-accounts. Je kunt de sollicitatie alleen bekijken.',
         },
     },
 
@@ -636,6 +637,28 @@ export const nl: DeepString<typeof en> = {
             yourAccount:
                 'Jouw account',
         },
+    },
+
+    demo: {
+        readOnlyTitle: 'Demomodus: deze pagina is alleen-lezen.',
+        readOnlyDescription:
+            'Demo-accounts kunnen deze informatie bekijken, maar niets wijzigen.',
+        profileEditDisabled: 'Het bewerken van het profiel is uitgeschakeld in de demomodus.',
+        companyCreateDisabled: 'Het aanmaken van een bedrijf is uitgeschakeld in de demomodus.',
+        companySaveDisabled: 'Opslaan is uitgeschakeld in de demomodus.',
+        companyReadOnly: 'Bedrijfsgegevens kunnen in de demomodus alleen worden bekeken.',
+        jobCreateDisabled: 'Het aanmaken van vacatures is uitgeschakeld in de demomodus.',
+        jobEditDisabled: 'Het bewerken van vacatures is uitgeschakeld in de demomodus.',
+        jobStatusDisabled: 'Het wijzigen van de vacaturestatus is uitgeschakeld in de demomodus.',
+        jobPublishDisabled: 'Publiceren is uitgeschakeld in de demomodus.',
+        jobPauseDisabled: 'Pauzeren is uitgeschakeld in de demomodus.',
+        jobCloseDisabled: 'Sluiten is uitgeschakeld in de demomodus.',
+        jobResumeDisabled: 'Hervatten is uitgeschakeld in de demomodus.',
+        jobReopenDisabled: 'Opnieuw openen is uitgeschakeld in de demomodus.',
+        jobRequirementsDisabled:
+            'Het beheren van vereisten is uitgeschakeld in de demomodus.',
+        jobSaveDisabled: 'Opslaan is uitgeschakeld in de demomodus.',
+        noSkillsAvailable: 'Geen vaardigheden beschikbaar.',
     },
 
     errors: {
@@ -1228,6 +1251,7 @@ export const nl: DeepString<typeof en> = {
                 'Deze sollicitatiestatus is ongeldig.',
             updateError:
                 'De status van de sollicitatie kan niet worden bijgewerkt.',
+            demoReadOnly: 'Deze actie is uitgeschakeld voor demo-accounts. Je kunt sollicitaties alleen bekijken.',
         },
     },
 };

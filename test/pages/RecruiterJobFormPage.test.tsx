@@ -3,6 +3,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RecruiterJobFormPage from '../../src/pages/RecruiterJobFormPage'
 import { I18nProvider } from '../../src/i18n/context'
+import { AuthProvider } from '../../src/features/auth/AuthProvider'
 
 import {
     createJob,
@@ -28,6 +29,18 @@ vi.mock('../../src/features/jobs/jobs.api', () => ({
 
 vi.mock('../../src/features/skills/skills.api', () => ({
     getSkills: vi.fn(),
+}))
+
+const { authUserMock } = vi.hoisted(() => ({
+    authUserMock: {
+        current: { isDemo: false as boolean },
+    },
+}))
+
+vi.mock('../../src/features/auth/useAuth', () => ({
+    useAuth: () => ({
+        user: { isDemo: authUserMock.current.isDemo },
+    }),
 }))
 
 const jobId = '11111111-1111-4111-8111-111111111111'
@@ -57,24 +70,26 @@ const requirement = {
 
 function renderPage(path: string) {
     return render(
-        <I18nProvider>
-            <MemoryRouter initialEntries={[path]}>
-                <Routes>
-                    <Route
-                        path="/recruiter/jobs/new"
-                        element={<RecruiterJobFormPage />}
-                    />
-                    <Route
-                        path="/recruiter/jobs/:jobId/edit"
-                        element={<RecruiterJobFormPage />}
-                    />
-                    <Route
-                        path="/recruiter/jobs"
-                        element={<div>Jobs page</div>}
-                    />
-                </Routes>
-            </MemoryRouter>
-        </I18nProvider>,
+        <AuthProvider>
+            <I18nProvider>
+                <MemoryRouter initialEntries={[path]}>
+                    <Routes>
+                        <Route
+                            path="/recruiter/jobs/new"
+                            element={<RecruiterJobFormPage />}
+                        />
+                        <Route
+                            path="/recruiter/jobs/:jobId/edit"
+                            element={<RecruiterJobFormPage />}
+                        />
+                        <Route
+                            path="/recruiter/jobs"
+                            element={<div>Jobs page</div>}
+                        />
+                    </Routes>
+                </MemoryRouter>
+            </I18nProvider>
+        </AuthProvider>,
     )
 }
 
@@ -132,7 +147,7 @@ async function selectSkill(skillName: string) {
 describe('RecruiterJobFormPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
-
+        authUserMock.current.isDemo = false
         vi.mocked(getSkills).mockResolvedValue([])
         vi.mocked(getJobRequirements).mockResolvedValue([])
     })
@@ -764,5 +779,65 @@ describe('RecruiterJobFormPage', () => {
                 },
             )
         })
+    })
+
+    it('keeps the create form read-only for demo accounts', async () => {
+        authUserMock.current.isDemo = true
+        mockSkills()
+
+        renderPage('/recruiter/jobs/new')
+
+        await screen.findByRole('heading', {
+            name: 'Create job',
+        })
+
+        const fieldset = document.querySelector('fieldset')
+        expect(fieldset).toBeInTheDocument()
+        expect(fieldset).toBeDisabled()
+
+        const submitButton = screen
+            .getAllByRole('button')
+            .find(
+                (button) =>
+                    (button as HTMLButtonElement).type === 'submit',
+            )
+
+        expect(submitButton).toBeDefined()
+        expect(submitButton).toBeDisabled()
+
+        expect(createJob).not.toHaveBeenCalled()
+        expect(createJobRequirement).not.toHaveBeenCalled()
+    })
+
+    it('keeps the edit form and requirements read-only for demo accounts', async () => {
+        authUserMock.current.isDemo = true
+        mockSkills()
+        mockJob()
+
+        vi.mocked(getJobRequirements).mockResolvedValue([requirement])
+
+        renderPage(`/recruiter/jobs/${jobId}/edit`)
+
+        await screen.findByDisplayValue('Frontend Developer')
+
+        const fieldset = document.querySelector('fieldset')
+        expect(fieldset).toBeInTheDocument()
+        expect(fieldset).toBeDisabled()
+
+        const submitButton = screen
+            .getAllByRole('button')
+            .find(
+                (button) =>
+                    (button as HTMLButtonElement).type === 'submit',
+            )
+
+        expect(submitButton).toBeDefined()
+        expect(submitButton).toBeDisabled()
+
+        expect(createJob).not.toHaveBeenCalled()
+        expect(updateJob).not.toHaveBeenCalled()
+        expect(createJobRequirement).not.toHaveBeenCalled()
+        expect(updateJobRequirement).not.toHaveBeenCalled()
+        expect(removeJobRequirement).not.toHaveBeenCalled()
     })
 })

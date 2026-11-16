@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import DOMPurify from 'dompurify'
 import { Link, useParams } from 'react-router-dom'
@@ -5,6 +6,7 @@ import {
     getMyApplication,
     withdrawApplication,
 } from '../features/applications/applications.api'
+import { useAuth } from '../features/auth/useAuth'
 import { ApiError } from '../services/api/apiError'
 import { useTranslation } from '../i18n/useTranslation'
 import {
@@ -66,6 +68,9 @@ function CandidateApplicationDetailsPage() {
     const { applicationId } =
         useParams<{ applicationId: string }>()
 
+    const { user } = useAuth()
+    const isDemo = user?.isDemo === true
+
     const { language, t } = useTranslation()
 
     const [application, setApplication] =
@@ -122,7 +127,7 @@ function CandidateApplicationDetailsPage() {
     }, [applicationId])
 
     async function handleWithdraw() {
-        if (!applicationId || withdrawing) {
+        if (isDemo || !applicationId || withdrawing) {
             return
         }
 
@@ -442,6 +447,14 @@ function CandidateApplicationDetailsPage() {
                         )}
                     </p>
 
+                    {isDemo && (
+                        <p role="note">
+                            {t(
+                                'candidateApplications.details.demoReadOnly',
+                            )}
+                        </p>
+                    )}
+
                     {withdrawError && (
                         <p role="alert">
                             {withdrawError}
@@ -451,7 +464,14 @@ function CandidateApplicationDetailsPage() {
                     <button
                         type="button"
                         onClick={() => void handleWithdraw()}
-                        disabled={withdrawing}
+                        disabled={isDemo || withdrawing}
+                        title={
+                            isDemo
+                                ? t(
+                                    'candidateApplications.details.demoReadOnly',
+                                )
+                                : undefined
+                        }
                     >
                         {withdrawing
                             ? t(
