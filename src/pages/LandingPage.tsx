@@ -1,11 +1,31 @@
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
+import type { DemoLoginRole } from '../types/auth'
 import { useTranslation } from '../i18n/useTranslation'
 import './LandingPage.css'
 
 function LandingPage() {
   const { t } = useTranslation()
-  const { isAuthenticated } = useAuth()
+  const { isAuthenticated, demoLogin } = useAuth()
+  const navigate = useNavigate()
+
+  const [loadingRole, setLoadingRole] = useState<DemoLoginRole | null>(null)
+  const [demoLoginError, setDemoLoginError] = useState(false)
+
+  const handleDemoLogin = async (role: DemoLoginRole) => {
+    setLoadingRole(role)
+    setDemoLoginError(false)
+
+    try {
+      await demoLogin(role)
+      navigate(role === 'CANDIDATE' ? '/jobs' : '/dashboard')
+    } catch {
+      setDemoLoginError(true)
+    } finally {
+      setLoadingRole(null)
+    }
+  }
 
   return (
     <div className="landing-page">
@@ -54,9 +74,22 @@ function LandingPage() {
           <p>{t('landing.candidates.description')}</p>
 
           {!isAuthenticated && (
-            <Link to="/register">
-              {t('landing.candidates.createAccount')} →
-            </Link>
+            <>
+              <Link to="/register">
+                {t('landing.candidates.createAccount')} →
+              </Link>
+
+              <button
+                type="button"
+                className="landing-demo-button"
+                disabled={loadingRole !== null}
+                onClick={() => void handleDemoLogin('CANDIDATE')}
+              >
+                {loadingRole === 'CANDIDATE'
+                  ? t('landing.demoLoading')
+                  : t('landing.candidates.demoAccess')}
+              </button>
+            </>
           )}
         </article>
 
@@ -70,12 +103,31 @@ function LandingPage() {
           <p>{t('landing.recruiters.description')}</p>
 
           {!isAuthenticated && (
-            <Link to="/register">
-              {t('landing.recruiters.getStarted')} →
-            </Link>
+            <>
+              <Link to="/register">
+                {t('landing.recruiters.getStarted')} →
+              </Link>
+
+              <button
+                type="button"
+                className="landing-demo-button"
+                disabled={loadingRole !== null}
+                onClick={() => void handleDemoLogin('RECRUITER')}
+              >
+                {loadingRole === 'RECRUITER'
+                  ? t('landing.demoLoading')
+                  : t('landing.recruiters.demoAccess')}
+              </button>
+            </>
           )}
         </article>
       </section>
+
+      {demoLoginError && (
+        <p className="landing-demo-error" role="alert">
+          {t('landing.demoLoginError')}
+        </p>
+      )}
 
       <footer className="landing-footer">
         <span>© {new Date().getFullYear()} IT Talent</span>

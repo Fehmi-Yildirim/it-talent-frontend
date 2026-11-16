@@ -6,6 +6,7 @@ import type {
   RegisterResponse,
 } from '../../types/auth'
 import type { CurrentUser } from '../../types/user'
+import type { DemoLoginRole } from '../../types/auth'
 
 export function register(
   data: RegisterRequest,
@@ -30,4 +31,8 @@ export function updateCurrentUser(
   data: UpdateUserRequest,
 ): Promise<CurrentUser> {
   return apiClient.patch<CurrentUser>('/users/me', data)
+}
+
+export function demoLogin(role: DemoLoginRole): Promise<AuthResponse> {
+  return apiClient.post<AuthResponse>('/auth/demo-login', { role })
 }

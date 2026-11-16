@@ -1,5 +1,6 @@
 import { createContext } from 'react'
 import type { AuthUser } from '../../types/auth'
+import type { DemoLoginRole } from '../../types/auth'
 import type { CurrentUser } from '../../types/user'
 
 export interface AuthContextValue {
@@ -13,6 +14,7 @@ export interface AuthContextValue {
     firstName: string,
     lastName: string,
   ) => Promise<CurrentUser>
+  demoLogin: (role: DemoLoginRole) => Promise<AuthUser>
 }
 
 export const AuthContext = createContext<AuthContextValue | undefined>(

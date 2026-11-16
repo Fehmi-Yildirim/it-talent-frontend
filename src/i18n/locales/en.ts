@@ -587,6 +587,8 @@ export const en = {
             'IT Talent helps candidates and recruiters connect through a focused platform for the IT job market.',
         goToDashboard: 'Go to dashboard',
         getStarted: 'Get started',
+        demoLoading: 'Opening demo account...',
+        demoLoginError: 'Demo access is currently unavailable. Please try again later.',
 
         candidates: {
             label: 'For candidates',
@@ -594,6 +596,7 @@ export const en = {
             description:
                 'Create your profile and present your skills and experience to potential employers.',
             createAccount: 'Create your account',
+            demoAccess: 'Explore as a candidate',
         },
 
         recruiters: {
@@ -602,6 +605,7 @@ export const en = {
             description:
                 'Build your recruiter profile and connect with professionals for your hiring needs.',
             getStarted: 'Get started',
+            demoAccess: 'Explore as a recruiter',
         },
     },
 

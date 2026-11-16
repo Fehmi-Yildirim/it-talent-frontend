@@ -135,6 +135,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     mockedGetCandidateProfile.mockResolvedValue(
@@ -451,6 +452,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     renderProfilePage()
@@ -473,6 +475,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     renderProfilePage()
@@ -497,6 +500,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser,
+      demoLogin: vi.fn(),
     })
 
     renderProfilePage()
@@ -548,6 +552,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser,
+      demoLogin: vi.fn(),
     })
 
     renderProfilePage()
@@ -591,6 +596,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     mockedGetRecruiterProfile.mockRejectedValue(
@@ -627,6 +633,7 @@ describe('ProfilePage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       updateUser: vi.fn(),
+      demoLogin: vi.fn(),
     })
 
     mockedGetRecruiterProfile
