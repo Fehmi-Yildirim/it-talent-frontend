@@ -1,3 +1,4 @@
+
 import type React from 'react'
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -26,17 +27,17 @@ const INITIAL_CONTENT: JSONContent = {
 }
 
 export default function AdminContentPage() {
-    const { t } = useTranslation()
+    const { t, language } = useTranslation()
+    const activeLocale: ContentLocale = language === 'en' ? 'en' : 'nl'
 
     const [pages, setPages] = useState<ContentPage[]>([])
+    const [newPageTitle, setNewPageTitle] = useState('')
     const [selectedPageId, setSelectedPageId] = useState('')
     const [locale, setLocale] = useState<ContentLocale>('nl')
 
     const [title, setTitle] = useState('')
     const [introduction, setIntroduction] = useState('')
     const [content, setContent] = useState<JSONContent>(INITIAL_CONTENT)
-
-    const [slug, setSlug] = useState('')
 
     const [isLoading, setIsLoading] = useState(true)
     const [isSaving, setIsSaving] = useState(false)
@@ -121,12 +122,9 @@ export default function AdminContentPage() {
     const handleCreate = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
 
-        const normalizedSlug = slug.trim().toLowerCase()
+        const normalizedTitle = newPageTitle.trim()
 
-        if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(normalizedSlug)) {
-            setError(t('adminContent.invalidSlug'))
-            return
-        }
+        if (!normalizedTitle) return
 
         setIsCreating(true)
         setError(null)
@@ -134,15 +132,16 @@ export default function AdminContentPage() {
 
         try {
             const created = await createContentPage({
-                slug: normalizedSlug,
+                title: normalizedTitle,
+                locale: activeLocale,
             })
 
             const refreshedPage = await getContentPage(created.id)
 
             setPages((current) => [...current, refreshedPage])
             setSelectedPageId(refreshedPage.id)
-            setLocale('nl')
-            setSlug('')
+            setLocale(activeLocale)
+            setNewPageTitle('')
         } catch (requestError) {
             if (
                 requestError instanceof ApiError &&
@@ -329,13 +328,19 @@ export default function AdminContentPage() {
             <p>{t('adminContent.description')}</p>
 
             {error && (
-                <p className="admin-content-message admin-content-error" role="alert">
+                <p
+                    className="admin-content-message admin-content-error"
+                    role="alert"
+                >
                     {error}
                 </p>
             )}
 
             {success && (
-                <p className="admin-content-message admin-content-success" role="status">
+                <p
+                    className="admin-content-message admin-content-success"
+                    role="status"
+                >
                     {success}
                 </p>
             )}
@@ -345,17 +350,18 @@ export default function AdminContentPage() {
 
                 <form onSubmit={(event) => void handleCreate(event)}>
                     <div className="admin-content-field">
-                        <label htmlFor="content-slug">
-                            {t('adminContent.slug')}
+                        <label htmlFor="content-page-title">
+                            {t('adminContent.titleLabel')}
                         </label>
 
                         <input
-                            id="content-slug"
+                            id="content-page-title"
                             type="text"
-                            value={slug}
-                            onChange={(event) => setSlug(event.target.value)}
-                            placeholder={t('adminContent.slugPlaceholder')}
-                            maxLength={100}
+                            value={newPageTitle}
+                            onChange={(event) =>
+                                setNewPageTitle(event.target.value)
+                            }
+                            maxLength={200}
                             required
                             disabled={isCreating}
                         />
@@ -364,7 +370,7 @@ export default function AdminContentPage() {
                     <button
                         type="submit"
                         className="btn btn-primary"
-                        disabled={isCreating || !slug.trim()}
+                        disabled={isCreating || !newPageTitle.trim()}
                     >
                         {isCreating
                             ? t('adminContent.creating')
@@ -401,7 +407,14 @@ export default function AdminContentPage() {
 
                                     return (
                                         <tr key={page.id}>
-                                            <td>{page.slug}</td>
+                                            <td>
+                                                <div>
+                                                    NL: {nl?.slug ?? '—'}
+                                                </div>
+                                                <div>
+                                                    EN: {en?.slug ?? '—'}
+                                                </div>
+                                            </td>
 
                                             <td>
                                                 {nl?.isPublished
@@ -436,7 +449,9 @@ export default function AdminContentPage() {
                                                     <button
                                                         type="button"
                                                         className="btn btn-secondary"
-                                                        onClick={() => setPageToDelete(page)}
+                                                        onClick={() =>
+                                                            setPageToDelete(page)
+                                                        }
                                                         disabled={isDeleting}
                                                     >
                                                         {t('common.delete')}
@@ -455,7 +470,8 @@ export default function AdminContentPage() {
             {selectedPage && (
                 <section className="admin-content-section admin-content-editor-section">
                     <h2>
-                        {t('adminContent.editPage')}: {selectedPage.slug}
+                        {t('adminContent.editPage')}:{' '}
+                        {selectedTranslation?.slug ?? selectedPage.id}
                     </h2>
 
                     <div className="admin-content-field">
@@ -565,7 +581,9 @@ export default function AdminContentPage() {
                             <button
                                 type="button"
                                 className="btn btn-secondary"
-                                onClick={() => setConfirmDeleteTranslation(true)}
+                                onClick={() =>
+                                    setConfirmDeleteTranslation(true)
+                                }
                                 disabled={
                                     isDeletingTranslation ||
                                     isSaving ||
@@ -584,7 +602,12 @@ export default function AdminContentPage() {
                 title={t('common.delete')}
                 message={
                     pageToDelete
-                        ? `${t('adminContent.deleteConfirmation')} ${pageToDelete.slug}`
+                        ? `${t('adminContent.deleteConfirmation')} ${pageToDelete.translations
+                            .map(
+                                (translation) =>
+                                    `${translation.locale}: ${translation.slug}`,
+                            )
+                            .join(', ')}`
                         : ''
                 }
                 confirmLabel={t('common.delete')}

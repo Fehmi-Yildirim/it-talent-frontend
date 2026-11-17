@@ -1,3 +1,4 @@
+
 import { apiClient } from '../../services/api/apiClient'
 
 export type ContentLocale = 'nl' | 'en'
@@ -6,6 +7,7 @@ export interface ContentTranslation {
     id: string
     pageId: string
     locale: ContentLocale
+    slug: string
     draftTitle: string | null
     draftIntroduction: string | null
     draftContent: Record<string, unknown> | null
@@ -19,14 +21,14 @@ export interface ContentTranslation {
 
 export interface ContentPage {
     id: string
-    slug: string
     createdAt: string
     updatedAt: string
     translations: ContentTranslation[]
 }
 
 export interface CreateContentRequest {
-    slug: string
+    title: string
+    locale: ContentLocale
 }
 
 export interface UpdateContentTranslationRequest {
