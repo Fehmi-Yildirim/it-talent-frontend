@@ -1,0 +1,32 @@
+.cms-editor {
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.cms-editor__toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+}
+
+.cms-editor__toolbar button {
+    padding: 6px 10px;
+    cursor: pointer;
+}
+
+.cms-editor .tiptap {
+    min-height: 220px;
+    padding: 12px;
+    outline: none;
+}
+
+.cms-editor .tiptap p.is-editor-empty:first-child::before {
+    content: attr(data-placeholder);
+    color: #999;
+    float: left;
+    height: 0;
+    pointer-events: none;
+}

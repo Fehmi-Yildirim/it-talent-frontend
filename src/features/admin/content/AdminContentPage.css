@@ -1,0 +1,475 @@
+/* =========================================
+   ADMIN CONTENT MANAGEMENT
+   ========================================= */
+
+.admin-content-page {
+    width: 100%;
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2rem;
+    color: var(--color-text);
+    box-sizing: border-box;
+}
+
+.admin-content-page *,
+.admin-content-page *::before,
+.admin-content-page *::after {
+    box-sizing: border-box;
+}
+
+/* =========================================
+   PAGE HEADER
+   ========================================= */
+
+.admin-content-page .admin-skills-header {
+    margin-bottom: 1.5rem;
+}
+
+.admin-content-page .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--color-primary);
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.admin-content-page .back-link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+}
+
+.admin-content-page>h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(1.8rem, 3vw, 2.4rem);
+    font-weight: 750;
+    line-height: 1.2;
+    letter-spacing: -0.035em;
+}
+
+.admin-content-page>p {
+    margin: 0 0 2rem;
+    color: var(--color-text-muted);
+    line-height: 1.6;
+}
+
+/* =========================================
+   LOADING
+   ========================================= */
+
+.admin-content-loading {
+    display: flex;
+    min-height: 240px;
+    align-items: center;
+    justify-content: center;
+}
+
+.admin-content-loading p {
+    color: var(--color-text-muted);
+    font-size: 1rem;
+}
+
+/* =========================================
+   SECTIONS
+   ========================================= */
+
+.admin-content-section {
+    margin-bottom: 2rem;
+    padding: 1.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    box-shadow: 0 2px 8px rgb(0 0 0 / 3%);
+}
+
+.admin-content-section>h2 {
+    margin: 0 0 1.5rem;
+    font-size: 1.3rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+}
+
+.admin-content-section h3 {
+    margin: 0 0 1rem;
+    font-size: 1.05rem;
+    font-weight: 650;
+}
+
+/* =========================================
+   FORM LAYOUT
+   ========================================= */
+
+.admin-content-page form {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+/* =========================================
+   CREATE PAGE FORM
+   Slug input and Create page button
+   stay on the same horizontal line.
+   ========================================= */
+
+.admin-content-create form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: nowrap;
+    gap: 1rem;
+}
+
+.admin-content-create form .admin-content-field {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.admin-content-create form .btn {
+    flex: 0 0 auto;
+    min-height: 44px;
+    white-space: nowrap;
+    margin-bottom: 0;
+}
+
+/* =========================================
+   FORM FIELDS
+   ========================================= */
+
+.admin-content-field {
+    display: flex;
+    flex: 1 1 260px;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 0;
+    margin-bottom: 1.25rem;
+}
+
+.admin-content-page label {
+    color: var(--color-text);
+    font-size: 0.9rem;
+    font-weight: 650;
+}
+
+.admin-content-page input,
+.admin-content-page textarea,
+.admin-content-page select {
+    width: 100%;
+    min-height: 44px;
+    padding: 0.7rem 0.85rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    outline: none;
+    background: var(--color-background);
+    color: var(--color-text);
+    font: inherit;
+    font-size: 0.95rem;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        background-color 0.2s ease;
+}
+
+.admin-content-page textarea {
+    min-height: 120px;
+    resize: vertical;
+    line-height: 1.6;
+}
+
+.admin-content-page input:focus,
+.admin-content-page textarea:focus,
+.admin-content-page select:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+.admin-content-page input:disabled,
+.admin-content-page textarea:disabled,
+.admin-content-page select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* =========================================
+   BUTTONS
+   ========================================= */
+
+.admin-content-page .btn {
+    display: inline-flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.65rem 1rem;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    font: inherit;
+    font-size: 0.9rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-content-page .btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+}
+
+.admin-content-page .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.admin-content-page .btn-primary {
+    border-color: var(--color-primary);
+    background: var(--color-primary);
+    color: white;
+}
+
+.admin-content-page .btn-primary:hover:not(:disabled) {
+    filter: brightness(0.92);
+}
+
+.admin-content-page .btn-secondary {
+    border-color: var(--color-border);
+    background: var(--color-background);
+    color: var(--color-text);
+}
+
+.admin-content-page .btn-secondary:hover:not(:disabled) {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+/* =========================================
+   EXISTING PAGES TABLE
+   ========================================= */
+
+.admin-content-page .admin-skills-table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+}
+
+.admin-content-page .admin-skills-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.admin-content-page .admin-skills-table th {
+    padding: 1rem;
+    background: var(--color-background);
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.045em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-content-page .admin-skills-table td {
+    padding: 1rem;
+    border-top: 1px solid var(--color-border);
+    font-size: 0.9rem;
+    vertical-align: middle;
+}
+
+.admin-content-page .admin-skills-table tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.admin-content-page .admin-skills-table tbody tr:hover {
+    background: var(--color-background);
+}
+
+.admin-content-page .admin-skills-table td:first-child {
+    font-weight: 650;
+}
+
+/* =========================================
+   TABLE ACTIONS
+   ========================================= */
+
+.admin-content-table-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+/* =========================================
+   EDITOR SECTION
+   ========================================= */
+
+.admin-content-editor-section {
+    scroll-margin-top: 2rem;
+}
+
+.admin-content-editor-section>div {
+    margin-bottom: 1.25rem;
+}
+
+.admin-content-rich-editor {
+    flex: 1 1 100%;
+    min-width: 0;
+}
+
+.admin-content-rich-editor .rich-text-editor {
+    width: 100%;
+    min-width: 0;
+    min-height: 240px;
+}
+
+.admin-content-editor-section .admin-content-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+}
+
+/* =========================================
+   STATUS MESSAGES
+   ========================================= */
+
+.admin-content-page .admin-content-message {
+    margin: 1rem 0;
+    padding: 0.9rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.admin-content-page .admin-content-error {
+    border-color: #e5a4a4;
+    background: #fff1f1;
+    color: #a12626;
+}
+
+.admin-content-page .admin-content-success {
+    border-color: #9bc9a8;
+    background: #effaf1;
+    color: #246b36;
+}
+
+/* =========================================
+   EMPTY STATE
+   ========================================= */
+
+.admin-content-overview>p {
+    padding: 1.5rem;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-muted);
+    text-align: center;
+}
+
+/* =========================================
+   ACCESSIBILITY
+   ========================================= */
+
+.admin-content-page button:focus-visible,
+.admin-content-page a:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 3px;
+}
+
+/* =========================================
+   RESPONSIVE - TABLET
+   ========================================= */
+
+@media (max-width: 900px) {
+    .admin-content-page {
+        padding: 1.5rem;
+    }
+
+    .admin-content-section {
+        padding: 1.35rem;
+    }
+}
+
+/* =========================================
+   RESPONSIVE - MOBILE
+   ========================================= */
+
+@media (max-width: 640px) {
+    .admin-content-page {
+        padding: 1rem;
+    }
+
+    .admin-content-page>h1 {
+        font-size: 1.7rem;
+    }
+
+    .admin-content-section {
+        padding: 1rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .admin-content-page form {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    /* Create form also stacks on small screens */
+    .admin-content-create form {
+        align-items: stretch;
+        flex-direction: column;
+        flex-wrap: nowrap;
+    }
+
+    .admin-content-create form .admin-content-field {
+        width: 100%;
+    }
+
+    .admin-content-create form .btn {
+        width: 100%;
+    }
+
+    .admin-content-page form .btn {
+        width: 100%;
+    }
+
+    .admin-content-page .admin-skills-table {
+        min-width: 650px;
+    }
+
+    .admin-content-table-actions {
+        flex-direction: column;
+    }
+
+    .admin-content-table-actions .btn {
+        width: 100%;
+    }
+
+    .admin-content-editor-section .admin-content-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-content-editor-section .admin-content-actions .btn {
+        width: 100%;
+    }
+}
+
+/* =========================================
+   REDUCED MOTION
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .admin-content-page *,
+    .admin-content-page *::before,
+    .admin-content-page *::after {
+        scroll-behavior: auto !important;
+        transition: none !important;
+    }
+}

@@ -8,6 +8,7 @@ import RecruiterRoute from './RecruiterRoute'
 import LazyPage from './LazyPage'
 import {
   AdminSkillsPage,
+  AdminContentPage,
   AdminUsersPage,
   CandidateApplicationDetailsPage,
   CandidateApplicationsPage,
@@ -197,6 +198,16 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
+
+              {
+                path: 'admin/content',
+                element: (
+                  <LazyPage>
+                    <AdminContentPage />
+                  </LazyPage>
+                ),
+              },
+
             ],
           },
         ],

@@ -1,17 +1,45 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import type { DemoLoginRole } from '../types/auth'
 import { useTranslation } from '../i18n/useTranslation'
+import {
+  getPublicContentPage,
+  type PublicContentPage,
+} from '../features/admin/content.api'
+import { PublicCmsContent } from '../components/PublicCmsContent'
 import './LandingPage.css'
 
 function LandingPage() {
-  const { t } = useTranslation()
+  const { t, language } = useTranslation()
   const { isAuthenticated, demoLogin } = useAuth()
   const navigate = useNavigate()
 
   const [loadingRole, setLoadingRole] = useState<DemoLoginRole | null>(null)
   const [demoLoginError, setDemoLoginError] = useState(false)
+  const [cmsPage, setCmsPage] = useState<PublicContentPage | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    setCmsPage(null)
+
+    getPublicContentPage('home', language)
+      .then((page) => {
+        if (!cancelled) {
+          setCmsPage(page)
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCmsPage(null)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [language])
 
   const handleDemoLogin = async (role: DemoLoginRole) => {
     setLoadingRole(role)
@@ -35,12 +63,16 @@ function LandingPage() {
             {t('landing.eyebrow')}
           </span>
 
-          <h1>{t('landing.title')}</h1>
+          <h1>
+            {cmsPage?.publishedTitle ?? t('landing.title')}
+          </h1>
 
-          <h2>{t('landing.subtitle')}</h2>
+          {!cmsPage && (
+            <h2>{t('landing.subtitle')}</h2>
+          )}
 
           <p className="landing-hero-description">
-            {t('landing.description')}
+            {cmsPage?.publishedIntroduction ?? t('landing.description')}
           </p>
 
           <div className="landing-actions">
@@ -62,6 +94,10 @@ function LandingPage() {
           </div>
         </div>
       </section>
+
+      {cmsPage && (
+        <PublicCmsContent content={cmsPage.publishedContent} />
+      )}
 
       <section className="landing-audience">
         <article className="landing-card">

@@ -225,6 +225,15 @@ function Layout() {
                   <span aria-hidden="true">✦</span>
                   {t('dashboard.admin.manageSkills')}
                 </NavLink>
+
+                <NavLink
+                  to="/admin/content"
+                  className={navLinkClass}
+                  onClick={closeAdminNav}
+                >
+                  <span aria-hidden="true">✎</span>
+                  {t('adminContent.title')}
+                </NavLink>
               </nav>
             </div>
 

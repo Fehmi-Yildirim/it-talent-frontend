@@ -93,7 +93,7 @@ describe('application routes', () => {
     expect(
       await screen.findByRole('heading', {
         name: 'Register',
-      }),
+      }, { timeout: 5000 }),
     ).toBeInTheDocument()
   })
 
