@@ -8,7 +8,11 @@ import RecruiterRoute from './RecruiterRoute'
 import LazyPage from './LazyPage'
 import {
   AdminSkillsPage,
+  AdminContentPage,
+  AdminContentNewPage,
+  AdminContentPreviewPage,
   AdminUsersPage,
+  ContentPage,
   CandidateApplicationDetailsPage,
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
@@ -36,6 +40,19 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />,
+      },
+      {
+        path: 'about',
+        element: (
+          <LazyPage>
+            <ContentPage
+              slugs={{
+                nl: 'over-deze-app',
+                en: 'about-this-app',
+              }}
+            />
+          </LazyPage>
+        ),
       },
       {
         path: 'login',
@@ -197,6 +214,31 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
+              {
+                path: 'admin/content',
+                element: (
+                  <LazyPage>
+                    <AdminContentPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'admin/content/new',
+                element: (
+                  <LazyPage>
+                    <AdminContentNewPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'admin/content/:pageId/preview',
+                element: (
+                  <LazyPage>
+                    <AdminContentPreviewPage />
+                  </LazyPage>
+                ),
+              },
+
             ],
           },
         ],

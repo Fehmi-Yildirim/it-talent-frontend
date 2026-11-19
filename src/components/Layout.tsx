@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
 import './Layout.css'
@@ -71,10 +70,14 @@ function UserActions({
 function Layout() {
   const { language, setLanguage, t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, isAuthenticated, logout } = useAuth()
 
   const [isAdminNavOpen, setIsAdminNavOpen] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(
+    () => location.pathname.startsWith('/admin/content')
+  )
   const [isMobileViewport, setIsMobileViewport] = useState(
     () => window.innerWidth <= 820
   )
@@ -83,7 +86,18 @@ function Layout() {
   const isCandidate = user?.role === 'CANDIDATE'
   const isRecruiter = user?.role === 'RECRUITER'
 
-  // Lock body scrolling while a mobile navigation drawer is open.
+  const isPublicPage =
+    location.pathname === '/' || location.pathname === '/about'
+
+  const showAdminShell =
+    isAuthenticated && isAdmin && !isPublicPage
+
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin/content')) {
+      setIsPagesMenuOpen(true)
+    }
+  }, [location.pathname])
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     const shouldLockScroll = isMobileNavOpen || isAdminNavOpen
@@ -97,7 +111,6 @@ function Layout() {
     }
   }, [isMobileNavOpen, isAdminNavOpen])
 
-  // Close navigation drawers when switching to desktop.
   useEffect(() => {
     function handleResize() {
       const isMobile = window.innerWidth <= 820
@@ -117,7 +130,6 @@ function Layout() {
     }
   }, [])
 
-  // Close navigation drawers with the Escape key.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -167,13 +179,33 @@ function Layout() {
     />
   )
 
+  const accountLinks = (onNavigate?: () => void) => (
+    <>
+      <NavLink
+        to="/dashboard"
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        {t('common.dashboard')}
+      </NavLink>
+
+      <NavLink
+        to="/profile"
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        {t('common.profile')}
+      </NavLink>
+    </>
+  )
+
   return (
     <>
       <a className="skip-link" href="#main-content">
         {t('accessibility.skipToMainContent')}
       </a>
 
-      {isAuthenticated && isAdmin ? (
+      {showAdminShell ? (
         <div className="app-shell app-shell--admin">
           <aside
             className={`admin-sidebar${isAdminNavOpen ? ' is-open' : ''}`}
@@ -198,16 +230,6 @@ function Layout() {
                 className="admin-sidebar__nav"
                 aria-label={t('accessibility.mainNavigation')}
               >
-                {/* Home navigation */}
-                <NavLink
-                  to="/"
-                  className={navLinkClass}
-                  onClick={closeAdminNav}
-                >
-                  <span aria-hidden="true">⌂</span>
-                  {t('common.home')}
-                </NavLink>
-
                 <NavLink
                   to="/admin/users"
                   className={navLinkClass}
@@ -225,22 +247,69 @@ function Layout() {
                   <span aria-hidden="true">✦</span>
                   {t('dashboard.admin.manageSkills')}
                 </NavLink>
+
+                <div className="admin-sidebar__group">
+                  <button
+                    type="button"
+                    className="admin-sidebar__group-label"
+                    aria-expanded={isPagesMenuOpen}
+                    aria-controls="admin-pages-subnav"
+                    onClick={() =>
+                      setIsPagesMenuOpen((isOpen) => !isOpen)
+                    }
+                  >
+                    <span className="admin-sidebar__group-title">
+                      <span aria-hidden="true">🖋️</span>
+                      {t('adminContent.title')}
+                    </span>
+
+                    <span
+                      className="admin-sidebar__chevron"
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  <div
+                    id="admin-pages-subnav"
+                    className="admin-sidebar__subnav"
+                    hidden={!isPagesMenuOpen}
+                  >
+                    <NavLink
+                      to="/admin/content"
+                      end
+                      className={navLinkClass}
+                      onClick={closeAdminNav}
+                    >
+                      {t('dashboard.admin.allPages')}
+                    </NavLink>
+
+                    <NavLink
+                      to="/admin/content/new"
+                      className={navLinkClass}
+                      onClick={closeAdminNav}
+                    >
+                      {t('dashboard.admin.newPage')}
+                    </NavLink>
+                  </div>
+                </div>
               </nav>
             </div>
 
             <div className="admin-sidebar__footer">
               <NavLink
-                to="/profile"
+                to="/"
+                end
                 className={navLinkClass}
                 onClick={closeAdminNav}
               >
-                <span aria-hidden="true">⚙</span>
-                {t('common.profile')}
+                <span aria-hidden="true">↗</span>
+                {t('common.viewPublicWebsite')}
               </NavLink>
             </div>
 
             <div className="admin-sidebar__mobile-actions">
               {languageSwitcher}
+              {accountLinks(closeAdminNav)}
               {userActions}
             </div>
           </aside>
@@ -271,6 +340,7 @@ function Layout() {
 
               <div className="admin-topbar__right">
                 {languageSwitcher}
+                {accountLinks()}
                 {userActions}
               </div>
             </header>
@@ -323,6 +393,7 @@ function Layout() {
                     <div className="main-nav__links">
                       <NavLink
                         to="/"
+                        end
                         className={navLinkClass}
                         onClick={closeMobileNav}
                       >
@@ -330,11 +401,12 @@ function Layout() {
                       </NavLink>
 
                       <NavLink
-                        to="/dashboard"
+                        to="/about"
+                        end
                         className={navLinkClass}
                         onClick={closeMobileNav}
                       >
-                        {t('common.dashboard')}
+                        {t('common.aboutThisApp')}
                       </NavLink>
 
                       {isCandidate && (
@@ -384,18 +456,11 @@ function Layout() {
                           </NavLink>
                         </>
                       )}
-
-                      <NavLink
-                        to="/profile"
-                        className={navLinkClass}
-                        onClick={closeMobileNav}
-                      >
-                        {t('common.profile')}
-                      </NavLink>
                     </div>
 
                     <div className="main-nav__actions">
                       {languageSwitcher}
+                      {accountLinks(closeMobileNav)}
                       {userActions}
                     </div>
                   </>
@@ -403,10 +468,20 @@ function Layout() {
                   <div className="main-nav__links">
                     <NavLink
                       to="/"
+                      end
                       className={navLinkClass}
                       onClick={closeMobileNav}
                     >
                       {t('common.home')}
+                    </NavLink>
+
+                    <NavLink
+                      to="/about"
+                      end
+                      className={navLinkClass}
+                      onClick={closeMobileNav}
+                    >
+                      {t('common.aboutThisApp')}
                     </NavLink>
 
                     <NavLink
