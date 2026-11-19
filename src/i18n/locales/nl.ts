@@ -131,8 +131,6 @@ export const nl: DeepString<typeof en> = {
         english: 'Engels',
         titleLabel: 'Titel',
         titlePlaceholder: 'Vul de paginatitel in',
-        introduction: 'Introductie',
-        introductionPlaceholder: 'Vul een introductie in (optioneel)',
         content: 'Content',
         save: 'Wijzigingen opslaan',
         saving: 'Opslaan...',
@@ -696,6 +694,9 @@ export const nl: DeepString<typeof en> = {
                 'Gebruikers beheren',
             manageSkills:
                 'Skills beheren',
+            pages: "Pagina's",
+            allPages: "Alle pagina's",
+            newPage: "Nieuwe pagina",
         },
 
         account: {

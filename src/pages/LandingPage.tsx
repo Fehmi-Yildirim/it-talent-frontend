@@ -72,7 +72,7 @@ function LandingPage() {
           )}
 
           <p className="landing-hero-description">
-            {cmsPage?.publishedIntroduction ?? t('landing.description')}
+            {t('landing.description')}
           </p>
 
           <div className="landing-actions">

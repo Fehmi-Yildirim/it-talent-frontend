@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react'
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
 import './Layout.css'
@@ -71,10 +70,14 @@ function UserActions({
 function Layout() {
   const { language, setLanguage, t } = useTranslation()
   const navigate = useNavigate()
+  const location = useLocation()
   const { user, isAuthenticated, logout } = useAuth()
 
   const [isAdminNavOpen, setIsAdminNavOpen] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
+  const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(
+    () => location.pathname.startsWith('/admin/content')
+  )
   const [isMobileViewport, setIsMobileViewport] = useState(
     () => window.innerWidth <= 820
   )
@@ -83,7 +86,12 @@ function Layout() {
   const isCandidate = user?.role === 'CANDIDATE'
   const isRecruiter = user?.role === 'RECRUITER'
 
-  // Lock body scrolling while a mobile navigation drawer is open.
+  useEffect(() => {
+    if (location.pathname.startsWith('/admin/content')) {
+      setIsPagesMenuOpen(true)
+    }
+  }, [location.pathname])
+
   useEffect(() => {
     const previousOverflow = document.body.style.overflow
     const shouldLockScroll = isMobileNavOpen || isAdminNavOpen
@@ -97,7 +105,6 @@ function Layout() {
     }
   }, [isMobileNavOpen, isAdminNavOpen])
 
-  // Close navigation drawers when switching to desktop.
   useEffect(() => {
     function handleResize() {
       const isMobile = window.innerWidth <= 820
@@ -117,7 +124,6 @@ function Layout() {
     }
   }, [])
 
-  // Close navigation drawers with the Escape key.
   useEffect(() => {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
@@ -198,7 +204,6 @@ function Layout() {
                 className="admin-sidebar__nav"
                 aria-label={t('accessibility.mainNavigation')}
               >
-                {/* Home navigation */}
                 <NavLink
                   to="/"
                   className={navLinkClass}
@@ -226,14 +231,50 @@ function Layout() {
                   {t('dashboard.admin.manageSkills')}
                 </NavLink>
 
-                <NavLink
-                  to="/admin/content"
-                  className={navLinkClass}
-                  onClick={closeAdminNav}
-                >
-                  <span aria-hidden="true">✎</span>
-                  {t('adminContent.title')}
-                </NavLink>
+                <div className="admin-sidebar__group">
+                  <button
+                    type="button"
+                    className="admin-sidebar__group-label"
+                    aria-expanded={isPagesMenuOpen}
+                    aria-controls="admin-pages-subnav"
+                    onClick={() =>
+                      setIsPagesMenuOpen((isOpen) => !isOpen)
+                    }
+                  >
+                    <span className="admin-sidebar__group-title">
+                      <span aria-hidden="true">📄</span>
+                      {t('dashboard.admin.pages')}
+                    </span>
+
+                    <span
+                      className="admin-sidebar__chevron"
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  <div
+                    id="admin-pages-subnav"
+                    className="admin-sidebar__subnav"
+                    hidden={!isPagesMenuOpen}
+                  >
+                    <NavLink
+                      to="/admin/content"
+                      end
+                      className={navLinkClass}
+                      onClick={closeAdminNav}
+                    >
+                      {t('dashboard.admin.allPages')}
+                    </NavLink>
+
+                    <NavLink
+                      to="/admin/content/new"
+                      className={navLinkClass}
+                      onClick={closeAdminNav}
+                    >
+                      {t('dashboard.admin.newPage')}
+                    </NavLink>
+                  </div>
+                </div>
               </nav>
             </div>
 

@@ -1,8 +1,10 @@
 import {
     useEffect,
+    useLayoutEffect,
     useRef,
     useState,
 } from 'react'
+import { createPortal } from 'react-dom'
 import './ActionMenu.css'
 
 export interface ActionMenuItem {
@@ -17,15 +19,78 @@ interface ActionMenuProps {
     ariaLabel: string
 }
 
+interface MenuPosition {
+    top: number
+    left: number
+}
+
 function ActionMenu({
     actions,
     ariaLabel,
 }: ActionMenuProps) {
     const [open, setOpen] = useState(false)
+    const [position, setPosition] = useState<MenuPosition>({
+        top: 0,
+        left: 0,
+    })
 
-    const menuRef = useRef<HTMLDivElement>(null)
     const triggerRef = useRef<HTMLButtonElement>(null)
+    const menuRef = useRef<HTMLDivElement>(null)
     const itemRefs = useRef<Array<HTMLButtonElement | null>>([])
+
+    const updatePosition = () => {
+        const trigger = triggerRef.current
+        const menu = menuRef.current
+
+        if (!trigger || !menu) {
+            return
+        }
+
+        const triggerRect = trigger.getBoundingClientRect()
+        const menuRect = menu.getBoundingClientRect()
+        const viewportPadding = 8
+        const spacing = 8
+
+        const maxLeft = window.innerWidth - menuRect.width - viewportPadding
+
+        const left = Math.max(
+            viewportPadding,
+            Math.min(
+                triggerRect.right - menuRect.width,
+                maxLeft,
+            ),
+        )
+
+        const spaceBelow =
+            window.innerHeight - triggerRect.bottom
+
+        const shouldOpenAbove =
+            spaceBelow < menuRect.height + spacing &&
+            triggerRect.top > menuRect.height + spacing
+
+        const top = shouldOpenAbove
+            ? triggerRect.top - menuRect.height - spacing
+            : triggerRect.bottom + spacing
+
+        setPosition({
+            top: Math.max(
+                viewportPadding,
+                Math.min(
+                    top,
+                    window.innerHeight - menuRect.height - viewportPadding,
+                ),
+            ),
+            left,
+        })
+    }
+
+    useLayoutEffect(() => {
+        if (!open) {
+            return
+        }
+
+        updatePosition()
+    }, [open])
 
     useEffect(() => {
         if (!open) {
@@ -33,15 +98,16 @@ function ActionMenu({
         }
 
         const handleOutsideClick = (event: MouseEvent) => {
+            const target = event.target as Node
+
             if (
-                menuRef.current &&
-                !menuRef.current.contains(
-                    event.target as Node,
-                )
+                triggerRef.current?.contains(target) ||
+                menuRef.current?.contains(target)
             ) {
-                setOpen(false)
-                triggerRef.current?.focus()
+                return
             }
+
+            setOpen(false)
         }
 
         const handleKeyDown = (event: KeyboardEvent) => {
@@ -72,8 +138,7 @@ function ActionMenu({
             event.preventDefault()
 
             const currentIndex = enabledItems.findIndex(
-                (item) =>
-                    item === document.activeElement,
+                (item) => item === document.activeElement,
             )
 
             let nextIndex = currentIndex
@@ -82,16 +147,14 @@ function ActionMenu({
                 nextIndex =
                     currentIndex < 0
                         ? 0
-                        : (currentIndex + 1) %
-                        enabledItems.length
+                        : (currentIndex + 1) % enabledItems.length
             }
 
             if (event.key === 'ArrowUp') {
                 nextIndex =
                     currentIndex < 0
                         ? enabledItems.length - 1
-                        : (currentIndex - 1 +
-                            enabledItems.length) %
+                        : (currentIndex - 1 + enabledItems.length) %
                         enabledItems.length
             }
 
@@ -106,24 +169,20 @@ function ActionMenu({
             enabledItems[nextIndex]?.focus()
         }
 
-        document.addEventListener(
-            'mousedown',
-            handleOutsideClick,
-        )
-        document.addEventListener(
-            'keydown',
-            handleKeyDown,
-        )
+        const handleViewportChange = () => {
+            updatePosition()
+        }
+
+        document.addEventListener('mousedown', handleOutsideClick)
+        document.addEventListener('keydown', handleKeyDown)
+        window.addEventListener('resize', handleViewportChange)
+        window.addEventListener('scroll', handleViewportChange, true)
 
         return () => {
-            document.removeEventListener(
-                'mousedown',
-                handleOutsideClick,
-            )
-            document.removeEventListener(
-                'keydown',
-                handleKeyDown,
-            )
+            document.removeEventListener('mousedown', handleOutsideClick)
+            document.removeEventListener('keydown', handleKeyDown)
+            window.removeEventListener('resize', handleViewportChange)
+            window.removeEventListener('scroll', handleViewportChange, true)
         }
     }, [open])
 
@@ -143,9 +202,7 @@ function ActionMenu({
         setOpen((current) => !current)
     }
 
-    const handleActionClick = (
-        action: ActionMenuItem,
-    ) => {
+    const handleActionClick = (action: ActionMenuItem) => {
         if (action.disabled) {
             return
         }
@@ -156,10 +213,7 @@ function ActionMenu({
     }
 
     return (
-        <div
-            className="action-menu"
-            ref={menuRef}
-        >
+        <div className="action-menu">
             <button
                 ref={triggerRef}
                 type="button"
@@ -172,34 +226,38 @@ function ActionMenu({
                 ⋮
             </button>
 
-            {open && (
-                <div
-                    className="action-menu__dropdown"
-                    role="menu"
-                >
-                    {actions.map((action, index) => (
-                        <button
-                            key={`${action.label}-${index}`}
-                            ref={(element) => {
-                                itemRefs.current[index] =
-                                    element
-                            }}
-                            type="button"
-                            className={`action-menu__item${action.destructive
+            {open &&
+                createPortal(
+                    <div
+                        ref={menuRef}
+                        className="action-menu__dropdown"
+                        role="menu"
+                        style={{
+                            top: position.top,
+                            left: position.left,
+                        }}
+                    >
+                        {actions.map((action, index) => (
+                            <button
+                                key={`${action.label}-${index}`}
+                                ref={(element) => {
+                                    itemRefs.current[index] = element
+                                }}
+                                type="button"
+                                className={`action-menu__item${action.destructive
                                     ? ' action-menu__item--destructive'
                                     : ''
-                                }`}
-                            role="menuitem"
-                            disabled={action.disabled}
-                            onClick={() =>
-                                handleActionClick(action)
-                            }
-                        >
-                            {action.label}
-                        </button>
-                    ))}
-                </div>
-            )}
+                                    }`}
+                                role="menuitem"
+                                disabled={action.disabled}
+                                onClick={() => handleActionClick(action)}
+                            >
+                                {action.label}
+                            </button>
+                        ))}
+                    </div>,
+                    document.body,
+                )}
         </div>
     )
 }

@@ -9,10 +9,8 @@ export interface ContentTranslation {
     locale: ContentLocale
     slug: string
     draftTitle: string | null
-    draftIntroduction: string | null
     draftContent: Record<string, unknown> | null
     publishedTitle: string | null
-    publishedIntroduction: string | null
     publishedContent: Record<string, unknown> | null
     isPublished: boolean
     publishedAt: string | null
@@ -33,14 +31,12 @@ export interface CreateContentRequest {
 
 export interface UpdateContentTranslationRequest {
     draftTitle?: string
-    draftIntroduction?: string
     draftContent?: Record<string, unknown>
 }
 
 export interface PublicContentPage {
     locale: ContentLocale
     publishedTitle: string
-    publishedIntroduction: string | null
     publishedContent: Record<string, unknown>
     publishedAt: string
 }

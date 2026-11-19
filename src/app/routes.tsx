@@ -6,9 +6,11 @@ import CandidateRoute from './CandidateRoute'
 import ProtectedRoute from './ProtectedRoute'
 import RecruiterRoute from './RecruiterRoute'
 import LazyPage from './LazyPage'
+
 import {
   AdminSkillsPage,
   AdminContentPage,
+  AdminContentNewPage,
   AdminUsersPage,
   CandidateApplicationDetailsPage,
   CandidateApplicationsPage,
@@ -25,6 +27,7 @@ import {
   RecruiterJobsPage,
   RegisterPage,
 } from './lazyPages'
+
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import NotFoundPage from '../pages/NotFoundPage'
@@ -199,6 +202,7 @@ export const router = createBrowserRouter([
                 ),
               },
 
+
               {
                 path: 'admin/content',
                 element: (
@@ -207,6 +211,15 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
+              {
+                path: 'admin/content/new',
+                element: (
+                  <LazyPage>
+                    <AdminContentNewPage />
+                  </LazyPage>
+                ),
+              },
+
 
             ],
           },

@@ -122,8 +122,6 @@ export const en = {
         english: 'English',
         titleLabel: 'Title',
         titlePlaceholder: 'Enter the page title',
-        introduction: 'Introduction',
-        introductionPlaceholder: 'Enter an introduction (optional)',
         content: 'Content',
         save: 'Save changes',
         saving: 'Saving...',
@@ -605,6 +603,9 @@ export const en = {
                 'Manage users and platform administration.',
             manageUsers: 'Manage users',
             manageSkills: 'Manage skills',
+            pages: "Pages",
+            allPages: "All pages",
+            newPage: "New page",
         },
 
         account: {
