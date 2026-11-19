@@ -75,6 +75,8 @@ export const nl: DeepString<typeof en> = {
         skill: 'Vaardigheid',
         status: 'Status',
         suspended: 'Geschorst',
+        title: 'Title',
+        translations: 'Vertalingen',
         tryAgain: 'Opnieuw proberen',
         upTo: 'Tot',
         withdrawn: 'Ingetrokken',

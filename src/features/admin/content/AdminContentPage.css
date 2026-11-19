@@ -21,7 +21,7 @@
    PAGE HEADER
    ========================================= */
 
-.admin-content-page .admin-skills-header {
+.admin-content-page .admin-content-header {
     margin-bottom: 1.5rem;
 }
 
@@ -125,31 +125,6 @@
 }
 
 /* =========================================
-   CREATE PAGE FORM
-   ========================================= */
-
-.admin-content-create form {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-end;
-    flex-wrap: nowrap;
-    gap: 1rem;
-}
-
-.admin-content-create form .admin-content-field {
-    flex: 1 1 auto;
-    min-width: 0;
-    margin-bottom: 0;
-}
-
-.admin-content-create form .btn {
-    flex: 0 0 auto;
-    min-height: 44px;
-    white-space: nowrap;
-    margin-bottom: 0;
-}
-
-/* =========================================
    FORM FIELDS
    ========================================= */
 
@@ -208,21 +183,35 @@
 }
 
 /* =========================================
-   EDITOR FORM FIELD WIDTHS
+   CREATE AND EDIT FORM LAYOUT
    ========================================= */
 
-.admin-content-editor-section .admin-content-field {
-    flex: 1 1 100%;
+.admin-content-create form,
+.admin-content-editor-section form {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.admin-content-create form .admin-content-field,
+.admin-content-editor-section form .admin-content-field {
+    flex: 1 1 300px;
+    min-width: 0;
+    margin-bottom: 0;
 }
 
 /* Content language */
 
-.admin-content-editor-section .admin-content-field:has(#content-locale) {
-    flex: 0 1 180px;
+.admin-content-create form .admin-content-field:has(#content-locale),
+.admin-content-editor-section form .admin-content-field:has(#content-locale) {
+    flex: 0 0 180px;
     width: 180px;
     max-width: 180px;
 }
 
+.admin-content-create #content-locale,
 .admin-content-editor-section #content-locale {
     width: 100%;
     max-width: 180px;
@@ -230,15 +219,72 @@
 
 /* Title */
 
-.admin-content-editor-section .admin-content-field:has(#content-title) {
-    flex: 0 1 500px;
-    width: 100%;
-    max-width: 500px;
+.admin-content-create form .admin-content-field:has(#content-page-title),
+.admin-content-editor-section form .admin-content-field:has(#content-title) {
+    flex: 1 1 300px;
+    width: auto;
+    max-width: none;
 }
 
+.admin-content-create #content-page-title,
 .admin-content-editor-section #content-title {
     width: 100%;
-    max-width: 500px;
+    max-width: none;
+}
+
+/* Rich text editor */
+
+.admin-content-create form .admin-content-rich-editor,
+.admin-content-editor-section form .admin-content-rich-editor {
+    flex: 1 1 100%;
+    width: 100%;
+    min-width: 0;
+    margin-bottom: 0;
+}
+
+.admin-content-rich-editor .cms-editor {
+    width: 100%;
+    min-width: 0;
+    min-height: 240px;
+}
+
+/* Form buttons */
+
+.admin-content-create form .btn,
+.admin-content-editor-section form .btn {
+    flex: 0 0 auto;
+    align-self: flex-start;
+    min-height: 44px;
+    margin-bottom: 0;
+    white-space: nowrap;
+}
+
+/* =========================================
+   EDITOR SECTION
+   ========================================= */
+
+.admin-content-editor-section {
+    scroll-margin-top: 2rem;
+}
+
+.admin-content-editor-section>div {
+    margin-bottom: 1.25rem;
+}
+
+/* =========================================
+   CREATE AND EDIT ACTIONS
+   ========================================= */
+
+.admin-content-create form .admin-content-actions,
+.admin-content-editor-section form .admin-content-actions {
+    display: flex;
+    flex: 1 1 100%;
+    width: 100%;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
 }
 
 /* =========================================
@@ -297,10 +343,10 @@
 }
 
 /* =========================================
-   EXISTING PAGES TABLE
+   CONTENT PAGES TABLE
    ========================================= */
 
-.admin-content-page .admin-skills-table-wrapper {
+.admin-content-table-wrapper {
     width: 100%;
     overflow-x: auto;
     overflow-y: visible;
@@ -309,13 +355,13 @@
     border-radius: var(--radius-md);
 }
 
-.admin-content-page .admin-skills-table {
+.admin-content-table {
     width: 100%;
     border-collapse: collapse;
     text-align: left;
 }
 
-.admin-content-page .admin-skills-table th {
+.admin-content-table th {
     padding: 1rem;
     background: var(--color-background);
     color: var(--color-text-muted);
@@ -326,23 +372,84 @@
     white-space: nowrap;
 }
 
-.admin-content-page .admin-skills-table td {
+.admin-content-table td {
     padding: 1rem;
     border-top: 1px solid var(--color-border);
     font-size: 0.9rem;
     vertical-align: middle;
 }
 
-.admin-content-page .admin-skills-table tbody tr {
+.admin-content-table tbody tr {
     transition: background-color 0.15s ease;
 }
 
-.admin-content-page .admin-skills-table tbody tr:hover {
+.admin-content-table tbody tr:hover {
     background: var(--color-background);
 }
 
-.admin-content-page .admin-skills-table td:first-child {
+.admin-content-page-title-cell {
+    min-width: 220px;
     font-weight: 650;
+}
+
+.admin-content-fallback-locale {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 0.5rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    background: var(--color-background);
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+    vertical-align: middle;
+}
+
+/* =========================================
+   TRANSLATION BADGES
+   ========================================= */
+
+.admin-content-translation-list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.admin-content-translation-badge {
+    display: inline-flex;
+    min-width: 38px;
+    min-height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-background);
+    color: var(--color-primary);
+    font: inherit;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.admin-content-translation-badge:hover {
+    transform: translateY(-1px);
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+}
+
+.admin-content-translation-badge:active {
+    transform: translateY(0);
+}
+
+.admin-content-no-translations {
+    color: var(--color-text-muted);
 }
 
 /* =========================================
@@ -355,56 +462,19 @@
     gap: 0.5rem;
 }
 
-/* =========================================
-   ACTION MENU IN TABLE
-   ========================================= */
-
-.admin-content-page .admin-skills-table td:last-child {
+.admin-content-actions-cell {
     position: relative;
     overflow: visible;
     white-space: nowrap;
 }
 
-.admin-content-page .admin-skills-table tbody tr:last-child {
+.admin-content-table tbody tr:last-child {
     position: relative;
 }
 
-/* Ensure the menu appears above other table content */
-.admin-content-page .admin-skills-table td:last-child>* {
+.admin-content-actions-cell>* {
     position: relative;
     z-index: 2;
-}
-
-/* =========================================
-   EDITOR SECTION
-   ========================================= */
-
-.admin-content-editor-section {
-    scroll-margin-top: 2rem;
-}
-
-.admin-content-editor-section>div {
-    margin-bottom: 1.25rem;
-}
-
-.admin-content-rich-editor {
-    flex: 1 1 100%;
-    width: 100%;
-    min-width: 0;
-}
-
-.admin-content-rich-editor .cms-editor {
-    width: 100%;
-    min-width: 0;
-    min-height: 240px;
-}
-
-.admin-content-editor-section .admin-content-actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
 }
 
 /* =========================================
@@ -491,42 +561,56 @@
         flex-direction: column;
     }
 
-    /* Create form */
+    /* Create and edit forms */
 
-    .admin-content-create form {
+    .admin-content-create form,
+    .admin-content-editor-section form {
         align-items: stretch;
         flex-direction: column;
         flex-wrap: nowrap;
     }
 
-    .admin-content-create form .admin-content-field {
-        width: 100%;
-        max-width: none;
-    }
-
-    .admin-content-create form .btn {
-        width: 100%;
-    }
-
-    /* Editor fields */
-
-    .admin-content-editor-section .admin-content-field:has(#content-locale),
-    .admin-content-editor-section .admin-content-field:has(#content-title) {
+    .admin-content-create form .admin-content-field,
+    .admin-content-editor-section form .admin-content-field,
+    .admin-content-create form .admin-content-field:has(#content-locale),
+    .admin-content-editor-section form .admin-content-field:has(#content-locale),
+    .admin-content-create form .admin-content-field:has(#content-page-title),
+    .admin-content-editor-section form .admin-content-field:has(#content-title) {
         flex: 1 1 100%;
         width: 100%;
         max-width: none;
     }
 
+    .admin-content-create #content-locale,
     .admin-content-editor-section #content-locale,
+    .admin-content-create #content-page-title,
     .admin-content-editor-section #content-title {
         width: 100%;
         max-width: none;
     }
 
+    .admin-content-create form .btn,
+    .admin-content-editor-section form .btn {
+        width: 100%;
+    }
+
+    /* Create and edit actions */
+
+    .admin-content-create .admin-content-actions,
+    .admin-content-editor-section .admin-content-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .admin-content-create .admin-content-actions .btn,
+    .admin-content-editor-section .admin-content-actions .btn {
+        width: 100%;
+    }
+
     /* Tables */
 
-    .admin-content-page .admin-skills-table {
-        min-width: 650px;
+    .admin-content-table {
+        min-width: 520px;
     }
 
     /* Table buttons */
@@ -536,17 +620,6 @@
     }
 
     .admin-content-table-actions .btn {
-        width: 100%;
-    }
-
-    /* Editor actions */
-
-    .admin-content-editor-section .admin-content-actions {
-        align-items: stretch;
-        flex-direction: column;
-    }
-
-    .admin-content-editor-section .admin-content-actions .btn {
         width: 100%;
     }
 

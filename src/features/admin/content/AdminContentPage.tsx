@@ -30,6 +30,7 @@ export default function AdminContentPage() {
     const [pages, setPages] = useState<ContentPage[]>([])
     const [selectedPageId, setSelectedPageId] = useState('')
     const [locale, setLocale] = useState<ContentLocale>(activeLocale)
+    const [tableLocale, setTableLocale] = useState<ContentLocale>(activeLocale)
 
     const [title, setTitle] = useState('')
     const [content, setContent] = useState<JSONContent>(INITIAL_CONTENT)
@@ -66,6 +67,10 @@ export default function AdminContentPage() {
         void loadPages()
     }, [loadPages])
 
+    useEffect(() => {
+        setTableLocale(activeLocale)
+    }, [activeLocale])
+
     const selectedPage = pages.find(
         (page) => page.id === selectedPageId,
     )
@@ -73,6 +78,7 @@ export default function AdminContentPage() {
     const selectedTranslation = selectedPage?.translations.find(
         (item) => item.locale === locale,
     )
+
 
     const handleOpenEditor = async (page: ContentPage) => {
         setIsLoadingEditor(true)
@@ -90,10 +96,10 @@ export default function AdminContentPage() {
 
             const preferredLocale: ContentLocale =
                 fullPage.translations.some(
-                    (item) => item.locale === activeLocale,
+                    (item) => item.locale === tableLocale,
                 )
-                    ? activeLocale
-                    : fullPage.translations[0]?.locale ?? activeLocale
+                    ? tableLocale
+                    : fullPage.translations[0]?.locale ?? tableLocale
 
             const translation = fullPage.translations.find(
                 (item) => item.locale === preferredLocale,
@@ -114,6 +120,7 @@ export default function AdminContentPage() {
             setIsLoadingEditor(false)
         }
     }
+
 
     const closeEditor = () => {
         if (
@@ -344,78 +351,77 @@ export default function AdminContentPage() {
                     {pages.length === 0 ? (
                         <p>{t('adminContent.noPages')}</p>
                     ) : (
-                        <div className="admin-skills-table-wrapper">
-                            <table className="admin-skills-table">
+                        <div className="admin-content-table-wrapper">
+                            <table className="admin-content-table">
                                 <thead>
                                     <tr>
-                                        <th>Titles</th>
-                                        <th>{t('adminContent.slug')}</th>
-                                        <th>{t('adminContent.dutch')}</th>
-                                        <th>{t('adminContent.english')}</th>
+                                        <th>{t('common.page')}</th>
+                                        <th>{t('common.translations')}</th>
                                         <th>{t('common.actions')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {pages.map((page) => {
-                                        const nl = page.translations.find(
-                                            (item) => item.locale === 'nl',
-                                        )
+                                        const activeTranslation =
+                                            page.translations.find(
+                                                (item) => item.locale === tableLocale,
+                                            )
 
-                                        const en = page.translations.find(
-                                            (item) => item.locale === 'en',
-                                        )
+                                        const fallbackTranslation =
+                                            page.translations[0]
+
+                                        const displayedTranslation =
+                                            activeTranslation ?? fallbackTranslation
+
+                                        const displayedTitle =
+                                            displayedTranslation?.draftTitle ||
+                                            displayedTranslation?.publishedTitle ||
+                                            '—'
+
+                                        const otherTranslations =
+                                            page.translations.filter(
+                                                (item) => item.locale !== tableLocale,
+                                            )
 
                                         return (
                                             <tr key={page.id}>
-                                                <td>
-                                                    {page.translations.length > 0
-                                                        ? page.translations.map((translation) => (
-                                                            <div key={translation.id}>
-                                                                <strong>
-                                                                    {translation.locale.toUpperCase()}:
-                                                                </strong>{' '}
-                                                                {translation.draftTitle ||
-                                                                    translation.publishedTitle ||
-                                                                    '—'}
-                                                            </div>
-                                                        ))
-                                                        : '—'}
+                                                <td className="admin-content-page-title-cell">
+                                                    <span>{displayedTitle}</span>
+                                                    {!activeTranslation && displayedTranslation && (
+                                                        <span className="admin-content-fallback-locale">
+                                                            {displayedTranslation.locale.toUpperCase()}
+                                                        </span>
+                                                    )}
                                                 </td>
 
                                                 <td>
-                                                    {page.translations.map((translation) => (
-                                                        <div key={translation.id}>
-                                                            <strong>
-                                                                {translation.locale.toUpperCase()}:
-                                                            </strong>{' '}
-                                                            {translation.slug}
-                                                        </div>
-                                                    ))}
+                                                    <div className="admin-content-translation-list">
+                                                        {otherTranslations.length > 0 ? (
+                                                            otherTranslations.map((translation) => (
+                                                                <button
+                                                                    key={translation.id}
+                                                                    type="button"
+                                                                    className="admin-content-translation-badge"
+                                                                    onClick={() =>
+                                                                        setTableLocale(translation.locale)
+                                                                    }
+                                                                    aria-label={`Show pages in ${translation.locale.toUpperCase()}`}
+                                                                    aria-pressed={false}
+                                                                >
+                                                                    {translation.locale.toUpperCase()}
+                                                                </button>
+                                                            ))
+                                                        ) : (
+                                                            <span className="admin-content-no-translations">
+                                                                —
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                 </td>
 
-                                                <td>
-                                                    {nl?.isPublished
-                                                        ? t('adminContent.published')
-                                                        : nl
-                                                            ? t('adminContent.draft')
-                                                            : t('adminContent.notCreated')}
-                                                </td>
-
-                                                <td>
-                                                    {en?.isPublished
-                                                        ? t('adminContent.published')
-                                                        : en
-                                                            ? t('adminContent.draft')
-                                                            : t('adminContent.notCreated')}
-                                                </td>
-
-                                                <td>
+                                                <td className="admin-content-actions-cell">
                                                     <ActionMenu
-                                                        ariaLabel={`${t('common.actions')} - ${nl?.draftTitle ||
-                                                            nl?.publishedTitle ||
-                                                            en?.draftTitle ||
-                                                            en?.publishedTitle ||
-                                                            page.id
+                                                        ariaLabel={`${t('common.actions')} - ${displayedTitle || page.id
                                                             }`}
                                                         actions={[
                                                             {

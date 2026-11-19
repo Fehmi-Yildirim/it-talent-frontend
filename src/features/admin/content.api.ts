@@ -27,6 +27,7 @@ export interface ContentPage {
 export interface CreateContentRequest {
     title: string
     locale: ContentLocale
+    draftContent: Record<string, unknown>
 }
 
 export interface UpdateContentTranslationRequest {

@@ -67,6 +67,8 @@ export const en = {
         skill: 'Skill',
         status: 'Status',
         suspended: 'Suspended',
+        title: 'Title',
+        translations: 'Translations',
         tryAgain: 'Try again',
         upTo: 'Up to',
         withdrawn: 'Withdrawn',

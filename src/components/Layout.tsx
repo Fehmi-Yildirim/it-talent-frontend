@@ -242,8 +242,8 @@ function Layout() {
                     }
                   >
                     <span className="admin-sidebar__group-title">
-                      <span aria-hidden="true">📄</span>
-                      {t('dashboard.admin.pages')}
+                      <span aria-hidden="true">🖋️</span>
+                      {t('adminContent.title')}
                     </span>
 
                     <span
