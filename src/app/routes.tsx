@@ -6,14 +6,13 @@ import CandidateRoute from './CandidateRoute'
 import ProtectedRoute from './ProtectedRoute'
 import RecruiterRoute from './RecruiterRoute'
 import LazyPage from './LazyPage'
-
 import {
   AdminSkillsPage,
   AdminContentPage,
   AdminContentNewPage,
   AdminContentPreviewPage,
   AdminUsersPage,
-  AboutPage,
+  ContentPage,
   CandidateApplicationDetailsPage,
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
@@ -46,7 +45,12 @@ export const router = createBrowserRouter([
         path: 'about',
         element: (
           <LazyPage>
-            <AboutPage />
+            <ContentPage
+              slugs={{
+                nl: 'over-deze-app',
+                en: 'about-this-app',
+              }}
+            />
           </LazyPage>
         ),
       },

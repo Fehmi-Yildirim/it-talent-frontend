@@ -96,6 +96,11 @@ export const nl: DeepString<typeof en> = {
         workMode: 'Werkmodus',
     },
 
+    contentPage: {
+        "loading": "Pagina laden...",
+        "unavailable": "Deze pagina is momenteel niet beschikbaar."
+    },
+
     accessibility: {
         skipToMainContent: 'Ga naar hoofdinhoud',
         mainNavigation: 'Hoofdnavigatie',

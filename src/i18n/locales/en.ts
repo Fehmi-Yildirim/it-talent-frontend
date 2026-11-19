@@ -88,6 +88,11 @@ export const en = {
         workMode: 'Work mode',
     },
 
+    contentPage: {
+        "loading": "Loading page...",
+        "unavailable": "This page is currently unavailable."
+    },
+
     accessibility: {
         skipToMainContent: 'Skip to main content',
         mainNavigation: 'Main navigation',

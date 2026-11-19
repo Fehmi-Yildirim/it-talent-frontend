@@ -76,6 +76,6 @@ export const AdminContentPreviewPage = lazy(
     () => import('../features/admin/content/AdminContentPreviewPage'),
 )
 
-export const AboutPage = lazy(
-    () => import('../pages/AboutPage'),
+export const ContentPage = lazy(
+    () => import('../pages/ContentPage')
 )
