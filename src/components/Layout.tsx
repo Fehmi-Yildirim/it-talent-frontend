@@ -86,6 +86,12 @@ function Layout() {
   const isCandidate = user?.role === 'CANDIDATE'
   const isRecruiter = user?.role === 'RECRUITER'
 
+  const isPublicPage =
+    location.pathname === '/' || location.pathname === '/about'
+
+  const showAdminShell =
+    isAuthenticated && isAdmin && !isPublicPage
+
   useEffect(() => {
     if (location.pathname.startsWith('/admin/content')) {
       setIsPagesMenuOpen(true)
@@ -173,13 +179,33 @@ function Layout() {
     />
   )
 
+  const accountLinks = (onNavigate?: () => void) => (
+    <>
+      <NavLink
+        to="/dashboard"
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        {t('common.dashboard')}
+      </NavLink>
+
+      <NavLink
+        to="/profile"
+        className={navLinkClass}
+        onClick={onNavigate}
+      >
+        {t('common.profile')}
+      </NavLink>
+    </>
+  )
+
   return (
     <>
       <a className="skip-link" href="#main-content">
         {t('accessibility.skipToMainContent')}
       </a>
 
-      {isAuthenticated && isAdmin ? (
+      {showAdminShell ? (
         <div className="app-shell app-shell--admin">
           <aside
             className={`admin-sidebar${isAdminNavOpen ? ' is-open' : ''}`}
@@ -204,15 +230,6 @@ function Layout() {
                 className="admin-sidebar__nav"
                 aria-label={t('accessibility.mainNavigation')}
               >
-                <NavLink
-                  to="/"
-                  className={navLinkClass}
-                  onClick={closeAdminNav}
-                >
-                  <span aria-hidden="true">⌂</span>
-                  {t('common.home')}
-                </NavLink>
-
                 <NavLink
                   to="/admin/users"
                   className={navLinkClass}
@@ -280,17 +297,19 @@ function Layout() {
 
             <div className="admin-sidebar__footer">
               <NavLink
-                to="/profile"
+                to="/"
+                end
                 className={navLinkClass}
                 onClick={closeAdminNav}
               >
-                <span aria-hidden="true">⚙</span>
-                {t('common.profile')}
+                <span aria-hidden="true">↗</span>
+                {t('common.viewPublicWebsite')}
               </NavLink>
             </div>
 
             <div className="admin-sidebar__mobile-actions">
               {languageSwitcher}
+              {accountLinks(closeAdminNav)}
               {userActions}
             </div>
           </aside>
@@ -321,6 +340,7 @@ function Layout() {
 
               <div className="admin-topbar__right">
                 {languageSwitcher}
+                {accountLinks()}
                 {userActions}
               </div>
             </header>
@@ -373,6 +393,7 @@ function Layout() {
                     <div className="main-nav__links">
                       <NavLink
                         to="/"
+                        end
                         className={navLinkClass}
                         onClick={closeMobileNav}
                       >
@@ -380,11 +401,12 @@ function Layout() {
                       </NavLink>
 
                       <NavLink
-                        to="/dashboard"
+                        to="/about"
+                        end
                         className={navLinkClass}
                         onClick={closeMobileNav}
                       >
-                        {t('common.dashboard')}
+                        {t('common.aboutThisApp')}
                       </NavLink>
 
                       {isCandidate && (
@@ -434,18 +456,11 @@ function Layout() {
                           </NavLink>
                         </>
                       )}
-
-                      <NavLink
-                        to="/profile"
-                        className={navLinkClass}
-                        onClick={closeMobileNav}
-                      >
-                        {t('common.profile')}
-                      </NavLink>
                     </div>
 
                     <div className="main-nav__actions">
                       {languageSwitcher}
+                      {accountLinks(closeMobileNav)}
                       {userActions}
                     </div>
                   </>
@@ -453,10 +468,20 @@ function Layout() {
                   <div className="main-nav__links">
                     <NavLink
                       to="/"
+                      end
                       className={navLinkClass}
                       onClick={closeMobileNav}
                     >
                       {t('common.home')}
+                    </NavLink>
+
+                    <NavLink
+                      to="/about"
+                      end
+                      className={navLinkClass}
+                      onClick={closeMobileNav}
+                    >
+                      {t('common.aboutThisApp')}
                     </NavLink>
 
                     <NavLink

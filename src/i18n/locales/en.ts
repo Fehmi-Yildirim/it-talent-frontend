@@ -1,5 +1,17 @@
 export const en = {
+    about: {
+        eyebrow: 'IT Talent Platform',
+        title: 'About IT Talent',
+        intro: 'IT Talent connects candidates and recruiters through a platform focused on the IT job market.',
+        missionTitle: 'Our purpose',
+        missionDescription: 'Our goal is to make it easier for IT professionals and recruiters to find the right match.',
+        candidatesTitle: 'For candidates',
+        candidatesDescription: 'Candidates can create a profile, present their skills and experience, explore job opportunities and manage their applications.',
+        recruitersTitle: 'For recruiters',
+        recruitersDescription: 'Recruiters can manage company information, publish job opportunities and review applications from candidates.',
+    },
     common: {
+        aboutThisApp: 'About this app',
         accepted: 'Accepted',
         actions: 'Actions',
         active: 'Active',
@@ -71,6 +83,7 @@ export const en = {
         translations: 'Translations',
         tryAgain: 'Try again',
         upTo: 'Up to',
+        viewPublicWebsite: 'View public website',
         withdrawn: 'Withdrawn',
         workMode: 'Work mode',
     },
@@ -140,6 +153,12 @@ export const en = {
         deleteTranslation: 'Delete translation',
         deleteTranslationConfirmation:
             'Are you sure you want to delete this language translation?',
+        preview: 'Preview',
+        previewTitle: 'Content preview',
+        previewLoading: 'Loading preview...',
+        previewError: 'Unable to load content preview.',
+        previewNotFound: 'No content is available for this language.',
+        previewDraft: 'Draft preview',
         editor: {
             loading: 'Loading editor...',
             linkPrompt: 'Enter the URL:',

@@ -71,3 +71,11 @@ export const AdminContentPage = lazy(
 export const AdminContentNewPage = lazy(
     () => import('../features/admin/content/AdminContentNewPage'),
 )
+
+export const AdminContentPreviewPage = lazy(
+    () => import('../features/admin/content/AdminContentPreviewPage'),
+)
+
+export const AboutPage = lazy(
+    () => import('../pages/AboutPage'),
+)

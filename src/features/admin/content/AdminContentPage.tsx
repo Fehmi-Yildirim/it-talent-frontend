@@ -79,7 +79,6 @@ export default function AdminContentPage() {
         (item) => item.locale === locale,
     )
 
-
     const handleOpenEditor = async (page: ContentPage) => {
         setIsLoadingEditor(true)
         setError(null)
@@ -120,7 +119,6 @@ export default function AdminContentPage() {
             setIsLoadingEditor(false)
         }
     }
-
 
     const closeEditor = () => {
         if (
@@ -421,9 +419,24 @@ export default function AdminContentPage() {
 
                                                 <td className="admin-content-actions-cell">
                                                     <ActionMenu
-                                                        ariaLabel={`${t('common.actions')} - ${displayedTitle || page.id
-                                                            }`}
+                                                        ariaLabel={`${t('common.actions')} - ${displayedTitle || page.id}`}
                                                         actions={[
+                                                            {
+                                                                label: t('adminContent.preview'),
+                                                                onClick: () => {
+                                                                    const previewLocale =
+                                                                        displayedTranslation?.locale ?? tableLocale
+                                                                    const previewUrl =
+                                                                        `/admin/content/${page.id}/preview?locale=${previewLocale}`
+
+                                                                    window.open(
+                                                                        previewUrl,
+                                                                        '_blank',
+                                                                        'noopener,noreferrer',
+                                                                    )
+                                                                },
+                                                                disabled: !displayedTranslation || isLoadingEditor,
+                                                            },
                                                             {
                                                                 label: t('common.edit'),
                                                                 onClick: () => void handleOpenEditor(page),
@@ -463,19 +476,6 @@ export default function AdminContentPage() {
                         <h2>
                             {t('adminContent.editPage')}: {selectedTranslation?.draftTitle || selectedTranslation?.publishedTitle || 'Untitled page'}
                         </h2>
-
-                        <button
-                            type="button"
-                            className="btn btn-secondary"
-                            onClick={closeEditor}
-                            disabled={
-                                isSaving ||
-                                isPublishing ||
-                                isDeletingTranslation
-                            }
-                        >
-                            {t('common.cancel')}
-                        </button>
                     </div>
 
                     {error && (
@@ -503,6 +503,37 @@ export default function AdminContentPage() {
                             void handleSave()
                         }}
                     >
+                        <div className="admin-content-actions">
+                            {selectedTranslation?.isPublished ? (
+                                <button
+                                    type="button"
+                                    className="btn btn-secondary"
+                                    onClick={() => void handleUnpublish()}
+                                    disabled={isPublishing || isSaving}
+                                >
+                                    {isPublishing
+                                        ? t('adminContent.unpublishing')
+                                        : t('adminContent.unpublish')}
+                                </button>
+                            ) : (
+                                <button
+                                    type="button"
+                                    className="btn btn-primary"
+                                    onClick={() => void handlePublish()}
+                                    disabled={
+                                        isPublishing ||
+                                        isSaving ||
+                                        !title.trim() ||
+                                        !selectedTranslation
+                                    }
+                                >
+                                    {isPublishing
+                                        ? t('adminContent.publishing')
+                                        : t('adminContent.publish')}
+                                </button>
+                            )}
+                        </div>
+
                         <div className="admin-content-field">
                             <label htmlFor="content-locale">
                                 {t('adminContent.selectLocale')}
@@ -565,45 +596,6 @@ export default function AdminContentPage() {
                         </div>
 
                         <div className="admin-content-actions">
-                            <button
-                                type="submit"
-                                className="btn btn-primary"
-                                disabled={isSaving || isPublishing}
-                            >
-                                {isSaving
-                                    ? t('adminContent.saving')
-                                    : t('adminContent.save')}
-                            </button>
-
-                            {selectedTranslation?.isPublished ? (
-                                <button
-                                    type="button"
-                                    className="btn btn-secondary"
-                                    onClick={() => void handleUnpublish()}
-                                    disabled={isPublishing || isSaving}
-                                >
-                                    {isPublishing
-                                        ? t('adminContent.unpublishing')
-                                        : t('adminContent.unpublish')}
-                                </button>
-                            ) : (
-                                <button
-                                    type="button"
-                                    className="btn btn-primary"
-                                    onClick={() => void handlePublish()}
-                                    disabled={
-                                        isPublishing ||
-                                        isSaving ||
-                                        !title.trim() ||
-                                        !selectedTranslation
-                                    }
-                                >
-                                    {isPublishing
-                                        ? t('adminContent.publishing')
-                                        : t('adminContent.publish')}
-                                </button>
-                            )}
-
                             {selectedTranslation &&
                                 selectedPage.translations.length > 1 && (
                                     <button
@@ -621,6 +613,29 @@ export default function AdminContentPage() {
                                         {t('adminContent.deleteTranslation')}
                                     </button>
                                 )}
+
+                            <button
+                                type="submit"
+                                className="btn btn-primary"
+                                disabled={isSaving || isPublishing}
+                            >
+                                {isSaving
+                                    ? t('adminContent.saving')
+                                    : t('adminContent.save')}
+                            </button>
+
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={closeEditor}
+                                disabled={
+                                    isSaving ||
+                                    isPublishing ||
+                                    isDeletingTranslation
+                                }
+                            >
+                                {t('common.cancel')}
+                            </button>
                         </div>
                     </form>
                 </section>

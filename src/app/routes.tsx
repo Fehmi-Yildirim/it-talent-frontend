@@ -11,7 +11,9 @@ import {
   AdminSkillsPage,
   AdminContentPage,
   AdminContentNewPage,
+  AdminContentPreviewPage,
   AdminUsersPage,
+  AboutPage,
   CandidateApplicationDetailsPage,
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
@@ -27,7 +29,6 @@ import {
   RecruiterJobsPage,
   RegisterPage,
 } from './lazyPages'
-
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import NotFoundPage from '../pages/NotFoundPage'
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <LandingPage />,
+      },
+      {
+        path: 'about',
+        element: (
+          <LazyPage>
+            <AboutPage />
+          </LazyPage>
+        ),
       },
       {
         path: 'login',
@@ -201,8 +210,6 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
-
-
               {
                 path: 'admin/content',
                 element: (
@@ -219,7 +226,14 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
-
+              {
+                path: 'admin/content/:pageId/preview',
+                element: (
+                  <LazyPage>
+                    <AdminContentPreviewPage />
+                  </LazyPage>
+                ),
+              },
 
             ],
           },

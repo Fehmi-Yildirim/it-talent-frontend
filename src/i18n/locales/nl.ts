@@ -7,7 +7,19 @@ type DeepString<T> = {
 };
 
 export const nl: DeepString<typeof en> = {
+    about: {
+        eyebrow: 'IT Talent Platform',
+        title: 'Over IT Talent',
+        intro: 'IT Talent brengt kandidaten en recruiters samen via een platform dat zich richt op de IT-arbeidsmarkt.',
+        missionTitle: 'Ons doel',
+        missionDescription: 'We willen het voor IT-professionals en recruiters eenvoudiger maken om de juiste match te vinden.',
+        candidatesTitle: 'Voor kandidaten',
+        candidatesDescription: 'Kandidaten kunnen een profiel aanmaken, hun vaardigheden en ervaring presenteren, vacatures bekijken en hun sollicitaties beheren.',
+        recruitersTitle: 'Voor recruiters',
+        recruitersDescription: 'Recruiters kunnen bedrijfsinformatie beheren, vacatures publiceren en sollicitaties van kandidaten bekijken.',
+    },
     common: {
+        aboutThisApp: 'Over deze app',
         accepted: 'Geaccepteerd',
         actions: 'Acties',
         active: 'Actief',
@@ -79,6 +91,7 @@ export const nl: DeepString<typeof en> = {
         translations: 'Vertalingen',
         tryAgain: 'Opnieuw proberen',
         upTo: 'Tot',
+        viewPublicWebsite: 'Bekijk publieke website',
         withdrawn: 'Ingetrokken',
         workMode: 'Werkmodus',
     },
@@ -149,6 +162,12 @@ export const nl: DeepString<typeof en> = {
         deleteTranslation: 'Vertaling verwijderen',
         deleteTranslationConfirmation:
             'Weet je zeker dat je deze taalvertaling wilt verwijderen?',
+        preview: 'Preview',
+        previewTitle: 'Inhoudsvoorbeeld',
+        previewLoading: 'Preview laden...',
+        previewError: 'De preview kon niet worden geladen.',
+        previewNotFound: 'Er is geen inhoud beschikbaar voor deze taal.',
+        previewDraft: 'Conceptvoorbeeld',
         editor: {
             loading: 'Editor laden...',
             linkPrompt: 'Voer de URL in:',
