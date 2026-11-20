@@ -61,6 +61,67 @@ describe('application routes', () => {
     ).toBeInTheDocument()
   })
 
+
+  it('renders the Dutch landing page at /nl/', async () => {
+    mockedGetAccessToken.mockReturnValue(null)
+
+    await router.navigate('/nl/')
+
+    render(
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>,
+    )
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'IT Talent',
+      }),
+    ).toBeInTheDocument()
+
+    expect(router.state.location.pathname).toBe('/nl/')
+  })
+
+  it('renders the Dutch register page at /nl/registreren', async () => {
+    mockedGetAccessToken.mockReturnValue(null)
+
+    await router.navigate('/nl/registreren')
+
+    render(
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>,
+    )
+
+    expect(
+      await screen.findByRole(
+        'heading',
+        { name: 'Registreren' },
+        { timeout: 10000 },
+      ),
+    ).toBeInTheDocument()
+
+    expect(router.state.location.pathname).toBe('/nl/registreren')
+  })
+
+  it('renders the not-found page for unsupported language prefixes', async () => {
+    mockedGetAccessToken.mockReturnValue(null)
+
+    await router.navigate('/fr/about')
+
+    render(
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>,
+    )
+
+    expect(
+      await screen.findByRole('heading', {
+        name: 'Page not found',
+      }),
+    ).toBeInTheDocument()
+  })
+
   it('renders the login page at /login', async () => {
     mockedGetAccessToken.mockReturnValue(null)
 

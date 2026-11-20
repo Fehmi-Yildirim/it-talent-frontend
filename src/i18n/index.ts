@@ -4,6 +4,7 @@ import type {
 } from '../types/job';
 import { en } from './locales/en';
 import { nl } from './locales/nl';
+import { DEFAULT_LANGUAGE } from '../config/app'
 
 export const translations = {
     en,
@@ -17,7 +18,7 @@ export const LOCALES = {
 
 export type Language = keyof typeof translations;
 
-export const defaultLanguage: Language = 'en';
+export const defaultLanguage: Language = DEFAULT_LANGUAGE
 
 type PreviousDepth = [never, 0, 1, 2, 3, 4];
 

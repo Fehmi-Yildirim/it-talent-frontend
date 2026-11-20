@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react'
-import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom'
+import type { ComponentProps } from 'react'
+import {
+  Link as RouterLink,
+  NavLink as RouterNavLink,
+  Outlet,
+  useNavigate,
+  useLocation,
+} from 'react-router-dom'
 import { useAuth } from '../features/auth/useAuth'
 import { useTranslation } from '../i18n/useTranslation'
+import {
+  getLocalizedPath,
+  getPathWithoutLocale,
+} from '../i18n/routing'
 import './Layout.css'
 
 type Translation = ReturnType<typeof useTranslation>
@@ -11,6 +22,28 @@ type LanguageSwitcherProps = {
   language: Translation['language']
   setLanguage: Translation['setLanguage']
   t: Translation['t']
+}
+
+function Link(props: ComponentProps<typeof RouterLink>) {
+  const { language } = useTranslation()
+
+  const to =
+    typeof props.to === 'string'
+      ? getLocalizedPath(props.to, language)
+      : props.to
+
+  return <RouterLink {...props} to={to} />
+}
+
+function NavLink(props: ComponentProps<typeof RouterNavLink>) {
+  const { language } = useTranslation()
+
+  const to =
+    typeof props.to === 'string'
+      ? getLocalizedPath(props.to, language)
+      : props.to
+
+  return <RouterNavLink {...props} to={to} />
 }
 
 function LanguageSwitcher({
@@ -76,24 +109,35 @@ function Layout() {
   const [isAdminNavOpen, setIsAdminNavOpen] = useState(false)
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false)
   const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(
-    () => location.pathname.startsWith('/admin/content')
+    () =>
+      getPathWithoutLocale(location.pathname).startsWith(
+        '/admin/content',
+      ),
   )
   const [isMobileViewport, setIsMobileViewport] = useState(
-    () => window.innerWidth <= 820
+    () => window.innerWidth <= 820,
   )
 
   const isAdmin = user?.role === 'ADMIN'
   const isCandidate = user?.role === 'CANDIDATE'
   const isRecruiter = user?.role === 'RECRUITER'
 
+  const currentPath = getPathWithoutLocale(location.pathname)
+
   const isPublicPage =
-    location.pathname === '/' || location.pathname === '/about'
+    currentPath === '/' ||
+    currentPath === '/about-this-app' ||
+    currentPath === '/over-deze-app'
 
   const showAdminShell =
     isAuthenticated && isAdmin && !isPublicPage
 
   useEffect(() => {
-    if (location.pathname.startsWith('/admin/content')) {
+    if (
+      getPathWithoutLocale(location.pathname).startsWith(
+        '/admin/content',
+      )
+    ) {
       setIsPagesMenuOpen(true)
     }
   }, [location.pathname])
@@ -149,7 +193,9 @@ function Layout() {
     logout()
     setIsMobileNavOpen(false)
     setIsAdminNavOpen(false)
-    navigate('/login', { replace: true })
+    navigate(getLocalizedPath('/login', language), {
+      replace: true,
+    })
   }
 
   function closeAdminNav() {

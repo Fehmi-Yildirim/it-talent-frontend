@@ -1,4 +1,3 @@
-
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import App from './App'
 import AdminRoute from './AdminRoute'
@@ -31,10 +30,17 @@ import {
 import LandingPage from '../pages/LandingPage'
 import LoginPage from '../pages/LoginPage'
 import NotFoundPage from '../pages/NotFoundPage'
+import { getLocalizedPath, type Language } from '../i18n/routing'
 
-export const router = createBrowserRouter([
-  {
-    path: '/',
+function createAppRoute(path: '/' | '/nl', language: Language) {
+  const aboutSlug =
+    language === 'nl' ? 'over-deze-app' : 'about-this-app'
+
+  const registerSlug =
+    language === 'nl' ? 'registreren' : 'register'
+
+  return {
+    path,
     element: <App />,
     children: [
       {
@@ -42,7 +48,7 @@ export const router = createBrowserRouter([
         element: <LandingPage />,
       },
       {
-        path: 'about',
+        path: aboutSlug,
         element: (
           <LazyPage>
             <ContentPage
@@ -55,11 +61,20 @@ export const router = createBrowserRouter([
         ),
       },
       {
+        path: 'about',
+        element: (
+          <Navigate
+            to={getLocalizedPath('/about-this-app', language)}
+            replace
+          />
+        ),
+      },
+      {
         path: 'login',
         element: <LoginPage />,
       },
       {
-        path: 'register',
+        path: registerSlug,
         element: (
           <LazyPage>
             <RegisterPage />
@@ -132,7 +147,12 @@ export const router = createBrowserRouter([
           },
           {
             path: 'recruiter/profile',
-            element: <Navigate to="/profile" replace />,
+            element: (
+              <Navigate
+                to={getLocalizedPath('/profile', language)}
+                replace
+              />
+            ),
           },
           {
             element: <RecruiterRoute />,
@@ -238,7 +258,6 @@ export const router = createBrowserRouter([
                   </LazyPage>
                 ),
               },
-
             ],
           },
         ],
@@ -248,5 +267,10 @@ export const router = createBrowserRouter([
         element: <NotFoundPage />,
       },
     ],
-  },
+  }
+}
+
+export const router = createBrowserRouter([
+  createAppRoute('/', 'en'),
+  createAppRoute('/nl', 'nl'),
 ])
