@@ -683,6 +683,29 @@ export const en = {
         getStarted: 'Get started',
         demoLoading: 'Opening demo account...',
         demoLoginError: 'Demo access is currently unavailable. Please try again later.',
+        demoStartup: {
+            title: 'Starting your demo',
+            description:
+                'We are preparing your demo environment. Please wait...',
+            render: {
+                name: 'Render',
+                description: 'Connecting to the backend service',
+                status: 'Connecting...',
+            },
+            neon: {
+                name: 'Neon',
+                description: 'Database requests are handled by the backend',
+                status: 'Via backend',
+            },
+            github: {
+                name: 'GitHub',
+                description: 'Source code and deployment platform',
+                status: 'Deployment source',
+            },
+            account: 'Account',
+            candidate: 'Candidate',
+            recruiter: 'Recruiter',
+        },
 
         candidates: {
             label: 'For candidates',

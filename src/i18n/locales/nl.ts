@@ -802,6 +802,29 @@ export const nl: DeepString<typeof en> = {
             'Aan de slag',
         demoLoading: 'Demo-account openen...',
         demoLoginError: 'Demo-toegang is momenteel niet beschikbaar. Probeer het later opnieuw.',
+        demoStartup: {
+            title: 'Je demo wordt opgestart',
+            description:
+                'We bereiden je demo-omgeving voor. Een ogenblik geduld...',
+            render: {
+                name: 'Render',
+                description: 'Verbinding maken met de backend',
+                status: 'Verbinden...',
+            },
+            neon: {
+                name: 'Neon',
+                description: 'Databaseverzoeken worden verwerkt via de backend',
+                status: 'Via backend',
+            },
+            github: {
+                name: 'GitHub',
+                description: 'Broncode- en deploymentplatform',
+                status: 'Deploymentbron',
+            },
+            account: 'Account',
+            candidate: 'Kandidaat',
+            recruiter: 'Recruiter',
+        },
 
         candidates: {
             label:
