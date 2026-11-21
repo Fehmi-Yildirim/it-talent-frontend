@@ -20,7 +20,7 @@ function GlobalLoadingOverlay() {
 
         const timeout = window.setTimeout(() => {
             setIsVisible(true)
-        }, 300)
+        }, 5000)
 
         return () => window.clearTimeout(timeout)
     }, [isLoading])
