@@ -212,11 +212,9 @@ function LandingPage() {
                 ),
               )}
             </div>
-
             <div className="demo-loading-progress">
               <span />
             </div>
-
             <p className="demo-loading-role">
               {t('landing.demoStartup.account')}:{' '}
               {t(
@@ -228,6 +226,7 @@ function LandingPage() {
           </div>
         </div>
       )}
+
       <footer className="landing-footer">
         <span>© {new Date().getFullYear()} IT Talent</span>
       </footer>

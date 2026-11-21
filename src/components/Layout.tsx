@@ -14,6 +14,7 @@ import {
   getPathWithoutLocale,
 } from '../i18n/routing'
 import './Layout.css'
+import GlobalLoadingOverlay from './feedback/GlobalLoadingOverlay'
 
 type Translation = ReturnType<typeof useTranslation>
 type AuthUser = ReturnType<typeof useAuth>['user']
@@ -558,6 +559,8 @@ function Layout() {
           </main>
         </div>
       )}
+
+      <GlobalLoadingOverlay />
     </>
   )
 }

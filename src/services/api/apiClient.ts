@@ -2,6 +2,7 @@ import { env } from '../../config/env'
 import type { ApiErrorDetails } from '../../types/api'
 import { ApiError } from './apiError'
 import { authToken } from './authToken'
+import { apiLoading } from './apiLoading'
 
 async function request<T>(
   endpoint: string,
@@ -12,53 +13,67 @@ async function request<T>(
   const isFormData =
     typeof FormData !== 'undefined' && options?.body instanceof FormData
 
-  let response: Response
+  const trackLoading =
+    options?.method === undefined ||
+    options.method.toUpperCase() === 'GET'
+
+  if (trackLoading) {
+    apiLoading.start()
+  }
 
   try {
-    response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
-      ...options,
-      headers: {
-        ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
-        ...(token
-          ? {
-            Authorization: `Bearer ${token}`,
-          }
-          : {}),
-        ...options?.headers,
-      },
-    })
-  } catch (error) {
-    throw new ApiError(0, 'Unable to connect to the API', {
-      cause: error,
-    })
-  }
-
-  if (!response.ok) {
-    let details: ApiErrorDetails | undefined
+    let response: Response
 
     try {
-      details = (await response.json()) as ApiErrorDetails
-    } catch {
-      // Response bevat geen JSON body.
+      response = await fetch(`${env.apiBaseUrl}${endpoint}`, {
+        ...options,
+        headers: {
+          ...(!isFormData ? { 'Content-Type': 'application/json' } : {}),
+          ...(token
+            ? {
+              Authorization: `Bearer ${token}`,
+            }
+            : {}),
+          ...options?.headers,
+        },
+      })
+    } catch (error) {
+      throw new ApiError(0, 'Unable to connect to the API', {
+        cause: error,
+      })
     }
 
-    const message =
-      typeof details?.message === 'string'
-        ? details.message
-        : Array.isArray(details?.message)
-          ? details.message.join(', ')
-          : `API request failed with status ${response.status}`
+    if (!response.ok) {
+      let details: ApiErrorDetails | undefined
 
-    throw new ApiError(response.status, message, details)
+      try {
+        details = (await response.json()) as ApiErrorDetails
+      } catch {
+        // Response bevat geen JSON body.
+      }
+
+      const message =
+        typeof details?.message === 'string'
+          ? details.message
+          : Array.isArray(details?.message)
+            ? details.message.join(', ')
+            : `API request failed with status ${response.status}`
+
+      throw new ApiError(response.status, message, details)
+    }
+
+    if (response.status === 204) {
+      return undefined as T
+    }
+
+    return responseType === 'blob'
+      ? (await response.blob()) as T
+      : (await response.json()) as T
+  } finally {
+    if (trackLoading) {
+      apiLoading.finish()
+    }
   }
-
-  if (response.status === 204) {
-    return undefined as T
-  }
-
-  return responseType === 'blob'
-    ? (response.blob() as Promise<T>)
-    : (response.json() as Promise<T>)
 }
 
 export const apiClient = {
