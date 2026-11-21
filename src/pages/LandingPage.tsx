@@ -111,9 +111,13 @@ function LandingPage() {
 
           {!isAuthenticated && (
             <>
-              <Link to="/register">
-                {t('landing.candidates.createAccount')} →
+              <Link to="https://it-talent.onrender.com/register">
+                {t('landing.candidates.createAccount')}
               </Link>
+
+              <span className="landing-flow-arrow" aria-hidden="true">
+                ↓
+              </span>
 
               <button
                 type="button"
@@ -140,9 +144,13 @@ function LandingPage() {
 
           {!isAuthenticated && (
             <>
-              <Link to="/register">
-                {t('landing.recruiters.getStarted')} →
+              <Link to="https://it-talent.onrender.com/register">
+                {t('landing.recruiters.getStarted')}
               </Link>
+
+              <span className="landing-flow-arrow" aria-hidden="true">
+                ↓
+              </span>
 
               <button
                 type="button"

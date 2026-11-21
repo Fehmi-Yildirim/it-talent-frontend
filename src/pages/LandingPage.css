@@ -493,3 +493,34 @@
     animation: none;
   }
 }
+
+.landing-flow-arrow {
+  display: block;
+  margin: 12px 0;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.landing-card {
+  text-align: center;
+}
+
+.landing-card>a {
+  display: block;
+  width: fit-content;
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+.landing-flow-arrow {
+  display: block;
+  text-align: center;
+  margin: 12px auto;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.landing-demo-button {
+  display: block;
+  margin: 0 auto;
+}
