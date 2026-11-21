@@ -165,6 +165,69 @@ function LandingPage() {
         </p>
       )}
 
+      {loadingRole !== null && (
+        <div
+          className="demo-loading-overlay"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="demo-loading-panel">
+            <div className="demo-loading-spinner" />
+
+            <span className="demo-loading-eyebrow">
+              IT TALENT PLATFORM
+            </span>
+
+            <h2>{t('landing.demoStartup.title')}</h2>
+
+            <p className="demo-loading-description">
+              {t('landing.demoStartup.description')}
+            </p>
+
+            <div className="demo-loading-services">
+              {(['render', 'neon', 'github'] as const).map(
+                (service) => (
+                  <div className="demo-service" key={service}>
+                    <span
+                      className={`demo-service-indicator ${service === 'github' ? 'idle' : 'active'
+                        }`}
+                    />
+
+                    <div>
+                      <strong>
+                        {t(`landing.demoStartup.${service}.name`)}
+                      </strong>
+
+                      <span>
+                        {t(
+                          `landing.demoStartup.${service}.description`,
+                        )}
+                      </span>
+                    </div>
+
+                    <span className="demo-service-status">
+                      {t(`landing.demoStartup.${service}.status`)}
+                    </span>
+                  </div>
+                ),
+              )}
+            </div>
+
+            <div className="demo-loading-progress">
+              <span />
+            </div>
+
+            <p className="demo-loading-role">
+              {t('landing.demoStartup.account')}:{' '}
+              {t(
+                loadingRole === 'CANDIDATE'
+                  ? 'landing.demoStartup.candidate'
+                  : 'landing.demoStartup.recruiter',
+              )}
+            </p>
+          </div>
+        </div>
+      )}
       <footer className="landing-footer">
         <span>© {new Date().getFullYear()} IT Talent</span>
       </footer>
