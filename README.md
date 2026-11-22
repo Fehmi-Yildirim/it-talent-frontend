@@ -63,3 +63,7 @@ The frontend uses environment variables to configure the API base URL.
 - `.env.example` is the tracked template for required environment variables. Keep its values safe and suitable for sharing.
 - Variables prefixed with `VITE_` are exposed to client-side code and may be included in the built frontend. **Never store secrets, API keys, passwords, or private tokens in `VITE_` variables.**
 - Store sensitive credentials on the backend, not in the frontend environment configuration.
+
+  ## Related repositories
+- [Backend](https://github.com/Fehmi-Yildirim/it-talent-backend)
+- [Project documentation](./docs/)
