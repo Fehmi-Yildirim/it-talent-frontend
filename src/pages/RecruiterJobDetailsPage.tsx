@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import DOMPurify from 'dompurify'
@@ -19,6 +18,12 @@ import { WORK_MODE_TRANSLATION_KEYS } from '../i18n'
 import { useTranslation } from '../i18n/useTranslation'
 import type { Job, JobRequirement } from '../types/job'
 import './RecruiterJobDetailsPage.css'
+import Pagination from '../components/Pagination/Pagination'
+import { getCandidatesForJob } from '../features/matching/matching.api'
+import type {
+    MatchingMeta,
+    RecruiterCandidateMatch,
+} from '../types/matching'
 
 function formatSalaryValue(
     value: string | number,
@@ -128,6 +133,14 @@ export default function RecruiterJobDetailsPage() {
     const [actionLoading, setActionLoading] = useState(false)
     const [error, setError] = useState('')
     const [success, setSuccess] = useState('')
+    const [candidateMatches, setCandidateMatches] = useState<
+        RecruiterCandidateMatch[]
+    >([])
+    const [matchesMeta, setMatchesMeta] = useState<MatchingMeta | null>(null)
+    const [matchesLoading, setMatchesLoading] = useState(false)
+    const [matchesError, setMatchesError] = useState(false)
+    const [matchesPage, setMatchesPage] = useState(1)
+    const [matchesRetry, setMatchesRetry] = useState(0)
 
     const locale = LOCALES[language]
 
@@ -179,6 +192,10 @@ export default function RecruiterJobDetailsPage() {
 
                 if (active) {
                     setJob(response)
+                    setMatchesPage(1)
+                    setCandidateMatches([])
+                    setMatchesMeta(null)
+                    setMatchesError(false)
                 }
             } catch {
                 if (active) {
@@ -198,6 +215,50 @@ export default function RecruiterJobDetailsPage() {
         }
     }, [jobId, t])
 
+    useEffect(() => {
+        if (!jobId || job?.status !== 'PUBLISHED') {
+            setCandidateMatches([])
+            setMatchesMeta(null)
+            setMatchesLoading(false)
+            return
+        }
+
+        let cancelled = false
+
+        const currentJobId = jobId
+
+        async function loadCandidateMatches() {
+            setMatchesLoading(true)
+            setMatchesError(false)
+
+            try {
+                const response = await getCandidatesForJob(currentJobId, {
+                    page: matchesPage,
+                    limit: 20,
+                })
+
+                if (!cancelled) {
+                    setCandidateMatches(response.data)
+                    setMatchesMeta(response.meta)
+                }
+            } catch {
+                if (!cancelled) {
+                    setMatchesError(true)
+                }
+            } finally {
+                if (!cancelled) {
+                    setMatchesLoading(false)
+                }
+            }
+        }
+
+        void loadCandidateMatches()
+
+        return () => {
+            cancelled = true
+        }
+    }, [jobId, job?.status, matchesPage, matchesRetry])
+
     async function refreshJob() {
         if (!jobId) {
             return
@@ -205,6 +266,9 @@ export default function RecruiterJobDetailsPage() {
 
         const response = await getJobById(jobId)
         setJob(response)
+        setMatchesPage(1)
+        setCandidateMatches([])
+        setMatchesMeta(null)
     }
 
     async function handlePublish() {
@@ -716,6 +780,147 @@ export default function RecruiterJobDetailsPage() {
                         </div>
                     )}
                 </section>
+
+
+                <section className="recruiter-job-details-card">
+                    <div className="recruiter-job-details-section-header">
+                        <div>
+                            <h2>{t('recruiterMatches.title')}</h2>
+                            <p>{t('recruiterMatches.description')}</p>
+                        </div>
+                    </div>
+
+                    {job.status !== 'PUBLISHED' && (
+                        <p className="recruiter-job-details-muted">
+                            {t('recruiterMatches.onlyPublished')}
+                        </p>
+                    )}
+
+                    {job.status === 'PUBLISHED' && matchesLoading && (
+                        <p role="status" className="recruiter-job-details-muted">
+                            {t('recruiterMatches.loading')}
+                        </p>
+                    )}
+
+                    {job.status === 'PUBLISHED' && !matchesLoading && matchesError && (
+                        <div role="alert" className="recruiter-job-details-state">
+                            <p>{t('recruiterMatches.loadError')}</p>
+                            <button
+                                type="button"
+                                className="btn btn-primary"
+                                onClick={() => setMatchesRetry((value) => value + 1)}
+                            >
+                                {t('common.tryAgain')}
+                            </button>
+                        </div>
+                    )}
+
+                    {job.status === 'PUBLISHED' &&
+                        !matchesLoading &&
+                        !matchesError &&
+                        candidateMatches.length === 0 && (
+                            <p className="recruiter-job-details-muted">
+                                {t('recruiterMatches.empty')}
+                            </p>
+                        )}
+
+                    {job.status === 'PUBLISHED' &&
+                        !matchesLoading &&
+                        !matchesError &&
+                        candidateMatches.length > 0 && (
+                            <>
+                                <div className="recruiter-matches-list">
+                                    {candidateMatches.map((match) => (
+                                        <article
+                                            className="recruiter-match-card"
+                                            key={match.id}
+                                        >
+                                            <div className="recruiter-match-card__header">
+                                                <div>
+                                                    <h3>
+                                                        {match.candidate.user.firstName}{' '}
+                                                        {match.candidate.user.lastName}
+                                                    </h3>
+
+                                                    {match.candidate.headline && (
+                                                        <p>{match.candidate.headline}</p>
+                                                    )}
+
+                                                    {match.candidate.location && (
+                                                        <p>{match.candidate.location}</p>
+                                                    )}
+                                                </div>
+
+                                                <div className="recruiter-match-score">
+                                                    <strong>
+                                                        {Math.round(Number(match.overallScore))}%
+                                                    </strong>
+                                                    <span>
+                                                        {t('recruiterMatches.matchScore')}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {match.candidate.candidateSkills.length > 0 && (
+                                                <div className="recruiter-match-skills">
+                                                    <strong>
+                                                        {t('recruiterMatches.skills')}
+                                                    </strong>
+
+                                                    <ul>
+                                                        {match.candidate.candidateSkills.map(
+                                                            (candidateSkill) => (
+                                                                <li key={candidateSkill.id}>
+                                                                    {candidateSkill.skill.name}
+                                                                    {' · '}
+                                                                    {t('recruiterMatches.level')}
+                                                                    {' '}
+                                                                    {candidateSkill.proficiencyLevel}
+                                                                </li>
+                                                            ),
+                                                        )}
+                                                    </ul>
+                                                </div>
+                                            )}
+
+                                            {match.explanation?.gaps &&
+                                                match.explanation.gaps.length > 0 && (
+                                                    <div className="recruiter-match-gaps">
+                                                        <strong>
+                                                            {t('recruiterMatches.skillGaps')}
+                                                        </strong>
+
+                                                        <ul>
+                                                            {match.explanation.gaps.map(
+                                                                (gap) => (
+                                                                    <li key={gap.skill}>
+                                                                        {gap.skill}
+                                                                        {' · '}
+                                                                        {t('recruiterMatches.requiredLevel')}
+                                                                        {' '}
+                                                                        {gap.requiredLevel}
+                                                                    </li>
+                                                                ),
+                                                            )}
+                                                        </ul>
+                                                    </div>
+                                                )}
+                                        </article>
+                                    ))}
+                                </div>
+
+                                {matchesMeta && (
+                                    <Pagination
+                                        currentPage={matchesMeta.page}
+                                        totalItems={matchesMeta.total}
+                                        itemsPerPage={matchesMeta.limit}
+                                        onPageChange={setMatchesPage}
+                                    />
+                                )}
+                            </>
+                        )}
+                </section>
+
             </div>
         </div>
     )

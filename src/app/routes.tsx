@@ -16,6 +16,7 @@ import {
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
   CandidateJobsPage,
+  CandidateMatchesPage,
   CandidateJobApplicationPage,
   CompanyManagement,
   DashboardPage,
@@ -92,6 +93,14 @@ function createAppRoute(path: '/' | '/nl', language: Language) {
                 element: (
                   <LazyPage>
                     <CandidateJobsPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'matches',
+                element: (
+                  <LazyPage>
+                    <CandidateMatchesPage />
                   </LazyPage>
                 ),
               },

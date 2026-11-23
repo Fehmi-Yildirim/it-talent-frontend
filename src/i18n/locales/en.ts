@@ -50,6 +50,7 @@ export const en = {
         login: 'Login',
         logout: 'Logout',
         minimumLevel: 'Minimum level',
+        myMatches: 'My matches',
         name: 'Name',
         next: 'Next',
         notSpecified: 'Not specified',
@@ -347,6 +348,23 @@ export const en = {
                 'Unable to withdraw the application. Try again.',
             demoReadOnly: 'This action is disabled for demo accounts. You can only view the application.',
         },
+    },
+
+    candidateMatches: {
+        eyebrow: 'Candidate',
+        title: 'Your job matches',
+        description: 'Discover published jobs that match your skills.',
+        loading: 'Loading your matches...',
+        loadError: 'Your matches could not be loaded. Please try again.',
+        emptyTitle: 'No matches yet',
+        emptyDescription: 'Add skills to your profile and explore available jobs to improve your matches.',
+        matchScore: 'match',
+        matchingSkills: 'Matching skills',
+        skillGaps: 'Skills to develop',
+        yourLevel: 'Your level:',
+        requiredLevel: 'Required level:',
+        calculatedAt: 'Calculated:',
+        viewJob: 'View job',
     },
 
     candidateJobDetails: {
@@ -1091,6 +1109,20 @@ export const en = {
                 'Unable to update the application status.',
             demoReadOnly: 'This action is disabled for demo accounts. You can only view applications.',
         },
+    },
+
+    recruiterMatches: {
+        title: 'Matching candidates',
+        description: 'Candidates ranked by their match with this job.',
+        onlyPublished: 'Publish this job to view matching candidates.',
+        loading: 'Loading matching candidates...',
+        loadError: 'Matching candidates could not be loaded.',
+        empty: 'No matching candidates found yet.',
+        matchScore: 'match',
+        skills: 'Candidate skills',
+        level: 'Level:',
+        skillGaps: 'Skill gaps',
+        requiredLevel: 'Required level:',
     },
 
 } as const;

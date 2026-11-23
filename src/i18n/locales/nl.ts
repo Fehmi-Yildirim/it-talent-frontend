@@ -58,6 +58,7 @@ export const nl: DeepString<typeof en> = {
         login: 'Inloggen',
         logout: 'Uitloggen',
         minimumLevel: 'Minimaal niveau',
+        myMatches: 'Mijn matches',
         name: 'Naam',
         next: 'Volgende',
         notSpecified: 'Niet gespecificeerd',
@@ -405,6 +406,23 @@ export const nl: DeepString<typeof en> = {
                 'De sollicitatie kon niet worden ingetrokken. Probeer het opnieuw.',
             demoReadOnly: 'Deze actie is uitgeschakeld voor demo-accounts. Je kunt de sollicitatie alleen bekijken.',
         },
+    },
+
+    candidateMatches: {
+        eyebrow: 'Kandidaat',
+        title: 'Jouw vacaturematches',
+        description: 'Ontdek gepubliceerde vacatures die bij jouw vaardigheden passen.',
+        loading: 'Je matches worden geladen...',
+        loadError: 'Je matches konden niet worden geladen. Probeer het opnieuw.',
+        emptyTitle: 'Nog geen matches',
+        emptyDescription: 'Voeg vaardigheden toe aan je profiel en bekijk beschikbare vacatures om je matches te verbeteren.',
+        matchScore: 'match',
+        matchingSkills: 'Overeenkomende vaardigheden',
+        skillGaps: 'Vaardigheden om te ontwikkelen',
+        yourLevel: 'Jouw niveau:',
+        requiredLevel: 'Vereist niveau:',
+        calculatedAt: 'Berekend:',
+        viewJob: 'Bekijk vacature',
     },
 
     candidateJobDetails: {
@@ -1374,5 +1392,19 @@ export const nl: DeepString<typeof en> = {
                 'De status van de sollicitatie kan niet worden bijgewerkt.',
             demoReadOnly: 'Deze actie is uitgeschakeld voor demo-accounts. Je kunt sollicitaties alleen bekijken.',
         },
+    },
+
+    recruiterMatches: {
+        title: 'Passende kandidaten',
+        description: 'Kandidaten gerangschikt op hun match met deze vacature.',
+        onlyPublished: 'Publiceer deze vacature om passende kandidaten te bekijken.',
+        loading: 'Passende kandidaten laden...',
+        loadError: 'De passende kandidaten konden niet worden geladen.',
+        empty: 'Er zijn nog geen passende kandidaten gevonden.',
+        matchScore: 'match',
+        skills: 'Vaardigheden van de kandidaat',
+        level: 'Niveau:',
+        skillGaps: 'Ontbrekende vaardigheden',
+        requiredLevel: 'Vereist niveau:',
     },
 };

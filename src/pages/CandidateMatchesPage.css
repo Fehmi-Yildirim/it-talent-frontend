@@ -1,0 +1,113 @@
+.candidate-matches-page {
+    width: min(100% - 2rem, 1100px);
+    margin: 2rem auto;
+}
+
+.candidate-matches-header {
+    margin-bottom: 2rem;
+}
+
+.candidate-matches-header h1 {
+    margin: 0.25rem 0 0.75rem;
+}
+
+.candidate-matches-eyebrow {
+    color: var(--color-primary, #2563eb);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.candidate-matches-state {
+    padding: 2rem;
+    border: 1px solid var(--color-border, #ddd);
+    border-radius: 12px;
+    text-align: center;
+}
+
+.candidate-matches-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.candidate-match-card {
+    padding: 1.5rem;
+    border: 1px solid var(--color-border, #ddd);
+    border-radius: 12px;
+    background: var(--color-surface, #fff);
+}
+
+.candidate-match-card__header,
+.candidate-match-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.candidate-match-card__header h2 {
+    margin: 0 0 0.35rem;
+}
+
+.candidate-match-card__header p {
+    margin: 0;
+    color: var(--color-muted, #666);
+}
+
+.candidate-match-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 90px;
+    padding: 0.75rem;
+    border-radius: 10px;
+    background: var(--color-background, #f3f4f6);
+}
+
+.candidate-match-score strong {
+    font-size: 1.5rem;
+}
+
+.candidate-match-score span {
+    font-size: 0.8rem;
+}
+
+.candidate-match-skills {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+}
+
+.candidate-match-skills h3 {
+    margin-bottom: 0.5rem;
+}
+
+.candidate-match-skills ul {
+    margin: 0;
+    padding-left: 1.25rem;
+}
+
+.candidate-match-card__footer {
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border, #ddd);
+}
+
+.candidate-match-card__footer>span {
+    color: var(--color-muted, #666);
+    font-size: 0.875rem;
+}
+
+@media (max-width: 600px) {
+
+    .candidate-match-card__header,
+    .candidate-match-card__footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .candidate-match-score {
+        flex-direction: row;
+        gap: 0.5rem;
+    }
+}

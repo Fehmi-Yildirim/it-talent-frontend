@@ -79,3 +79,7 @@ export const AdminContentPreviewPage = lazy(
 export const ContentPage = lazy(
     () => import('../pages/ContentPage')
 )
+
+export const CandidateMatchesPage = lazy(
+    () => import('../pages/CandidateMatchesPage'),
+)

@@ -348,3 +348,66 @@
 .demo-disabled-link:hover {
     cursor: not-allowed;
 }
+
+.recruiter-matches-list {
+    display: grid;
+    gap: 16px;
+}
+
+.recruiter-match-card {
+    padding: 18px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
+}
+
+.recruiter-match-card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.recruiter-match-card__header h3 {
+    margin: 0 0 6px;
+}
+
+.recruiter-match-card__header p {
+    margin: 4px 0;
+    color: var(--color-text-muted);
+}
+
+.recruiter-match-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: var(--color-surface);
+}
+
+.recruiter-match-score strong {
+    font-size: 1.4rem;
+}
+
+.recruiter-match-score span {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+}
+
+.recruiter-match-skills,
+.recruiter-match-gaps {
+    margin-top: 16px;
+}
+
+.recruiter-match-skills ul,
+.recruiter-match-gaps ul {
+    margin: 8px 0 0;
+    padding-left: 20px;
+}
+
+@media (max-width: 480px) {
+    .recruiter-match-card__header {
+        flex-direction: column;
+    }
+}
