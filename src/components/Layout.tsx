@@ -503,6 +503,14 @@ function Layout() {
                           </NavLink>
 
                           <NavLink
+                            to="/recruiter/matches"
+                            className={navLinkClass}
+                            onClick={closeMobileNav}
+                          >
+                            {t('common.myMatches')}
+                          </NavLink>
+
+                          <NavLink
                             to="/recruiter/applications"
                             className={navLinkClass}
                             onClick={closeMobileNav}

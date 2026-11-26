@@ -5,6 +5,7 @@ import type {
     MatchingQuery,
     MatchingResponse,
     RecruiterCandidateMatch,
+    RecruiterMatchJobsResponse,
 } from '../../types/matching'
 
 function buildMatchingQuery(query: MatchingQuery = {}): string {
@@ -48,5 +49,11 @@ export function getMyMatchForJob(
 ): Promise<{ data: MatchRecord | null }> {
     return apiClient.get<{ data: MatchRecord | null }>(
         `/matches/me/jobs/${encodeURIComponent(jobId)}`,
+    )
+}
+
+export function getRecruiterMatchJobs(): Promise<RecruiterMatchJobsResponse> {
+    return apiClient.get<RecruiterMatchJobsResponse>(
+        '/matches/recruiter/jobs',
     )
 }

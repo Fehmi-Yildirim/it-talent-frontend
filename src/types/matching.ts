@@ -67,6 +67,19 @@ export interface RecruiterCandidateMatch extends MatchRecord {
     candidate: MatchedCandidate
 }
 
+export interface RecruiterMatchJob {
+    id: string
+    title: string
+    matchCount: number
+    strongMatchCount: number
+    partialMatchCount: number
+    noMatchCount: number
+}
+
+export interface RecruiterMatchJobsResponse {
+    data: RecruiterMatchJob[]
+}
+
 export interface MatchingMeta {
     page: number
     limit: number
