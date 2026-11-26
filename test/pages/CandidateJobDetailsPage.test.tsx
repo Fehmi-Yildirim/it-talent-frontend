@@ -12,6 +12,7 @@ import CandidateJobDetailsPage from '../../src/pages/CandidateJobDetailsPage'
 import { getMyApplications } from '../../src/features/applications/applications.api'
 import { getCandidateJobById } from '../../src/features/jobs/jobs.api'
 import { ApiError } from '../../src/services/api/apiError'
+import { getMyMatchForJob } from '../../src/features/matching/matching.api'
 
 vi.mock('../../src/features/jobs/jobs.api', () => ({
     getCandidateJobById: vi.fn(),
@@ -21,8 +22,13 @@ vi.mock('../../src/features/applications/applications.api', () => ({
     getMyApplications: vi.fn(),
 }))
 
+vi.mock('../../src/features/matching/matching.api', () => ({
+    getMyMatchForJob: vi.fn(),
+}))
+
 const mockedGetCandidateJobById = vi.mocked(getCandidateJobById)
 const mockedGetMyApplications = vi.mocked(getMyApplications)
+const mockedGetMyMatchForJob = vi.mocked(getMyMatchForJob)
 
 const candidateJob = {
     id: 'job-1',
@@ -76,6 +82,42 @@ const candidateJob = {
     ],
 }
 
+const candidateMatch = {
+    id: 'match-1',
+    candidateId: 'candidate-1',
+    jobId: 'job-1',
+    overallScore: 85,
+    skillScore: 90,
+    experienceScore: 80,
+    locationScore: 100,
+    salaryScore: null,
+    availabilityScore: null,
+    preferenceScore: null,
+    explanation: {
+        algorithm: 'weighted-skill-v1',
+        strengths: [
+            {
+                skill: 'React',
+                candidateLevel: 4,
+                requiredLevel: 3,
+                required: true,
+            },
+        ],
+        gaps: [
+            {
+                skill: 'TypeScript',
+                candidateLevel: 1,
+                requiredLevel: 2,
+                required: false,
+            },
+        ],
+        requirementsCount: 2,
+    },
+    calculatedAt: '2026-11-24T10:00:00.000Z',
+    createdAt: '2026-11-24T10:00:00.000Z',
+    updatedAt: '2026-11-24T10:00:00.000Z',
+}
+
 function renderPage(jobId = 'job-1') {
     return render(
         <MemoryRouter initialEntries={[`/jobs/${jobId}`]}>
@@ -109,7 +151,12 @@ function createApiError(status: number, message = 'API error') {
     return error
 }
 
+mockedGetMyMatchForJob.mockResolvedValue({
+    data: null,
+})
+
 describe('CandidateJobDetailsPage', () => {
+
     beforeEach(() => {
         vi.clearAllMocks()
         mockedGetCandidateJobById.mockResolvedValue(candidateJob)
@@ -387,4 +434,74 @@ describe('CandidateJobDetailsPage', () => {
         ).toBeInTheDocument()
     })
 
+    it('shows the match section collapsed by default', async () => {
+        mockedGetMyMatchForJob.mockResolvedValue({
+            data: candidateMatch,
+        })
+
+        renderPage()
+
+        await screen.findByRole('heading', {
+            name: 'Senior React Developer',
+        })
+
+        const summary = await screen.findByText(
+            'Your match with this job',
+        )
+        const details = summary.closest('details')
+
+        expect(details).toBeInTheDocument()
+        expect(details).not.toHaveAttribute('open')
+    })
+
+    it('shows match score, strengths and gaps when expanded', async () => {
+        mockedGetMyMatchForJob.mockResolvedValue({
+            data: candidateMatch,
+        })
+
+        renderPage()
+
+        const summary = await screen.findByText(
+            'Your match with this job',
+        )
+
+        fireEvent.click(summary)
+
+        const details = summary.closest('details')
+
+        expect(details).toHaveAttribute('open')
+        expect(details).toHaveTextContent('85%')
+        expect(details).toHaveTextContent('React')
+        expect(details).toHaveTextContent('TypeScript')
+        expect(details).toHaveTextContent('Your strengths')
+        expect(details).toHaveTextContent('Missing skills')
+    })
+
+    it('shows a message when no match is available', async () => {
+        mockedGetMyMatchForJob.mockResolvedValue({
+            data: null,
+        })
+
+        renderPage()
+
+        expect(
+            await screen.findByText(
+                'No match has been calculated for this job yet.',
+            ),
+        ).toBeInTheDocument()
+    })
+
+    it('shows an error when loading the match fails', async () => {
+        mockedGetMyMatchForJob.mockRejectedValue(
+            new Error('Matching API unavailable'),
+        )
+
+        renderPage()
+
+        expect(
+            await screen.findByText(
+                'Your match could not be loaded.',
+            ),
+        ).toBeInTheDocument()
+    })
 })

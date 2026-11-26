@@ -71,6 +71,7 @@ export interface Job {
 
 export interface CandidateJob extends Job {
   company: Company
+  matchScore?: string | number | null
 }
 
 export interface JobDiscoveryQuery {
@@ -81,6 +82,7 @@ export interface JobDiscoveryQuery {
   salaryMin?: number
   salaryMax?: number
   skillIds?: string[]
+  onlyMatches?: boolean
   sort?: 'newest' | 'salary' | 'title'
   page?: number
   limit?: number

@@ -16,6 +16,7 @@ import {
   CandidateApplicationsPage,
   CandidateJobDetailsPage,
   CandidateJobsPage,
+  CandidateMatchesPage,
   CandidateJobApplicationPage,
   CompanyManagement,
   DashboardPage,
@@ -25,6 +26,7 @@ import {
   RecruiterJobDetailsPage,
   RecruiterJobFormPage,
   RecruiterJobsPage,
+  RecruiterMatchesPage,
   RegisterPage,
 } from './lazyPages'
 import LandingPage from '../pages/LandingPage'
@@ -92,6 +94,14 @@ function createAppRoute(path: '/' | '/nl', language: Language) {
                 element: (
                   <LazyPage>
                     <CandidateJobsPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'matches',
+                element: (
+                  <LazyPage>
+                    <CandidateMatchesPage />
                   </LazyPage>
                 ),
               },
@@ -210,6 +220,14 @@ function createAppRoute(path: '/' | '/nl', language: Language) {
                 element: (
                   <LazyPage>
                     <RecruiterApplicationDetailsPage />
+                  </LazyPage>
+                ),
+              },
+              {
+                path: 'recruiter/matches',
+                element: (
+                  <LazyPage>
+                    <RecruiterMatchesPage />
                   </LazyPage>
                 ),
               },

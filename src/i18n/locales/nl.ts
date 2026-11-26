@@ -58,6 +58,7 @@ export const nl: DeepString<typeof en> = {
         login: 'Inloggen',
         logout: 'Uitloggen',
         minimumLevel: 'Minimaal niveau',
+        myMatches: 'Mijn matches',
         name: 'Naam',
         next: 'Volgende',
         notSpecified: 'Niet gespecificeerd',
@@ -316,6 +317,9 @@ export const nl: DeepString<typeof en> = {
             'werkvormen',
         employmentTypesSelected:
             'dienstverbanden',
+        myMatches: 'Mijn matches',
+        onlyMyMatches: 'Alleen mijn matches',
+        matchScore: 'match',
     },
 
     candidateApplications: {
@@ -407,6 +411,23 @@ export const nl: DeepString<typeof en> = {
         },
     },
 
+    candidateMatches: {
+        eyebrow: 'Kandidaat',
+        title: 'Jouw vacaturematches',
+        description: 'Ontdek gepubliceerde vacatures die bij jouw vaardigheden passen.',
+        loading: 'Je matches worden geladen...',
+        loadError: 'Je matches konden niet worden geladen. Probeer het opnieuw.',
+        emptyTitle: 'Nog geen matches',
+        emptyDescription: 'Voeg vaardigheden toe aan je profiel en bekijk beschikbare vacatures om je matches te verbeteren.',
+        matchScore: 'match',
+        matchingSkills: 'Overeenkomende vaardigheden',
+        skillGaps: 'Vaardigheden om te ontwikkelen',
+        yourLevel: 'Jouw niveau:',
+        requiredLevel: 'Vereist niveau:',
+        calculatedAt: 'Berekend:',
+        viewJob: 'Bekijk vacature',
+    },
+
     candidateJobDetails: {
         loading: 'Vacature laden...',
         jobIdMissing: 'Vacature-ID ontbreekt.',
@@ -434,7 +455,6 @@ export const nl: DeepString<typeof en> = {
         alreadyApplied: 'Al gesolliciteerd',
         alreadyAppliedDescription:
             'Je hebt al gesolliciteerd op deze vacature.',
-
 
         coverLetter: 'Motivatiebrief',
         cvUpload: 'Cv / cv-bestand',
@@ -524,6 +544,18 @@ export const nl: DeepString<typeof en> = {
             'Selecteer een cv voordat je doorgaat.',
         cvRetentionConsentRequired:
             'Geef toestemming om je cv te bewaren voordat je doorgaat.',
+
+        match: {
+            title: 'Jouw match met deze vacature',
+            loading: 'Je match wordt geladen...',
+            error: 'Je match kon niet worden geladen.',
+            score: 'match met deze vacature',
+            strengths: 'Jouw sterke punten',
+            gaps: 'Ontbrekende vaardigheden',
+            noStrengths: 'Er zijn nog geen sterke punten beschikbaar.',
+            noGaps: 'Er zijn geen ontbrekende vaardigheden.',
+            noMatch: 'Er is nog geen match berekend voor deze vacature.',
+        },
     },
 
     candidateSkills: {
@@ -1155,6 +1187,7 @@ export const nl: DeepString<typeof en> = {
     recruiterJobDetails: {
         loading:
             'Vacature laden...',
+        tabsLabel: 'Onderdelen vacature',
     },
 
     recruiterJobForm: {
@@ -1374,5 +1407,60 @@ export const nl: DeepString<typeof en> = {
                 'De status van de sollicitatie kan niet worden bijgewerkt.',
             demoReadOnly: 'Deze actie is uitgeschakeld voor demo-accounts. Je kunt sollicitaties alleen bekijken.',
         },
+    },
+
+    recruiterMatches: {
+        title: 'Passende kandidaten',
+        description: 'Kandidaten gerangschikt op hun match met deze vacature.',
+        onlyPublished: 'Publiceer deze vacature om passende kandidaten te bekijken.',
+        loading: 'Passende kandidaten laden...',
+        loadError: 'De passende kandidaten konden niet worden geladen.',
+        empty: 'Er zijn nog geen passende kandidaten gevonden.',
+        matchScore: 'match',
+        skills: 'Vaardigheden van de kandidaat',
+        level: 'Niveau:',
+        skillGaps: 'Ontbrekende vaardigheden',
+        requiredLevel: 'Vereist niveau:',
+        filters: 'Filter op matchscore',
+        allScores: 'Alle kandidaten',
+        strongMatches: 'Sterke matches (80%+)',
+        partialMatches: 'Gedeeltelijke matches (1–79%)',
+        noMatches: 'Geen match (0%)',
+        sortByScore: 'Sorteren op matchscore',
+        highestFirst: 'Hoogste score eerst',
+        lowestFirst: 'Laagste score eerst',
+        noCandidatesForFilter: 'Geen kandidaten gevonden voor dit filter.',
+        candidatesFound: 'kandidaten gevonden',
+        candidatesOnThisPage: 'Kandidaten op deze pagina',
+        strongMatchesOnThisPage: 'Sterke matches op deze pagina',
+        totalFound: 'Totaal gevonden',
+        filterCandidatesByScore: 'Filter kandidaten op matchscore',
+        all: 'Alle',
+        strongMatch: 'Sterke match',
+        partialMatch: 'Gedeeltelijke match',
+        noMatch: 'Geen match',
+        hideDetails: 'Details verbergen',
+        viewDetails: 'Bekijk details',
+        noSkillDetails: 'Geen vaardigheidsdetails beschikbaar.',
+        allCandidates: 'Alle',
+        strongMatchesFilter: 'Sterke matches (80%+)',
+        partialMatchesFilter: 'Gedeeltelijke matches (1–79%)',
+        noMatchesFilter: 'Geen match (0%)',
+        candidatesOf: 'van',
+        overviewTitle: 'Mijn vacaturematches',
+        overviewDescription: 'Bekijk welke kandidaten passen bij de gepubliceerde vacatures van je bedrijf.',
+        publishedJobs: 'Gepubliceerde vacatures',
+        totalMatches: 'Totaal aantal matches',
+        strongMatchesTotal: 'Sterke matches',
+        partialMatchesTotal: 'Gedeeltelijke matches',
+        noMatchesTotal: 'Geen matches',
+        selectJob: 'Selecteer een vacature',
+        noPublishedJobs: 'Je hebt nog geen gepubliceerde vacatures.',
+        selectedJob: 'Geselecteerde vacature',
+        viewCandidates: 'Bekijk kandidaten',
+        loadingJobs: 'Je gepubliceerde vacatures laden...',
+        jobsLoadError: 'Je gepubliceerde vacatures konden niet worden geladen.',
+        noPublishedJobsDescription: 'Publiceer een vacature om passende kandidaten te bekijken.',
+        jobMatches: 'matches',
     },
 };

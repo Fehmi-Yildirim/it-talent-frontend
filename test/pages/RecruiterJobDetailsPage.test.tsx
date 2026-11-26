@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fireEvent, render, screen, waitFor } from '../test-utils'
+import userEvent from '@testing-library/user-event'
+import { fireEvent, render, screen, waitFor, within } from '../test-utils'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import RecruiterJobDetailsPage from '../../src/pages/RecruiterJobDetailsPage'
 import type { Job } from '../../src/types/job'
+import type { RecruiterCandidateMatch } from '../../src/types/matching'
 
 const {
     getJobByIdMock,
@@ -39,6 +41,14 @@ vi.mock('../../src/features/jobs/jobs.api', () => ({
     resumeJob: resumeJobMock,
     closeJob: closeJobMock,
     reopenJob: reopenJobMock,
+}))
+
+const { getCandidatesForJobMock } = vi.hoisted(() => ({
+    getCandidatesForJobMock: vi.fn(),
+}))
+
+vi.mock('../../src/features/matching/matching.api', () => ({
+    getCandidatesForJob: getCandidatesForJobMock,
 }))
 
 const baseJob: Job = {
@@ -84,6 +94,95 @@ const baseJob: Job = {
     ],
 }
 
+const publishedJob: Job = {
+    ...baseJob,
+    status: 'PUBLISHED',
+    publishedAt: '2026-09-01T10:00:00.000Z',
+}
+
+const candidateMatch: RecruiterCandidateMatch = {
+    id: 'match-1',
+    candidateId: 'candidate-1',
+    jobId: 'job-1',
+    overallScore: 85,
+    skillScore: 90,
+    experienceScore: 80,
+    locationScore: 100,
+    salaryScore: null,
+    availabilityScore: null,
+    preferenceScore: null,
+    calculatedAt: '2026-09-01T10:00:00.000Z',
+    createdAt: '2026-09-01T10:00:00.000Z',
+    updatedAt: '2026-09-01T10:00:00.000Z',
+    explanation: {
+        algorithm: 'weighted-skill-v1',
+        strengths: [
+            {
+                skill: 'React',
+                candidateLevel: 4,
+                requiredLevel: 3,
+                required: true,
+            },
+        ],
+        gaps: [
+            {
+                skill: 'TypeScript',
+                candidateLevel: 1,
+                requiredLevel: 2,
+                required: false,
+            },
+        ],
+        requirementsCount: 2,
+    },
+    candidate: {
+        id: 'candidate-1',
+        headline: 'Experienced Frontend Developer',
+        summary: 'Frontend developer with React experience',
+        location: 'Amsterdam',
+        salaryMin: 5000,
+        salaryMax: 7000,
+        currency: 'EUR',
+        availabilityDate: null,
+        remotePreference: 'HYBRID',
+        user: {
+            firstName: 'Alex',
+            lastName: 'Johnson',
+        },
+        candidateSkills: [
+            {
+                id: 'candidate-skill-1',
+                skillId: 'skill-1',
+                proficiencyLevel: 4,
+                yearsOfExperience: 5,
+                source: 'MANUAL',
+                skill: {
+                    name: 'React',
+                },
+            },
+        ],
+    },
+}
+
+const emptyMatchesResponse = {
+    data: [],
+    meta: {
+        page: 1,
+        limit: 20,
+        total: 0,
+        totalPages: 0,
+    },
+}
+
+const candidateMatchesResponse = {
+    data: [candidateMatch],
+    meta: {
+        page: 1,
+        limit: 20,
+        total: 1,
+        totalPages: 1,
+    },
+}
+
 function renderPage(jobId = 'job-1') {
     return render(
         <MemoryRouter initialEntries={[`/recruiter/jobs/${jobId}`]}>
@@ -97,10 +196,19 @@ function renderPage(jobId = 'job-1') {
     )
 }
 
+async function openMatchingTab(user: ReturnType<typeof userEvent.setup>) {
+    await user.click(
+        screen.getByRole('button', {
+            name: 'Matching candidates',
+        }),
+    )
+}
+
 describe('RecruiterJobDetailsPage', () => {
     beforeEach(() => {
         vi.clearAllMocks()
         authUserMock.current.isDemo = false
+        getCandidatesForJobMock.mockReset()
     })
 
     it('shows loading state while loading the job', () => {
@@ -142,6 +250,146 @@ describe('RecruiterJobDetailsPage', () => {
             'href',
             '/recruiter/jobs/job-1/edit',
         )
+
+        // Matching wordt niet geladen zolang de matching-tab niet geopend is.
+        expect(getCandidatesForJobMock).not.toHaveBeenCalled()
+    })
+
+    it('loads and displays matching candidates for a published job', async () => {
+        const user = userEvent.setup()
+
+        getJobByIdMock.mockResolvedValue(publishedJob)
+        getCandidatesForJobMock.mockResolvedValue(
+            candidateMatchesResponse,
+        )
+
+        renderPage()
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Senior React Developer',
+            }),
+        ).toBeInTheDocument()
+
+        expect(getCandidatesForJobMock).not.toHaveBeenCalled()
+
+        await openMatchingTab(user)
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Alex Johnson',
+            }),
+        ).toBeInTheDocument()
+
+        expect(
+            screen.getByText('Experienced Frontend Developer'),
+        ).toBeInTheDocument()
+
+        // Open eerst de uitklapbare kandidaatdetails.
+        await user.click(
+            screen.getByRole('button', {
+                name: 'View details',
+            }),
+        )
+
+        expect(screen.getByText('React')).toBeInTheDocument()
+
+        const skillGapsHeading = screen.getByText('Skill gaps')
+
+        expect(
+            within(skillGapsHeading.parentElement!).getByText(
+                /TypeScript/,
+            ),
+        ).toBeInTheDocument()
+
+        expect(getCandidatesForJobMock).toHaveBeenCalledWith(
+            'job-1',
+            { page: 1, limit: 5, scoreRange: 'all' },
+        )
+    })
+
+    it('does not load matching candidates for an unpublished job', async () => {
+        const user = userEvent.setup()
+
+        getJobByIdMock.mockResolvedValue(baseJob)
+
+        renderPage()
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Senior React Developer',
+            }),
+        ).toBeInTheDocument()
+
+        await openMatchingTab(user)
+
+        expect(
+            screen.getByText(
+                'Publish this job to view matching candidates.',
+            ),
+        ).toBeInTheDocument()
+
+        expect(getCandidatesForJobMock).not.toHaveBeenCalled()
+    })
+
+    it('shows an empty state when no matching candidates exist', async () => {
+        const user = userEvent.setup()
+
+        getJobByIdMock.mockResolvedValue(publishedJob)
+        getCandidatesForJobMock.mockResolvedValue(
+            emptyMatchesResponse,
+        )
+
+        renderPage()
+
+        // Wacht tot de vacature en de tabknoppen zichtbaar zijn.
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Senior React Developer',
+            }),
+        ).toBeInTheDocument()
+
+        await openMatchingTab(user)
+
+        expect(
+            await screen.findByText('No matching candidates found yet.'),
+        ).toBeInTheDocument()
+    })
+
+    it('allows retrying when loading matching candidates fails', async () => {
+        const user = userEvent.setup()
+
+        getJobByIdMock.mockResolvedValue(publishedJob)
+        getCandidatesForJobMock
+            .mockRejectedValueOnce(new Error('API error'))
+            .mockResolvedValueOnce(candidateMatchesResponse)
+
+        renderPage()
+
+        // Wacht tot de vacature en de tabknoppen zichtbaar zijn.
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Senior React Developer',
+            }),
+        ).toBeInTheDocument()
+
+        await openMatchingTab(user)
+
+        expect(
+            await screen.findByRole('alert'),
+        ).toHaveTextContent('Matching candidates could not be loaded.')
+
+        await user.click(
+            screen.getByRole('button', { name: 'Try again' }),
+        )
+
+        expect(
+            await screen.findByRole('heading', {
+                name: 'Alex Johnson',
+            }),
+        ).toBeInTheDocument()
+
+        expect(getCandidatesForJobMock).toHaveBeenCalledTimes(2)
     })
 
     it('publishes a draft job and refreshes the job', async () => {

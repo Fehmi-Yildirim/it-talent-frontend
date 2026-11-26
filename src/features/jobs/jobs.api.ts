@@ -70,6 +70,10 @@ function buildJobDiscoveryQuery(
     )
   }
 
+  if (query.onlyMatches) {
+    params.set('onlyMatches', 'true')
+  }
+
   if (query.sort) {
     params.set('sort', query.sort)
   }

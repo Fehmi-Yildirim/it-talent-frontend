@@ -48,6 +48,10 @@ export const RecruiterJobDetailsPage = lazy(
     () => import('../pages/RecruiterJobDetailsPage'),
 )
 
+export const RecruiterMatchesPage = lazy(
+    () => import('../pages/RecruiterMatchesPage'),
+)
+
 export const RecruiterApplicationsPage = lazy(
     () => import('../pages/RecruiterApplicationsPage'),
 )
@@ -78,4 +82,8 @@ export const AdminContentPreviewPage = lazy(
 
 export const ContentPage = lazy(
     () => import('../pages/ContentPage')
+)
+
+export const CandidateMatchesPage = lazy(
+    () => import('../pages/CandidateMatchesPage'),
 )
