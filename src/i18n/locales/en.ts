@@ -283,6 +283,9 @@ export const en = {
         noSkillsFound: 'No skills found.',
         workModesSelected: 'work modes',
         employmentTypesSelected: 'employment types',
+        myMatches: 'My matches',
+        onlyMyMatches: 'Only show my matches',
+        matchScore: 'match',
     },
 
     candidateApplications: {
@@ -479,6 +482,18 @@ export const en = {
             'Select a CV / resume before continuing.',
         cvRetentionConsentRequired:
             'Give consent to retain your CV before continuing.',
+
+        match: {
+            title: 'Your match with this job',
+            loading: 'Loading your match...',
+            error: 'Your match could not be loaded.',
+            score: 'match with this job',
+            strengths: 'Your strengths',
+            gaps: 'Missing skills',
+            noStrengths: 'No strengths are available yet.',
+            noGaps: 'There are no missing skills.',
+            noMatch: 'No match has been calculated for this job yet.',
+        },
 
     },
 
@@ -941,6 +956,7 @@ export const en = {
 
     recruiterJobDetails: {
         loading: 'Loading job...',
+        tabsLabel: 'Job details sections',
     },
 
     recruiterJobForm: {
@@ -1123,6 +1139,32 @@ export const en = {
         level: 'Level:',
         skillGaps: 'Skill gaps',
         requiredLevel: 'Required level:',
+        filters: 'Filter by match score',
+        allScores: 'All candidates',
+        strongMatches: 'Strong matches (80%+)',
+        partialMatches: 'Partial matches (1–79%)',
+        noMatches: 'No match (0%)',
+        sortByScore: 'Sort by score',
+        highestFirst: 'Highest score first',
+        lowestFirst: 'Lowest score first',
+        noCandidatesForFilter: 'No candidates found for this filter.',
+        candidatesFound: 'candidates found',
+        candidatesOnThisPage: 'Candidates on this page',
+        strongMatchesOnThisPage: 'Strong matches on this page',
+        totalFound: 'Total found',
+        filterCandidatesByScore: 'Filter candidates by match score',
+        all: 'All',
+        strongMatch: 'Strong match',
+        partialMatch: 'Partial match',
+        noMatch: 'No match',
+        hideDetails: 'Hide details',
+        viewDetails: 'View details',
+        noSkillDetails: 'No skill details available.',
+        allCandidates: 'All',
+        strongMatchesFilter: 'Strong matches (80%+)',
+        partialMatchesFilter: 'Partial matches (1–79%)',
+        noMatchesFilter: 'No match (0%)',
+        candidatesOf: 'of',
     },
 
 } as const;

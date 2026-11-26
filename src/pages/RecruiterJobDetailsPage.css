@@ -349,65 +349,474 @@
     cursor: not-allowed;
 }
 
-.recruiter-matches-list {
-    display: grid;
-    gap: 16px;
+/* Recruiter matching candidates */
+
+.recruiter-matches-section {
+    scroll-margin-top: 24px;
 }
 
-.recruiter-match-card {
-    padding: 18px;
+.recruiter-matches-section__header {
+    margin-bottom: 22px;
+}
+
+.recruiter-matches-overview {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.recruiter-matches-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    min-width: 0;
+    padding: 16px 18px;
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     background: var(--color-background);
+}
+
+.recruiter-matches-stat span {
+    color: var(--color-text-muted);
+    font-size: 0.8rem;
+    line-height: 1.4;
+}
+
+.recruiter-matches-stat strong {
+    color: var(--color-text);
+    font-size: 1.65rem;
+    line-height: 1;
+    font-weight: 750;
+    font-variant-numeric: tabular-nums;
+}
+
+.recruiter-matches-stat--success strong {
+    color: var(--color-success, #18743a);
+}
+
+.recruiter-matches-feedback {
+    padding: 18px 0;
+}
+
+.recruiter-matches-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 14px;
+    margin: 8px 0 12px;
+}
+
+.recruiter-matches-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+}
+
+.recruiter-matches-filter,
+.recruiter-matches-sort,
+.recruiter-match-details-toggle {
+    min-height: 36px;
+    border: 1px solid var(--color-border);
+    border-radius: 999px;
+    background: var(--color-surface);
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.recruiter-matches-filter {
+    padding: 7px 13px;
+}
+
+.recruiter-matches-filter:hover,
+.recruiter-matches-sort:hover,
+.recruiter-match-details-toggle:hover {
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.recruiter-matches-filter.is-active {
+    border-color: var(--color-primary);
+    background: var(--color-primary-soft);
+    color: var(--color-primary);
+}
+
+.recruiter-matches-sort {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 7px 13px;
+    white-space: nowrap;
+}
+
+.recruiter-matches-result-count {
+    margin: 0 0 14px;
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+}
+
+.recruiter-matches-list {
+    display: grid;
+    gap: 14px;
+}
+
+.recruiter-match-card {
+    min-width: 0;
+    padding: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
+    transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.recruiter-match-card:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 35%, var(--color-border));
 }
 
 .recruiter-match-card__header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    gap: 16px;
+    gap: 18px;
 }
 
-.recruiter-match-card__header h3 {
-    margin: 0 0 6px;
+.recruiter-match-candidate {
+    min-width: 0;
 }
 
-.recruiter-match-card__header p {
-    margin: 4px 0;
+.recruiter-match-candidate h3 {
+    margin: 0 0 5px;
+    color: var(--color-text);
+    font-size: 1.05rem;
+    line-height: 1.35;
+}
+
+.recruiter-match-candidate p {
+    margin: 3px 0;
     color: var(--color-text-muted);
+    font-size: 0.86rem;
+}
+
+.recruiter-match-candidate .recruiter-match-location {
+    font-size: 0.8rem;
 }
 
 .recruiter-match-score {
     display: flex;
+    flex: 0 0 82px;
     flex-direction: column;
     align-items: center;
-    padding: 10px 14px;
-    border-radius: 10px;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
     background: var(--color-surface);
 }
 
 .recruiter-match-score strong {
-    font-size: 1.4rem;
+    color: var(--color-text);
+    font-size: 1.45rem;
+    line-height: 1.1;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
 }
 
 .recruiter-match-score span {
-    font-size: 0.8rem;
     color: var(--color-text-muted);
+    font-size: 0.72rem;
+}
+
+.recruiter-match-score--strong strong {
+    color: var(--color-success, #18743a);
+}
+
+.recruiter-match-score--partial strong {
+    color: var(--color-warning, #9a6700);
+}
+
+.recruiter-match-progress {
+    height: 7px;
+    margin-top: 16px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--color-border);
+}
+
+.recruiter-match-progress span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-primary);
+    transition: width 200ms ease;
+}
+
+.recruiter-match-progress--strong span {
+    background: var(--color-success, #18743a);
+}
+
+.recruiter-match-card__footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    margin-top: 13px;
+}
+
+.recruiter-match-label {
+    color: var(--color-text-muted);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.recruiter-match-label.is-strong {
+    color: var(--color-success, #18743a);
+}
+
+.recruiter-match-label.is-partial {
+    color: var(--color-warning, #9a6700);
+}
+
+.recruiter-match-details-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+}
+
+.recruiter-match-details-toggle span {
+    font-size: 1rem;
+    line-height: 1;
+}
+
+.recruiter-match-details {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-border);
 }
 
 .recruiter-match-skills,
 .recruiter-match-gaps {
-    margin-top: 16px;
+    min-width: 0;
+    margin: 0;
+}
+
+.recruiter-match-skills>strong,
+.recruiter-match-gaps>strong {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--color-text);
+    font-size: 0.85rem;
 }
 
 .recruiter-match-skills ul,
 .recruiter-match-gaps ul {
-    margin: 8px 0 0;
-    padding-left: 20px;
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.recruiter-match-skills li,
+.recruiter-match-gaps li {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 11px;
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-size: 0.8rem;
+}
+
+.recruiter-match-skills li span:last-child,
+.recruiter-match-gaps li span:last-child {
+    flex-shrink: 0;
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+}
+
+.recruiter-match-gaps li {
+    border-left: 3px solid var(--color-warning, #d69e36);
+}
+
+.recruiter-match-skills li {
+    border-left: 3px solid var(--color-success, #18743a);
+}
+
+.recruiter-matches-no-filter-results {
+    padding: 20px 0;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.recruiter-matches-filter:focus-visible,
+.recruiter-matches-sort:focus-visible,
+.recruiter-match-details-toggle:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+@media (max-width: 768px) {
+    .recruiter-matches-overview {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .recruiter-matches-stat:last-child:nth-child(odd) {
+        grid-column: 1 / -1;
+    }
+}
+
+@media (max-width: 600px) {
+    .recruiter-matches-toolbar {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .recruiter-matches-sort {
+        align-self: flex-end;
+    }
+
+    .recruiter-match-details {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 480px) {
+    .recruiter-matches-overview {
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .recruiter-matches-stat {
+        padding: 13px;
+    }
+
+    .recruiter-matches-stat strong {
+        font-size: 1.4rem;
+    }
+
+    .recruiter-match-card {
+        padding: 16px;
+    }
+
     .recruiter-match-card__header {
+        gap: 10px;
+    }
+
+    .recruiter-match-score {
+        flex-basis: 72px;
+        padding: 9px;
+    }
+
+    .recruiter-match-card__footer {
+        align-items: flex-start;
+    }
+
+    .recruiter-match-skills li,
+    .recruiter-match-gaps li {
         flex-direction: column;
+        gap: 3px;
+    }
+}
+
+/* Job details tabs */
+
+.recruiter-job-details-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 20px;
+    padding: 6px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-background);
+}
+
+.recruiter-job-details-tab {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 1px solid transparent;
+    border-radius: var(--radius-md);
+    background: transparent;
+    color: var(--color-text-muted);
+    font: inherit;
+    font-size: 0.95rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition:
+        background 150ms ease,
+        border-color 150ms ease,
+        color 150ms ease,
+        box-shadow 150ms ease;
+}
+
+.recruiter-job-details-tab:hover {
+    color: var(--color-primary);
+    background: var(--color-surface);
+}
+
+.recruiter-job-details-tab.is-active {
+    border-color: var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-primary);
+    box-shadow: var(--shadow-sm);
+}
+
+.recruiter-job-details-tab:focus-visible {
+    outline: 3px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+    .recruiter-job-details-tabs {
+        gap: 5px;
+        padding: 4px;
+    }
+
+    .recruiter-job-details-tab {
+        min-height: 44px;
+        padding: 10px 6px;
+        font-size: 0.82rem;
+        text-align: center;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .recruiter-job-details-tab {
+        transition: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .recruiter-matches-filter,
+    .recruiter-matches-sort,
+    .recruiter-match-details-toggle,
+    .recruiter-match-progress span,
+    .recruiter-match-card {
+        transition: none;
     }
 }

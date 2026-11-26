@@ -11,7 +11,7 @@ import type {
 } from '../types/matching'
 import './CandidateMatchesPage.css'
 
-const PAGE_SIZE = 20
+const PAGE_SIZE = 5
 
 function formatScore(score: number | string): string {
     const value = Number(score)
@@ -128,7 +128,14 @@ export default function CandidateMatchesPage() {
                                 >
                                     <div className="candidate-match-card__header">
                                         <div>
-                                            <h2>{match.job.title}</h2>
+                                            <h2>
+                                                <Link
+                                                    to={`/jobs/${match.job.id}`}
+                                                    className="candidate-match-title-link"
+                                                >
+                                                    {match.job.title}
+                                                </Link>
+                                            </h2>
                                             <p>
                                                 {match.job.company?.name}
                                                 {match.job.location
@@ -210,13 +217,15 @@ export default function CandidateMatchesPage() {
                         })}
                     </div>
 
-                    {meta && (
-                        <Pagination
-                            currentPage={meta.page}
-                            totalItems={meta.total}
-                            itemsPerPage={meta.limit}
-                            onPageChange={setCurrentPage}
-                        />
+                    {meta && meta.totalPages > 1 && (
+                        <div className="candidate-matches-pagination">
+                            <Pagination
+                                currentPage={meta.page}
+                                totalItems={meta.total}
+                                itemsPerPage={meta.limit}
+                                onPageChange={setCurrentPage}
+                            />
+                        </div>
                     )}
                 </>
             )}

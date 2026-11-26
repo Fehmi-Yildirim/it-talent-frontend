@@ -71,6 +71,7 @@ export function CandidateJobsPage() {
 
     const [search, setSearch] = useState('')
     const [location, setLocation] = useState('')
+    const [onlyMatches, setOnlyMatches] = useState(false)
 
     const [selectedWorkModes, setSelectedWorkModes] =
         useState<WorkMode[]>([])
@@ -128,6 +129,7 @@ export function CandidateJobsPage() {
                 selectedSkills.length > 0
                     ? selectedSkills
                     : undefined,
+            onlyMatches: onlyMatches || undefined,
             sort,
             page,
             limit: PAGE_SIZE,
@@ -140,6 +142,7 @@ export function CandidateJobsPage() {
             salaryMin,
             salaryMax,
             selectedSkills,
+            onlyMatches,
             sort,
             page,
         ],
@@ -335,6 +338,7 @@ export function CandidateJobsPage() {
         setSkillsDropdownOpen(false)
         setSkillSearch('')
 
+        setOnlyMatches(false)
         setSort('newest')
         setPage(1)
     }
@@ -396,7 +400,17 @@ export function CandidateJobsPage() {
                                 }
                             />
                         </label>
-
+                        <label className="candidate-jobs-only-matches">
+                            <input
+                                type="checkbox"
+                                checked={onlyMatches}
+                                onChange={(event) => {
+                                    setOnlyMatches(event.target.checked)
+                                    setPage(1)
+                                }}
+                            />
+                            {t('candidateJobs.onlyMyMatches')}
+                        </label>
                         <label>
                             {t('common.location')}
 
@@ -869,6 +883,13 @@ export function CandidateJobsPage() {
                                         <p className="candidate-job-company">
                                             {job.company?.name}
                                         </p>
+
+                                        {job.matchScore !== undefined &&
+                                            job.matchScore !== null && (
+                                                <p className="candidate-job-match-score">
+                                                    {Math.round(Number(job.matchScore))}% {t('candidateJobs.matchScore')}
+                                                </p>
+                                            )}
 
                                         <div className="candidate-job-meta">
                                             {job.location && (

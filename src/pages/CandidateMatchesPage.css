@@ -111,3 +111,19 @@
         gap: 0.5rem;
     }
 }
+
+.candidate-match-title-link {
+    color: inherit;
+    text-decoration: none;
+}
+
+.candidate-match-title-link:hover {
+    color: var(--color-primary, #2563eb);
+    text-decoration: underline;
+}
+
+.candidate-matches-pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 2rem;
+}

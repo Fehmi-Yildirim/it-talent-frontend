@@ -317,6 +317,9 @@ export const nl: DeepString<typeof en> = {
             'werkvormen',
         employmentTypesSelected:
             'dienstverbanden',
+        myMatches: 'Mijn matches',
+        onlyMyMatches: 'Alleen mijn matches',
+        matchScore: 'match',
     },
 
     candidateApplications: {
@@ -453,7 +456,6 @@ export const nl: DeepString<typeof en> = {
         alreadyAppliedDescription:
             'Je hebt al gesolliciteerd op deze vacature.',
 
-
         coverLetter: 'Motivatiebrief',
         cvUpload: 'Cv / cv-bestand',
         cvFileTypes:
@@ -542,6 +544,18 @@ export const nl: DeepString<typeof en> = {
             'Selecteer een cv voordat je doorgaat.',
         cvRetentionConsentRequired:
             'Geef toestemming om je cv te bewaren voordat je doorgaat.',
+
+        match: {
+            title: 'Jouw match met deze vacature',
+            loading: 'Je match wordt geladen...',
+            error: 'Je match kon niet worden geladen.',
+            score: 'match met deze vacature',
+            strengths: 'Jouw sterke punten',
+            gaps: 'Ontbrekende vaardigheden',
+            noStrengths: 'Er zijn nog geen sterke punten beschikbaar.',
+            noGaps: 'Er zijn geen ontbrekende vaardigheden.',
+            noMatch: 'Er is nog geen match berekend voor deze vacature.',
+        },
     },
 
     candidateSkills: {
@@ -1173,6 +1187,7 @@ export const nl: DeepString<typeof en> = {
     recruiterJobDetails: {
         loading:
             'Vacature laden...',
+        tabsLabel: 'Onderdelen vacature',
     },
 
     recruiterJobForm: {
@@ -1406,5 +1421,31 @@ export const nl: DeepString<typeof en> = {
         level: 'Niveau:',
         skillGaps: 'Ontbrekende vaardigheden',
         requiredLevel: 'Vereist niveau:',
+        filters: 'Filter op matchscore',
+        allScores: 'Alle kandidaten',
+        strongMatches: 'Sterke matches (80%+)',
+        partialMatches: 'Gedeeltelijke matches (1–79%)',
+        noMatches: 'Geen match (0%)',
+        sortByScore: 'Sorteren op matchscore',
+        highestFirst: 'Hoogste score eerst',
+        lowestFirst: 'Laagste score eerst',
+        noCandidatesForFilter: 'Geen kandidaten gevonden voor dit filter.',
+        candidatesFound: 'kandidaten gevonden',
+        candidatesOnThisPage: 'Kandidaten op deze pagina',
+        strongMatchesOnThisPage: 'Sterke matches op deze pagina',
+        totalFound: 'Totaal gevonden',
+        filterCandidatesByScore: 'Filter kandidaten op matchscore',
+        all: 'Alle',
+        strongMatch: 'Sterke match',
+        partialMatch: 'Gedeeltelijke match',
+        noMatch: 'Geen match',
+        hideDetails: 'Details verbergen',
+        viewDetails: 'Bekijk details',
+        noSkillDetails: 'Geen vaardigheidsdetails beschikbaar.',
+        allCandidates: 'Alle',
+        strongMatchesFilter: 'Sterke matches (80%+)',
+        partialMatchesFilter: 'Gedeeltelijke matches (1–79%)',
+        noMatchesFilter: 'Geen match (0%)',
+        candidatesOf: 'van',
     },
 };

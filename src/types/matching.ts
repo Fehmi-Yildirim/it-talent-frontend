@@ -82,4 +82,5 @@ export interface MatchingResponse<TMatch> {
 export interface MatchingQuery {
     page?: number
     limit?: number
+    scoreRange?: 'all' | 'strong' | 'partial' | 'none'
 }

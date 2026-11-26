@@ -15,6 +15,8 @@ import {
     type WorkMode,
 } from '../types/job'
 import './CandidateJobDetailsPage.css'
+import { getMyMatchForJob } from '../features/matching/matching.api'
+import type { MatchRecord } from '../types/matching'
 
 function formatSalary(
     salaryMin: string | number | null,
@@ -75,6 +77,9 @@ function CandidateJobDetailsPage() {
     const [loading, setLoading] = useState(true)
     const [errorStatus, setErrorStatus] = useState<number | null>(null)
     const [retryCount, setRetryCount] = useState(0)
+    const [match, setMatch] = useState<MatchRecord | null>(null)
+    const [matchLoading, setMatchLoading] = useState(true)
+    const [matchError, setMatchError] = useState(false)
 
     const locale = LOCALES[language]
 
@@ -125,6 +130,43 @@ function CandidateJobDetailsPage() {
             cancelled = true
         }
     }, [jobId, retryCount])
+
+    useEffect(() => {
+        let cancelled = false
+
+        async function loadMatch() {
+            if (!jobId) {
+                setMatchLoading(false)
+                return
+            }
+
+            setMatchLoading(true)
+            setMatchError(false)
+            setMatch(null)
+
+            try {
+                const result = await getMyMatchForJob(jobId)
+
+                if (!cancelled) {
+                    setMatch(result.data)
+                }
+            } catch {
+                if (!cancelled) {
+                    setMatchError(true)
+                }
+            } finally {
+                if (!cancelled) {
+                    setMatchLoading(false)
+                }
+            }
+        }
+
+        void loadMatch()
+
+        return () => {
+            cancelled = true
+        }
+    }, [jobId])
 
     if (loading) {
         return (
@@ -254,6 +296,102 @@ function CandidateJobDetailsPage() {
                         </dd>
                     </div>
                 </div>
+
+                <section className="candidate-job-match">
+                    <details className="candidate-job-match-details">
+                        <summary className="candidate-job-match-summary">
+                            <span>
+                                {t('candidateJobDetails.match.title')}
+                            </span>
+                            <span className="candidate-job-match-toggle" aria-hidden="true" />
+                        </summary>
+
+                        <div className="candidate-job-match-content">
+                            {matchLoading && (
+                                <p className="candidate-job-match-message" role="status">
+                                    {t('candidateJobDetails.match.loading')}
+                                </p>
+                            )}
+
+                            {matchError && (
+                                <p className="candidate-job-match-message candidate-job-match-error" role="alert">
+                                    {t('candidateJobDetails.match.error')}
+                                </p>
+                            )}
+
+                            {!matchLoading && !matchError && match && (
+                                <>
+                                    <div className="candidate-job-match-score">
+                                        <div>
+                                            <span className="candidate-job-match-score-label">
+                                                {t('candidateJobDetails.match.score')}
+                                            </span>
+                                            <strong className="candidate-job-match-score-value">
+                                                {Number(match.overallScore).toFixed(0)}%
+                                            </strong>
+                                        </div>
+                                    </div>
+
+                                    {match.explanation && (
+                                        <div className="candidate-job-match-columns">
+                                            <div className="candidate-job-match-card candidate-job-match-strengths">
+                                                <h3>
+                                                    {t('candidateJobDetails.match.strengths')}
+                                                </h3>
+
+                                                {match.explanation.strengths.length > 0 ? (
+                                                    <ul>
+                                                        {match.explanation.strengths.map((item) => (
+                                                            <li key={item.skill}>
+                                                                <strong>{item.skill}</strong>
+                                                                <span>
+                                                                    {item.candidateLevel}
+                                                                    {' / '}
+                                                                    {item.requiredLevel}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <p>{t('candidateJobDetails.match.noStrengths')}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="candidate-job-match-card candidate-job-match-gaps">
+                                                <h3>
+                                                    {t('candidateJobDetails.match.gaps')}
+                                                </h3>
+
+                                                {match.explanation.gaps.length > 0 ? (
+                                                    <ul>
+                                                        {match.explanation.gaps.map((item) => (
+                                                            <li key={item.skill}>
+                                                                <strong>{item.skill}</strong>
+                                                                <span>
+                                                                    {item.candidateLevel ?? 0}
+                                                                    {' / '}
+                                                                    {item.requiredLevel}
+                                                                </span>
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                ) : (
+                                                    <p>{t('candidateJobDetails.match.noGaps')}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </>
+                            )}
+
+                            {!matchLoading && !matchError && !match && (
+                                <p className="candidate-job-match-message">
+                                    {t('candidateJobDetails.match.noMatch')}
+                                </p>
+                            )}
+                        </div>
+                    </details>
+                </section>
 
                 <section className="candidate-job-details-section">
                     <h2>{t('candidateJobDetails.aboutTheJob')}</h2>

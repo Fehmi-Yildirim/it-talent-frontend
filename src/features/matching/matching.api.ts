@@ -1,6 +1,7 @@
 import { apiClient } from '../../services/api/apiClient'
 import type {
     CandidateMatch,
+    MatchRecord,
     MatchingQuery,
     MatchingResponse,
     RecruiterCandidateMatch,
@@ -15,6 +16,10 @@ function buildMatchingQuery(query: MatchingQuery = {}): string {
 
     if (query.limit !== undefined) {
         params.set('limit', String(query.limit))
+    }
+
+    if (query.scoreRange !== undefined) {
+        params.set('scoreRange', query.scoreRange)
     }
 
     const serialized = params.toString()
@@ -35,5 +40,13 @@ export function getCandidatesForJob(
 ): Promise<MatchingResponse<RecruiterCandidateMatch>> {
     return apiClient.get<MatchingResponse<RecruiterCandidateMatch>>(
         `/matches/jobs/${encodeURIComponent(jobId)}/candidates${buildMatchingQuery(query)}`,
+    )
+}
+
+export function getMyMatchForJob(
+    jobId: string,
+): Promise<{ data: MatchRecord | null }> {
+    return apiClient.get<{ data: MatchRecord | null }>(
+        `/matches/me/jobs/${encodeURIComponent(jobId)}`,
     )
 }
