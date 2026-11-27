@@ -27,6 +27,15 @@ type StatusAction = {
     execute: (jobId: string) => Promise<Job>
 }
 
+type JobSortOption = 'newest' | 'oldest' | 'title' | 'expiry'
+
+type JobFilters = {
+    search: string
+    status: JobStatus | ''
+    employmentType: Job['employmentType'] | ''
+    workMode: Job['workMode'] | ''
+}
+
 const STATUS_ACTIONS: Record<JobStatus, StatusAction[]> = {
     DRAFT: [
         {
@@ -104,6 +113,15 @@ export default function RecruiterJobsPage() {
     const [error, setError] = useState('')
     const [currentPage, setCurrentPage] = useState(1)
 
+    const [filters, setFilters] = useState<JobFilters>({
+        search: '',
+        status: '',
+        employmentType: '',
+        workMode: '',
+    })
+
+    const [sortBy, setSortBy] = useState<JobSortOption>('newest')
+
     const [updatingAction, setUpdatingAction] = useState<{
         jobId: string
         targetStatus: JobStatus
@@ -114,11 +132,6 @@ export default function RecruiterJobsPage() {
         type: 'success' | 'error'
     } | null>(null)
 
-    const paginatedJobs = jobs.slice(
-        (currentPage - 1) * PAGE_SIZE,
-        currentPage * PAGE_SIZE,
-    )
-
     const employmentTypeLabel = (value: Job['employmentType']) =>
         t(EMPLOYMENT_TYPE_TRANSLATION_KEYS[value])
 
@@ -127,6 +140,93 @@ export default function RecruiterJobsPage() {
 
     const statusLabel = (value: Job['status']) =>
         t(`common.${value.toLowerCase()}` as TranslationKey)
+
+    const filteredJobs = jobs
+        .filter((job) => {
+            const search = filters.search.trim().toLowerCase()
+
+            const matchesSearch =
+                !search ||
+                job.title.toLowerCase().includes(search) ||
+                (job.location ?? '').toLowerCase().includes(search)
+
+            const matchesStatus =
+                !filters.status || job.status === filters.status
+
+            const matchesEmploymentType =
+                !filters.employmentType ||
+                job.employmentType === filters.employmentType
+
+            const matchesWorkMode =
+                !filters.workMode || job.workMode === filters.workMode
+
+            return (
+                matchesSearch &&
+                matchesStatus &&
+                matchesEmploymentType &&
+                matchesWorkMode
+            )
+        })
+        .sort((a, b) => {
+            switch (sortBy) {
+                case 'title':
+                    return a.title.localeCompare(b.title, language)
+
+                case 'oldest':
+                    return (
+                        new Date(a.createdAt).getTime() -
+                        new Date(b.createdAt).getTime()
+                    )
+
+                case 'expiry': {
+                    if (!a.expiresAt && !b.expiresAt) return 0
+                    if (!a.expiresAt) return 1
+                    if (!b.expiresAt) return -1
+
+                    return (
+                        new Date(a.expiresAt).getTime() -
+                        new Date(b.expiresAt).getTime()
+                    )
+                }
+
+                case 'newest':
+                default:
+                    return (
+                        new Date(b.createdAt).getTime() -
+                        new Date(a.createdAt).getTime()
+                    )
+            }
+        })
+
+    const paginatedJobs = filteredJobs.slice(
+        (currentPage - 1) * PAGE_SIZE,
+        currentPage * PAGE_SIZE,
+    )
+
+    const jobCounts = {
+        total: jobs.length,
+        DRAFT: jobs.filter((job) => job.status === 'DRAFT').length,
+        PUBLISHED: jobs.filter((job) => job.status === 'PUBLISHED').length,
+        PAUSED: jobs.filter((job) => job.status === 'PAUSED').length,
+        CLOSED: jobs.filter((job) => job.status === 'CLOSED').length,
+    }
+
+    const hasActiveFilters =
+        filters.search !== '' ||
+        filters.status !== '' ||
+        filters.employmentType !== '' ||
+        filters.workMode !== ''
+
+    function clearFilters() {
+        setFilters({
+            search: '',
+            status: '',
+            employmentType: '',
+            workMode: '',
+        })
+        setSortBy('newest')
+        setCurrentPage(1)
+    }
 
     useEffect(() => {
         let active = true
@@ -159,7 +259,6 @@ export default function RecruiterJobsPage() {
         }
     }, [t])
 
-    // Hide the status feedback icon after 3 seconds.
     useEffect(() => {
         if (!statusFeedback) {
             return
@@ -174,6 +273,10 @@ export default function RecruiterJobsPage() {
         }
     }, [statusFeedback])
 
+    useEffect(() => {
+        setCurrentPage(1)
+    }, [filters, sortBy])
+
     async function handleStatusChange(
         job: Job,
         targetStatus: JobStatus,
@@ -186,7 +289,6 @@ export default function RecruiterJobsPage() {
             (item) => item.targetStatus === targetStatus,
         )
 
-        // Prevent invalid status transitions.
         if (!action) {
             return
         }
@@ -310,6 +412,190 @@ export default function RecruiterJobsPage() {
                 )}
             </div>
 
+            {jobs.length > 0 && (
+                <>
+                    <section
+                        className="recruiter-jobs-overview"
+                        aria-label={t('recruiterJobs.overview')}
+                    >
+                        {(
+                            ['total', 'DRAFT', 'PUBLISHED', 'PAUSED', 'CLOSED'] as const
+                        ).map((status) => (
+                            <article
+                                className={`recruiter-jobs-stat recruiter-jobs-stat-${status.toLowerCase()}`}
+                                key={status}
+                            >
+                                <span>
+                                    {t(
+                                        `recruiterJobs.stats.${status}` as TranslationKey,
+                                    )}
+                                </span>
+                                <strong>{jobCounts[status]}</strong>
+                            </article>
+                        ))}
+                    </section>
+
+                    <section
+                        className="recruiter-jobs-filters"
+                        aria-label={t('recruiterJobs.filters')}
+                    >
+                        <div className="recruiter-jobs-search">
+                            <label htmlFor="recruiter-jobs-search">
+                                {t('common.search')}
+                            </label>
+                            <input
+                                id="recruiter-jobs-search"
+                                type="search"
+                                value={filters.search}
+                                placeholder={t(
+                                    'recruiterJobs.searchPlaceholder',
+                                )}
+                                onChange={(event) =>
+                                    setFilters((current) => ({
+                                        ...current,
+                                        search: event.target.value,
+                                    }))
+                                }
+                            />
+                        </div>
+
+                        <div className="recruiter-jobs-filter">
+                            <label htmlFor="recruiter-jobs-status">
+                                {t('common.status')}
+                            </label>
+                            <select
+                                id="recruiter-jobs-status"
+                                value={filters.status}
+                                onChange={(event) =>
+                                    setFilters((current) => ({
+                                        ...current,
+                                        status: event.target.value as JobStatus | '',
+                                    }))
+                                }
+                            >
+                                <option value="">
+                                    {t('recruiterJobs.allStatuses')}
+                                </option>
+                                {(
+                                    ['DRAFT', 'PUBLISHED', 'PAUSED', 'CLOSED'] as const
+                                ).map((status) => (
+                                    <option key={status} value={status}>
+                                        {statusLabel(status)}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="recruiter-jobs-filter">
+                            <label htmlFor="recruiter-jobs-employment">
+                                {t('common.employmentType')}
+                            </label>
+                            <select
+                                id="recruiter-jobs-employment"
+                                value={filters.employmentType}
+                                onChange={(event) =>
+                                    setFilters((current) => ({
+                                        ...current,
+                                        employmentType: event.target.value as
+                                            | Job['employmentType']
+                                            | '',
+                                    }))
+                                }
+                            >
+                                <option value="">
+                                    {t('recruiterJobs.allEmploymentTypes')}
+                                </option>
+                                {Object.keys(
+                                    EMPLOYMENT_TYPE_TRANSLATION_KEYS,
+                                ).map((value) => (
+                                    <option key={value} value={value}>
+                                        {employmentTypeLabel(
+                                            value as Job['employmentType'],
+                                        )}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className="recruiter-jobs-filter">
+                            <label htmlFor="recruiter-jobs-workmode">
+                                {t('common.workMode')}
+                            </label>
+                            <select
+                                id="recruiter-jobs-workmode"
+                                value={filters.workMode}
+                                onChange={(event) =>
+                                    setFilters((current) => ({
+                                        ...current,
+                                        workMode: event.target.value as
+                                            | Job['workMode']
+                                            | '',
+                                    }))
+                                }
+                            >
+                                <option value="">
+                                    {t('recruiterJobs.allWorkModes')}
+                                </option>
+                                {Object.keys(WORK_MODE_TRANSLATION_KEYS).map(
+                                    (value) => (
+                                        <option key={value} value={value}>
+                                            {workModeLabel(
+                                                value as Job['workMode'],
+                                            )}
+                                        </option>
+                                    ),
+                                )}
+                            </select>
+                        </div>
+
+                        <div className="recruiter-jobs-filter">
+                            <label htmlFor="recruiter-jobs-sort">
+                                {t('recruiterJobs.sortBy')}
+                            </label>
+                            <select
+                                id="recruiter-jobs-sort"
+                                value={sortBy}
+                                onChange={(event) =>
+                                    setSortBy(
+                                        event.target.value as JobSortOption,
+                                    )
+                                }
+                            >
+                                <option value="newest">
+                                    {t('recruiterJobs.newest')}
+                                </option>
+                                <option value="oldest">
+                                    {t('recruiterJobs.oldest')}
+                                </option>
+                                <option value="title">
+                                    {t('recruiterJobs.sortTitle')}
+                                </option>
+                                <option value="expiry">
+                                    {t('recruiterJobs.expirySoonest')}
+                                </option>
+                            </select>
+                        </div>
+
+                        {hasActiveFilters && (
+                            <button
+                                type="button"
+                                className="recruiter-jobs-clear-filters"
+                                onClick={clearFilters}
+                            >
+                                {t('common.clearFilters')}
+                            </button>
+                        )}
+                    </section>
+
+                    <p
+                        className="recruiter-jobs-results-count"
+                        aria-live="polite"
+                    >
+                        {filteredJobs.length} / {jobs.length}
+                    </p>
+                </>
+            )}
+
             {jobs.length === 0 ? (
                 <section className="recruiter-jobs-state">
                     <h2>{t('recruiterJobs.noJobs')}</h2>
@@ -332,6 +618,19 @@ export default function RecruiterJobsPage() {
                             {t('recruiterJobs.createFirstJob')}
                         </Link>
                     )}
+                </section>
+            ) : filteredJobs.length === 0 ? (
+                <section className="recruiter-jobs-state">
+                    <h2>{t('recruiterJobs.noFilteredJobs')}</h2>
+                    <p>{t('recruiterJobs.noFilteredJobsDescription')}</p>
+
+                    <button
+                        type="button"
+                        className="recruiter-jobs-secondary-button"
+                        onClick={clearFilters}
+                    >
+                        {t('common.clearFilters')}
+                    </button>
                 </section>
             ) : (
                 <>
@@ -430,9 +729,7 @@ export default function RecruiterJobsPage() {
                                             {workModeLabel(job.workMode)}
                                         </span>
 
-                                        <span>
-                                            {formatSalary(job, t)}
-                                        </span>
+                                        <span>{formatSalary(job, t)}</span>
 
                                         <span>
                                             {t('recruiterJobs.expirationDate')}:{' '}
@@ -471,7 +768,7 @@ export default function RecruiterJobsPage() {
 
                     <Pagination
                         currentPage={currentPage}
-                        totalItems={jobs.length}
+                        totalItems={filteredJobs.length}
                         itemsPerPage={PAGE_SIZE}
                         onPageChange={setCurrentPage}
                     />
