@@ -1182,6 +1182,26 @@ export const nl: DeepString<typeof en> = {
         createJobError:
             'De vacature kan niet worden aangemaakt.',
         changeStatus: 'Status wijzigen',
+        overview: 'Vacatureoverzicht',
+        filters: 'Vacatures filteren',
+        searchPlaceholder: 'Zoek op functietitel of locatie...',
+        allStatuses: 'Alle statussen',
+        allEmploymentTypes: 'Alle dienstverbanden',
+        allWorkModes: 'Alle werkvormen',
+        sortBy: 'Sorteren op',
+        newest: 'Nieuwste eerst',
+        oldest: 'Oudste eerst',
+        sortTitle: 'Functietitel (A–Z)',
+        expirySoonest: 'Vervaldatum (eerstvolgende)',
+        noFilteredJobs: 'Geen vacatures gevonden',
+        noFilteredJobsDescription: 'Pas je zoekopdracht of filters aan.',
+        stats: {
+            total: 'Alle vacatures',
+            DRAFT: 'Concept',
+            PUBLISHED: 'Gepubliceerd',
+            PAUSED: 'Gepauzeerd',
+            CLOSED: 'Gesloten',
+        },
     },
 
     recruiterJobDetails: {
